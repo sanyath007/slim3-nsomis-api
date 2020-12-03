@@ -15,4 +15,5 @@ $app->get('/op/referout/{month}', 'OpController:referOut')->setName('referout');
 $app->get('/er/visit/{month}', 'ErController:ervisit')->setName('ervisit');
 $app->get('/er/emergency/{month}', 'ErController:emergency')->setName('emergency');
 
+$app->get('/or/visit/{month}', 'OrController:orvisit')->setName('orvisit');
 $app->get('/or/or-type/{month}', 'OrController:orType')->setName('orType');

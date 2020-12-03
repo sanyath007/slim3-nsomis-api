@@ -7,6 +7,22 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 class OrController extends Controller
 {
+    public function orvisit($req, $res, $args)
+    {
+        $sql="SELECT CONCAT(YEAR(operation_date),'-', MONTH(operation_date)) AS yearmonth, 
+            COUNT(DISTINCT CASE WHEN (operation_type_id=1) THEN operation_id END) as small,
+            COUNT(DISTINCT CASE WHEN (operation_type_id=3) THEN operation_id END) as large,
+            COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,3) OR operation_type_id is null) THEN operation_id END) as other
+            FROM operation_list 
+            WHERE (operation_date BETWEEN '2019-10-01' and '2020-09-30')
+            AND (status_id=3)
+            GROUP BY CONCAT(YEAR(operation_date),'-', MONTH(operation_date)) ";
+
+        return $res->withJson([
+            'visit' => DB::select($sql),
+        ]);
+    }
+
     public function orType($req, $res, $args)
     {
         $sql="SELECT
@@ -49,32 +65,6 @@ class OrController extends Controller
 
         return $res->withJson([
             'orday' => DB::select($sql),
-        ]);
-    }
-    
-    public function referIn($req, $res, $args)
-    {
-        $sql="SELECT CONCAT(YEAR(vstdate),'-', MONTH(vstdate)) AS yearmonth,
-            COUNT(DISTINCT vn) as num_pt
-            FROM vn_stat
-            WHERE (vn IN (SELECT vn FROM referin WHERE(refer_date BETWEEN '2019-10-01' AND '2020-09-30')))
-            GROUP BY CONCAT(YEAR(vstdate),'-', MONTH(vstdate)) ";
-
-        return $res->withJson([
-            'referin' => DB::select($sql),
-        ]);
-    }
-    
-    public function referOut($req, $res, $args)
-    {
-        $sql="SELECT CONCAT(YEAR(refer_date),'-', MONTH(refer_date)) AS yearmonth,
-            COUNT(DISTINCT vn) as num_pt
-            FROM referout
-            WHERE(refer_date BETWEEN '2019-10-01' AND '2020-09-30')
-            GROUP BY CONCAT(YEAR(refer_date),'-', MONTH(refer_date)) ";
-
-        return $res->withJson([
-            'referout' => DB::select($sql),
         ]);
     }
 }
