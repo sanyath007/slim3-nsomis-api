@@ -25,7 +25,7 @@ class IpController extends Controller
             'wardStat' => DB::select($q),
         ]);
     }
-    
+
     public function ipvisit($req, $res, $args)
     {
         $sql="SELECT CONCAT(YEAR(dchdate),'-', MONTH(dchdate)) AS yearmonth,
@@ -36,6 +36,24 @@ class IpController extends Controller
 
         return $res->withJson([
             'ipvisit' => DB::select($sql),
+        ]);
+    }
+
+    public function ipclassification($req, $res, $args)
+    {
+        $sql="SELECT 
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='1'))) THEN ip.an END) AS 'ประเภท 1',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='2'))) THEN ip.an END) AS 'ประเภท 2',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='3'))) THEN ip.an END) AS 'ประเภท 3',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='4'))) THEN ip.an END) AS 'ประเภท 4',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='5'))) THEN ip.an END) AS 'ประเภท 5',
+            COUNT(CASE WHEN (ip.an not IN (select an from ipt_icnp)) THEN ip.an END) AS 'ไม่ระบุ'
+            FROM ipt ip
+            LEFT JOIN ward w ON (ip.ward=w.ward)
+            WHERE (ip.dchdate BETWEEN '2019-10-01' AND '2020-09-30') ";
+
+        return $res->withJson([
+            'class' => DB::select($sql),
         ]);
     }
 }
