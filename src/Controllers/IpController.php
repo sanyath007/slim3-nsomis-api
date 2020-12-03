@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Contoller;
+use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
 
 class IpController extends Controller

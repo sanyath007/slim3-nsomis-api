@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Contoller;
+use App\Controllers\Controller;
 use App\Models\User;
 
 class UserController extends Controller
