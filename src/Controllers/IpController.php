@@ -9,6 +9,9 @@ class IpController extends Controller
 {
     public function admdate($req, $res, $args)
     {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
         $sql="SELECT 
             ip.ward, w.name, SUM(ip.rw) AS rw, COUNT(ip.an) AS dc_num, SUM(a.admdate) as admdate		
             FROM ipt ip
@@ -28,19 +31,25 @@ class IpController extends Controller
 
     public function ipvisit($req, $res, $args)
     {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
         $sql="SELECT CONCAT(YEAR(dchdate),'-', MONTH(dchdate)) AS yearmonth,
             COUNT(DISTINCT an) as num_pt
             FROM an_stat
-            WHERE (dchdate BETWEEN '2019-10-01' AND '2020-09-30')
+            WHERE (dchdate BETWEEN ? AND ?)
             GROUP BY CONCAT(YEAR(dchdate),'-', MONTH(dchdate)) ";
 
         return $res->withJson([
-            'ipvisit' => DB::select($sql),
+            'ipvisit' => DB::select($sql, [$sdate, $edate]),
         ]);
     }
 
     public function ipclassification($req, $res, $args)
     {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
         $sql="SELECT 
             COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='1'))) THEN ip.an END) AS 'ประเภท 1',
             COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='2'))) THEN ip.an END) AS 'ประเภท 2',
@@ -50,10 +59,10 @@ class IpController extends Controller
             COUNT(CASE WHEN (ip.an not IN (select an from ipt_icnp)) THEN ip.an END) AS 'ไม่ระบุ'
             FROM ipt ip
             LEFT JOIN ward w ON (ip.ward=w.ward)
-            WHERE (ip.dchdate BETWEEN '2019-10-01' AND '2020-09-30') ";
+            WHERE (ip.dchdate BETWEEN ? AND ?) ";
 
         return $res->withJson([
-            'class' => DB::select($sql),
+            'class' => DB::select($sql, [$sdate, $edate]),
         ]);
     }
 }

@@ -9,22 +9,28 @@ class OrController extends Controller
 {
     public function orvisit($req, $res, $args)
     {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
         $sql="SELECT CONCAT(YEAR(operation_date),'-', MONTH(operation_date)) AS yearmonth, 
             COUNT(DISTINCT CASE WHEN (operation_type_id=1) THEN operation_id END) as small,
             COUNT(DISTINCT CASE WHEN (operation_type_id=3) THEN operation_id END) as large,
             COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,3) OR operation_type_id is null) THEN operation_id END) as other
             FROM operation_list 
-            WHERE (operation_date BETWEEN '2019-10-01' and '2020-09-30')
+            WHERE (operation_date BETWEEN ? AND ?)
             AND (status_id=3)
             GROUP BY CONCAT(YEAR(operation_date),'-', MONTH(operation_date)) ";
 
         return $res->withJson([
-            'visit' => DB::select($sql),
+            'visit' => DB::select($sql, [$sdate, $edate]),
         ]);
     }
 
     public function orType($req, $res, $args)
     {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
         $sql="SELECT
             COUNT(DISTINCT CASE WHEN (request_doctor IN ('0102','0065','0867','1073')) THEN operation_id END) as 'eye',
             COUNT(DISTINCT CASE WHEN (request_doctor IN ('0489','0371','0869','0570')) THEN operation_id END) as 'ออร์โธฯ',
@@ -35,16 +41,19 @@ class OrController extends Controller
                                                         '0120','0220','0568','0865'
             )) THEN operation_id END) as 'อื่นๆ'
             FROM operation_list 
-            WHERE (operation_date BETWEEN '2019-10-01' and '2020-09-30')
+            WHERE (operation_date BETWEEN ? AND ?)
             AND (status_id=3) ";
 
         return $res->withJson([
-            'ortype' => DB::select($sql),
+            'ortype' => DB::select($sql, [$sdate, $edate]),
         ]);
     }
     
     public function orDay($req, $res, $args)
     {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
         $sql="SELECT operation_date, 
             COUNT(DISTINCT operation_id) as num, 
             COUNT(DISTINCT CASE WHEN (operation_type_id=1) THEN operation_id END) as small,
@@ -59,12 +68,12 @@ class OrController extends Controller
             COUNT(DISTINCT CASE WHEN (leave_time BETWEEN '16:01:00' AND '23:59:59') THEN operation_id END) as evening,
             COUNT(DISTINCT CASE WHEN (leave_time BETWEEN '00:00:01' AND '07:59:59') THEN operation_id END) as night
             FROM operation_list 
-            WHERE (operation_date BETWEEN '2019-10-01' and '2020-09-01')
+            WHERE (operation_date BETWEEN ? AND ?)
             AND (status_id=3)
             GROUP BY operation_date ";
 
         return $res->withJson([
-            'orday' => DB::select($sql),
+            'orday' => DB::select($sql, [$sdate, $edate]),
         ]);
     }
 }

@@ -9,6 +9,9 @@ class ErController extends Controller
 {
     public function ervisit($req, $res, $args)
     {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
         $sql="SELECT
         CONCAT(YEAR(vstdate),'-', MONTH(vstdate)) AS yearmonth,
         COUNT(CASE WHEN(er.er_emergency_type='1') THEN (er.vn) END) AS 'emergency',
@@ -18,16 +21,19 @@ class ErController extends Controller
         COUNT(CASE WHEN(er.er_emergency_type='5') THEN (er.vn) END) AS 'resuscitation'
         FROM er_regist er 
         LEFT JOIN er_period pr ON (er.er_period=pr.er_period)
-        WHERE (vstdate BETWEEN '2019-10-01' AND '2020-09-30')
+        WHERE (vstdate BETWEEN ? AND ?)
         GROUP BY CONCAT(YEAR(vstdate),'-', MONTH(vstdate)) ";
 
         return $res->withJson([
-            'visit' => DB::select($sql),
+            'visit' => DB::select($sql, [$sdate, $edate]),
         ]);
     }
     
     public function emergency($req, $res, $args)
     {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
         $sql="SELECT
         COUNT(CASE WHEN(er.er_emergency_type='1') THEN (er.vn) END) AS 'Emergency',
         COUNT(CASE WHEN(er.er_emergency_type='2') THEN (er.vn) END) AS 'Ugency',
@@ -36,10 +42,10 @@ class ErController extends Controller
         COUNT(CASE WHEN(er.er_emergency_type='5') THEN (er.vn) END) AS 'Resuscitation'
         FROM er_regist er 
         LEFT JOIN er_period pr ON (er.er_period=pr.er_period)
-        WHERE (vstdate BETWEEN '2019-10-01' AND '2020-09-30') ";
+        WHERE (vstdate BETWEEN ? AND ?) ";
 
         return $res->withJson([
-            'emergency' => DB::select($sql),
+            'emergency' => DB::select($sql, [$sdate, $edate]),
         ]);
     }
     
