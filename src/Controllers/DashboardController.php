@@ -163,6 +163,43 @@ class DashboardController extends Controller
         );
     }
 
+    public function ipVisitYear($req, $res, $args)
+    {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
+        $sql="SELECT CONCAT(YEAR(dchdate),'-', MONTH(dchdate)) AS yearmonth,
+            COUNT(DISTINCT an) as num_pt
+            FROM an_stat
+            WHERE (dchdate BETWEEN ? AND ?)
+            GROUP BY CONCAT(YEAR(dchdate),'-', MONTH(dchdate)) ";
+
+        return $res->withJson(
+            DB::select($sql, [$sdate, $edate])
+        );
+    }
+
+    public function ipClassYear($req, $res, $args)
+    {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
+        $sql="SELECT 
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='1'))) THEN ip.an END) AS 'ประเภท 1',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='2'))) THEN ip.an END) AS 'ประเภท 2',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='3'))) THEN ip.an END) AS 'ประเภท 3',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='4'))) THEN ip.an END) AS 'ประเภท 4',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='5'))) THEN ip.an END) AS 'ประเภท 5',
+            COUNT(CASE WHEN (ip.an not IN (select an from ipt_icnp)) THEN ip.an END) AS 'ไม่ระบุ'
+            FROM ipt ip
+            LEFT JOIN ward w ON (ip.ward=w.ward)
+            WHERE (ip.dchdate BETWEEN ? AND ?) ";
+
+        return $res->withJson(
+            DB::select($sql, [$sdate, $edate])
+        );
+    }
+
     public function referInDay($req, $res, $args)
     {        
         $sql="SELECT CAST(HOUR(vsttime) AS SIGNED) AS hhmm,
