@@ -3,12 +3,12 @@
 $app->get('/', 'HomeController:home')->setName('home');
 $app->get('/users', 'UserController:index')->setName('list');
 
-$app->get('/dashboard/op-visit/{date}', 'DashboardController:opVisit');
-$app->get('/dashboard/op-visit-type/{date}', 'DashboardController:opVisitType');
-$app->get('/dashboard/ip-visit/{date}', 'DashboardController:ipVisit');
-$app->get('/dashboard/ip-class/{date}', 'DashboardController:ipClass');
-$app->get('/dashboard/referin/{date}', 'DashboardController:referIn');
-$app->get('/dashboard/referout/{date}', 'DashboardController:referOut');
+$app->get('/dashboard/op-visit/{date}', 'DashboardController:opVisitDay');
+$app->get('/dashboard/op-visit-type/{date}', 'DashboardController:opVisitTypeDay');
+$app->get('/dashboard/ip-visit/{date}', 'DashboardController:ipVisitDay');
+$app->get('/dashboard/ip-class/{date}', 'DashboardController:ipClassDay');
+$app->get('/dashboard/referin/{date}', 'DashboardController:referInDay');
+$app->get('/dashboard/referout/{date}', 'DashboardController:referOutDay');
 
 $app->get('/dashboard/op-visit-month/{month}', 'DashboardController:opVisitMonth');
 $app->get('/dashboard/op-visit-type-month/{month}', 'DashboardController:opVisitTypeMonth');

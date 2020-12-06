@@ -93,7 +93,7 @@ class DashboardController extends Controller
         );
     }
 
-    public function ipVisit($req, $res, $args)
+    public function ipVisitDay($req, $res, $args)
     {
         $sql="SELECT CAST(HOUR(dchtime) AS SIGNED) AS hhmm,
             COUNT(DISTINCT an) as num_pt
@@ -107,7 +107,24 @@ class DashboardController extends Controller
         );
     }
 
-    public function ipClass($req, $res, $args)
+    public function ipVisitMonth($req, $res, $args)
+    {
+        $sdate = $args['month']. '-01';
+        $edate = $args['month']. '-31';
+
+        $sql="SELECT CAST(DAY(dchdate) AS SIGNED) AS d,
+            COUNT(DISTINCT an) as num_pt
+            FROM ipt
+            WHERE (dchdate BETWEEN ? AND ?)
+            GROUP BY CAST(DAY(dchdate) AS SIGNED) 
+            ORDER BY CAST(DAY(dchdate) AS SIGNED) ";
+
+        return $res->withJson(
+            DB::select($sql, [$sdate, $edate])
+        );
+    }
+
+    public function ipClassDay($req, $res, $args)
     {
         $sql="SELECT 
             COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='1'))) THEN ip.an END) AS 'ประเภท 1',
@@ -125,7 +142,28 @@ class DashboardController extends Controller
         );
     }
 
-    public function referIn($req, $res, $args)
+    public function ipClassMonth($req, $res, $args)
+    {
+        $sdate = $args['month']. '-01';
+        $edate = $args['month']. '-31';
+
+        $sql="SELECT 
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='1'))) THEN ip.an END) AS 'ประเภท 1',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='2'))) THEN ip.an END) AS 'ประเภท 2',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='3'))) THEN ip.an END) AS 'ประเภท 3',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='4'))) THEN ip.an END) AS 'ประเภท 4',
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='5'))) THEN ip.an END) AS 'ประเภท 5',
+            COUNT(CASE WHEN (ip.an not IN (select an from ipt_icnp)) THEN ip.an END) AS 'ไม่ระบุ'
+            FROM ipt ip
+            LEFT JOIN ward w ON (ip.ward=w.ward)
+            WHERE (ip.dchdate BETWEEN ? AND ?) ";
+
+        return $res->withJson(
+            DB::select($sql, [$sdate, $edate])
+        );
+    }
+
+    public function referInDay($req, $res, $args)
     {        
         $sql="SELECT CAST(HOUR(vsttime) AS SIGNED) AS hhmm,
             COUNT(DISTINCT vn) as num_pt
@@ -139,7 +177,7 @@ class DashboardController extends Controller
         );
     }
     
-    public function referOut($req, $res, $args)
+    public function referOutDay($req, $res, $args)
     {
         $sql="SELECT CAST(HOUR(refer_time) AS SIGNED) AS hhmm,
             COUNT(DISTINCT vn) as num_pt
