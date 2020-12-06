@@ -5,6 +5,10 @@ $app->get('/users', 'UserController:index')->setName('list');
 
 $app->get('/dashboard/op-visit/{date}', 'DashboardController:opVisit');
 $app->get('/dashboard/op-visit-type/{date}', 'DashboardController:opVisitType');
+$app->get('/dashboard/ip-visit/{date}', 'DashboardController:ipVisit');
+$app->get('/dashboard/ip-class/{date}', 'DashboardController:ipClass');
+$app->get('/dashboard/referin/{date}', 'DashboardController:referIn');
+$app->get('/dashboard/referout/{date}', 'DashboardController:referOut');
 
 $app->get('/ip/visit/{year}', 'IpController:ipvisit')->setName('ipvisit');
 $app->get('/ip/classification/{year}', 'IpController:ipclassification')->setName('ipclassification');
