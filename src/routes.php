@@ -10,6 +10,13 @@ $app->get('/dashboard/ip-class/{date}', 'DashboardController:ipClass');
 $app->get('/dashboard/referin/{date}', 'DashboardController:referIn');
 $app->get('/dashboard/referout/{date}', 'DashboardController:referOut');
 
+$app->get('/dashboard/op-visit-month/{month}', 'DashboardController:opVisitMonth');
+$app->get('/dashboard/op-visit-type-month/{month}', 'DashboardController:opVisitTypeMonth');
+$app->get('/dashboard/ip-visit-month/{month}', 'DashboardController:ipVisitMonth');
+$app->get('/dashboard/ip-class-month/{month}', 'DashboardController:ipClassMonth');
+$app->get('/dashboard/referin-month/{month}', 'DashboardController:referInMonth');
+$app->get('/dashboard/referout-month/{month}', 'DashboardController:referOutMonth');
+
 $app->get('/ip/visit/{year}', 'IpController:ipvisit')->setName('ipvisit');
 $app->get('/ip/classification/{year}', 'IpController:ipclassification')->setName('ipclassification');
 $app->get('/ip/admdate/{sdate}/{edate}', 'IpController:admdate')->setName('admdate');
