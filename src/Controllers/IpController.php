@@ -9,23 +9,23 @@ class IpController extends Controller
 {
     public function admdate($req, $res, $args)
     {
-        $sdate = ($args['year'] - 1). '-10-01';
-        $edate = $args['year']. '-09-30';
+        $sdate = $args['sdate'];
+        $edate = $args['edate'];
         
         $sql="SELECT 
             ip.ward, w.name, SUM(ip.rw) AS rw, COUNT(ip.an) AS dc_num, SUM(a.admdate) as admdate		
             FROM ipt ip
             LEFT JOIN ward w ON (ip.ward=w.ward)
             LEFT JOIN an_stat a ON (ip.an=a.an)				
-            WHERE (ip.dchdate BETWEEN '2020-11-01' AND '2020-11-30')				
+            WHERE (ip.dchdate BETWEEN ? AND ?)				
             GROUP BY ip.ward, w.name ";
                     
         $q = "SELECT * FROM ipt_ward_stat
-            WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN '2020-11-01' AND '2020-11-30')";
+            WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?)";
 
         return $res->withJson([
-            'admdate' => DB::select($sql),
-            'wardStat' => DB::select($q),
+            'admdate' => DB::select($sql, [$sdate, $edate]),
+            'wardStat' => DB::select($q, [$sdate, $edate]),
         ]);
     }
 

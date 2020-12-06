@@ -5,7 +5,7 @@ $app->get('/users', 'UserController:index')->setName('list');
 
 $app->get('/ip/visit/{year}', 'IpController:ipvisit')->setName('ipvisit');
 $app->get('/ip/classification/{year}', 'IpController:ipclassification')->setName('ipclassification');
-$app->get('/ip/admdate', 'IpController:admdate')->setName('admdate');
+$app->get('/ip/admdate/{sdate}/{edate}', 'IpController:admdate')->setName('admdate');
 
 $app->get('/op/visit/{year}', 'OpController:opvisit')->setName('opvisit');
 $app->get('/op/visit-type/{year}', 'OpController:opVisitType')->setName('opVisitType');
