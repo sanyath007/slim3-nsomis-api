@@ -3,6 +3,9 @@
 $app->get('/', 'HomeController:home')->setName('home');
 $app->get('/users', 'UserController:index')->setName('list');
 
+$app->get('/dashboard/op-visit/{date}', 'DashboardController:opVisit');
+$app->get('/dashboard/op-visit-type/{date}', 'DashboardController:opVisitType');
+
 $app->get('/ip/visit/{year}', 'IpController:ipvisit')->setName('ipvisit');
 $app->get('/ip/classification/{year}', 'IpController:ipclassification')->setName('ipclassification');
 $app->get('/ip/admdate/{sdate}/{edate}', 'IpController:admdate')->setName('admdate');
