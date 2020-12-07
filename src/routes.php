@@ -1,6 +1,7 @@
 <?php
 
 $app->get('/', 'HomeController:home')->setName('home');
+
 $app->get('/users', 'UserController:index')->setName('list');
 
 $app->get('/dashboard/op-visit/{date}', 'DashboardController:opVisitDay');
@@ -9,15 +10,14 @@ $app->get('/dashboard/ip-visit/{date}', 'DashboardController:ipVisitDay');
 $app->get('/dashboard/ip-class/{date}', 'DashboardController:ipClassDay');
 $app->get('/dashboard/referin/{date}', 'DashboardController:referInDay');
 $app->get('/dashboard/referout/{date}', 'DashboardController:referOutDay');
-
 $app->get('/dashboard/op-visit-month/{month}', 'DashboardController:opVisitMonth');
 $app->get('/dashboard/op-visit-type-month/{month}', 'DashboardController:opVisitTypeMonth');
 $app->get('/dashboard/ip-visit-month/{month}', 'DashboardController:ipVisitMonth');
 $app->get('/dashboard/ip-class-month/{month}', 'DashboardController:ipClassMonth');
 $app->get('/dashboard/referin-month/{month}', 'DashboardController:referInMonth');
 $app->get('/dashboard/referout-month/{month}', 'DashboardController:referOutMonth');
-$app->get('/dashboard/ip-visit-year/{year}', 'IpController:ipVisitYear');
-$app->get('/dashboard/ip-class-year/{year}', 'IpController:ipClassYear');
+$app->get('/dashboard/ip-visit-year/{year}', 'DashboardController:ipVisitYear');
+$app->get('/dashboard/ip-class-year/{year}', 'DashboardController:ipClassYear');
 
 $app->get('/ip/class/{sdate}/{edate}', 'IpController:ipclass')->setName('ipclass');
 $app->get('/ip/admdate/{sdate}/{edate}', 'IpController:admdate')->setName('admdate');

@@ -123,6 +123,22 @@ class DashboardController extends Controller
             DB::select($sql, [$sdate, $edate])
         );
     }
+    
+    public function ipVisitYear($req, $res, $args)
+    {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
+        $sql="SELECT CONCAT(YEAR(dchdate),'-', MONTH(dchdate)) AS yearmonth,
+            COUNT(DISTINCT an) as num_pt
+            FROM an_stat
+            WHERE (dchdate BETWEEN ? AND ?)
+            GROUP BY CONCAT(YEAR(dchdate),'-', MONTH(dchdate)) ";
+
+        return $res->withJson(
+            DB::select($sql, [$sdate, $edate])
+        );
+    }
 
     public function ipClassDay($req, $res, $args)
     {
@@ -157,22 +173,6 @@ class DashboardController extends Controller
             FROM ipt ip
             LEFT JOIN ward w ON (ip.ward=w.ward)
             WHERE (ip.dchdate BETWEEN ? AND ?) ";
-
-        return $res->withJson(
-            DB::select($sql, [$sdate, $edate])
-        );
-    }
-
-    public function ipVisitYear($req, $res, $args)
-    {
-        $sdate = ($args['year'] - 1). '-10-01';
-        $edate = $args['year']. '-09-30';
-        
-        $sql="SELECT CONCAT(YEAR(dchdate),'-', MONTH(dchdate)) AS yearmonth,
-            COUNT(DISTINCT an) as num_pt
-            FROM an_stat
-            WHERE (dchdate BETWEEN ? AND ?)
-            GROUP BY CONCAT(YEAR(dchdate),'-', MONTH(dchdate)) ";
 
         return $res->withJson(
             DB::select($sql, [$sdate, $edate])
