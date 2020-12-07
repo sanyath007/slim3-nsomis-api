@@ -33,3 +33,4 @@ $app->get('/er/emergency/{year}', 'ErController:emergency')->setName('emergency'
 
 $app->get('/or/visit/{year}', 'OrController:orvisit')->setName('orvisit');
 $app->get('/or/or-type/{year}', 'OrController:orType')->setName('orType');
+$app->get('/or/num-day/{sdate}/{edate}', 'OrController:numDay')->setName('orNumDay');
