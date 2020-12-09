@@ -2,7 +2,7 @@
 
 $app->get('/', 'HomeController:home')->setName('home');
 
-$app->get('/users', 'UserController:index')->setName('list');
+$app->post('/login', 'LoginController:login')->setName('login');
 
 $app->get('/dashboard/op-visit/{date}', 'DashboardController:opVisitDay');
 $app->get('/dashboard/op-visit-type/{date}', 'DashboardController:opVisitTypeDay');
@@ -34,3 +34,8 @@ $app->get('/er/emergency/{year}', 'ErController:emergency')->setName('emergency'
 $app->get('/or/visit/{year}', 'OrController:orvisit')->setName('orvisit');
 $app->get('/or/or-type/{year}', 'OrController:orType')->setName('orType');
 $app->get('/or/num-day/{sdate}/{edate}', 'OrController:numDay')->setName('orNumDay');
+
+$app->group('/api', function(Slim\App $app) {
+    $app->get('/users', 'UserController:index')->setName('userList');
+    $app->get('/users/{loginname}', 'UserController:getUser')->setName('user');
+});
