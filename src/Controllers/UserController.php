@@ -10,7 +10,7 @@ class UserController extends Controller
 {
     public function index($request, $response, $args)
     {
-        $users = DB::select("SELECT loginname, name, entryposition FROM opduser");
+        $users = User::all(['loginname', 'name', 'entryposition']);
         
         $data = json_encode($users, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE);
 
@@ -21,10 +21,10 @@ class UserController extends Controller
     
     public function getUser($request, $response, $args)
     {
-        $user = User::where('loginname', '=', $args['loginname'])->first();
-        // $user = DB::select($sql, [$sdate, $edate]),
-        var_dump($user->toSql());
-        // $data = json_encode($user, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
+        $user = User::where('loginname', $args['loginname'])
+                    ->get(['loginname', 'name', 'entryposition'])
+                    ->first();
+                    
         $data = json_encode($user, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE);
 
         return $response->withStatus(200)

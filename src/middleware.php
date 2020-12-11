@@ -24,6 +24,10 @@ $container['pdo'] = function ($c) {
     }   
 };
 
+$container['auth'] = function($c) {
+    return new App\Auth\Auth;
+};
+
 $container['logger'] = function($c) {
     $logger = new Monolog\Logger('My_logger');
     $file_handler = new Monolog\Handler\StreamHandler('../logs/app.log');
