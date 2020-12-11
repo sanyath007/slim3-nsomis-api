@@ -63,16 +63,16 @@ $container['HomeController'] = function($c) {
     return new App\Controllers\HomeController($c);
 };
 
+$container['UserController'] = function($c) {
+    return new App\Controllers\UserController($c);
+};
+
 $container['LoginController'] = function($c) {
     return new App\Controllers\Auth\LoginController($c);
 };
 
 $container['DashboardController'] = function($c) {
     return new App\Controllers\DashboardController($c);
-};
-
-$container['UserController'] = function($c) {
-    return new App\Controllers\UserController($c);
 };
 
 $container['IpController'] = function($c) {
