@@ -52,6 +52,42 @@ class ReferController extends Controller
         ]);
     }
     
+    public function referInMonth($req, $res, $args)
+    {
+        $sdate = $args['month']. '-01';
+        $edate = $args['month']. '-30';
+        
+        $sql="SELECT CAST(DAY(refer_date) AS SIGNED) AS d,
+            COUNT(DISTINCT CASE WHEN (refer_point='ER') THEN vn END) as 'ER',
+            COUNT(DISTINCT CASE WHEN (refer_point='OPD') THEN vn END) as 'OPD',
+            COUNT(DISTINCT CASE WHEN (refer_point='IPD') THEN vn END) as 'IPD',
+            COUNT(DISTINCT vn) as 'ALL'
+            FROM referin
+            WHERE (refer_date BETWEEN ? AND ?)
+            GROUP BY CAST(DAY(refer_date) AS SIGNED) 
+            ORDER BY CAST(DAY(refer_date) AS SIGNED) ";
+
+        return $res->withJson(DB::select($sql, [$sdate, $edate]));
+    }
+    
+    public function referOutMonth($req, $res, $args)
+    {
+        $sdate = $args['month']. '-01';
+        $edate = $args['month']. '-30';
+        
+        $sql="SELECT CAST(DAY(refer_date) AS SIGNED) AS d,
+            COUNT(DISTINCT CASE WHEN (refer_point='ER') THEN vn END) as 'ER',
+            COUNT(DISTINCT CASE WHEN (refer_point='OPD') THEN vn END) as 'OPD',
+            COUNT(DISTINCT CASE WHEN (refer_point='IPD') THEN vn END) as 'IPD',
+            COUNT(DISTINCT vn) as 'ALL'
+            FROM referout
+            WHERE(refer_date BETWEEN ? AND ?)
+            GROUP BY CAST(DAY(refer_date) AS SIGNED) 
+            ORDER BY CAST(DAY(refer_date) AS SIGNED) ";
+
+        return $res->withJson(DB::select($sql, [$sdate, $edate]));
+    }
+
     public function referInYear($req, $res, $args)
     {
         $sdate = ($args['year'] - 1). '-10-01';

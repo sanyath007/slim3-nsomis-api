@@ -34,6 +34,8 @@ $app->get('/or/num-day/{sdate}/{edate}', 'OrController:numDay')->setName('orNumD
 
 $app->get('/refer/referin-year/{year}', 'ReferController:referInYear')->setName('referInYear');
 $app->get('/refer/referout-year/{year}', 'ReferController:referOutYear')->setName('referOutYear');
+$app->get('/refer/referin-month/{month}', 'ReferController:referInMonth')->setName('referInMonth');
+$app->get('/refer/referout-month/{month}', 'ReferController:referOutMonth')->setName('referOutMonth');
 
 $app->group('/api', function(Slim\App $app) { 
     $app->get('/users', 'UserController:index')->setName('userList');
