@@ -27,6 +27,7 @@ $app->get('/op/visit-type/{year}', 'OpController:opVisitType')->setName('opVisit
 
 $app->get('/er/visit/{year}', 'ErController:ervisit')->setName('ervisit');
 $app->get('/er/emergency/{year}', 'ErController:emergency')->setName('emergency');
+$app->get('/er/sum-period/{sdate}/{edate}', 'ErController:sumPeriod')->setName('sumPeriod');
 
 $app->get('/or/visit/{year}', 'OrController:orvisit')->setName('orvisit');
 $app->get('/or/or-type/{year}', 'OrController:orType')->setName('orType');
