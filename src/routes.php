@@ -25,15 +25,15 @@ $app->get('/ip/admdate/{sdate}/{edate}', 'IpController:admdate')->setName('admda
 $app->get('/op/visit/{year}', 'OpController:opvisit')->setName('opvisit');
 $app->get('/op/visit-type/{year}', 'OpController:opVisitType')->setName('opVisitType');
 
-$app->get('/op/referin/{year}', 'OpController:referIn')->setName('referin');
-$app->get('/op/referout/{year}', 'OpController:referOut')->setName('referout');
-
 $app->get('/er/visit/{year}', 'ErController:ervisit')->setName('ervisit');
 $app->get('/er/emergency/{year}', 'ErController:emergency')->setName('emergency');
 
 $app->get('/or/visit/{year}', 'OrController:orvisit')->setName('orvisit');
 $app->get('/or/or-type/{year}', 'OrController:orType')->setName('orType');
 $app->get('/or/num-day/{sdate}/{edate}', 'OrController:numDay')->setName('orNumDay');
+
+$app->get('/refer/referin-year/{year}', 'ReferController:referInYear')->setName('referInYear');
+$app->get('/refer/referout-year/{year}', 'ReferController:referOutYear')->setName('referOutYear');
 
 $app->group('/api', function(Slim\App $app) { 
     $app->get('/users', 'UserController:index')->setName('userList');

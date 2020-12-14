@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
 
-class OpController extends Controller
+class ReferController extends Controller
 {
     public function opvisit($req, $res, $args)
     {
@@ -49,6 +49,44 @@ class OpController extends Controller
 
         return $res->withJson([
             'opVisitType' => DB::select($sql, [$sdate, $edate]),
+        ]);
+    }
+    
+    public function referInYear($req, $res, $args)
+    {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
+        $sql="SELECT CONCAT(YEAR(refer_date),'-', MONTH(refer_date)) AS yearmonth,
+            COUNT(DISTINCT CASE WHEN (refer_point='ER') THEN vn END) as 'ER',
+            COUNT(DISTINCT CASE WHEN (refer_point='OPD') THEN vn END) as 'OPD',
+            COUNT(DISTINCT CASE WHEN (refer_point='IPD') THEN vn END) as 'IPD',
+            COUNT(DISTINCT vn) as 'ALL'
+            FROM referin
+            WHERE (refer_date BETWEEN ? AND ?)
+            GROUP BY CONCAT(YEAR(refer_date),'-', MONTH(refer_date)) ";
+
+        return $res->withJson([
+            'referin' => DB::select($sql, [$sdate, $edate]),
+        ]);
+    }
+    
+    public function referOutYear($req, $res, $args)
+    {
+        $sdate = ($args['year'] - 1). '-10-01';
+        $edate = $args['year']. '-09-30';
+        
+        $sql="SELECT CONCAT(YEAR(refer_date),'-', MONTH(refer_date)) AS yearmonth,
+            COUNT(DISTINCT CASE WHEN (refer_point='ER') THEN vn END) as 'ER',
+            COUNT(DISTINCT CASE WHEN (refer_point='OPD') THEN vn END) as 'OPD',
+            COUNT(DISTINCT CASE WHEN (refer_point='IPD') THEN vn END) as 'IPD',
+            COUNT(DISTINCT vn) as 'ALL'
+            FROM referout
+            WHERE(refer_date BETWEEN ? AND ?)
+            GROUP BY CONCAT(YEAR(refer_date),'-', MONTH(refer_date)) ";
+
+        return $res->withJson([
+            'referout' => DB::select($sql, [$sdate, $edate]),
         ]);
     }
 }

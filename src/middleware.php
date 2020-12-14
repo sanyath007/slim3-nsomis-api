@@ -90,3 +90,7 @@ $container['ErController'] = function($c) {
 $container['OrController'] = function($c) {
     return new App\Controllers\OrController($c);
 };
+
+$container['ReferController'] = function($c) {
+    return new App\Controllers\ReferController($c);
+};
