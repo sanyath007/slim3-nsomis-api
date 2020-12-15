@@ -258,15 +258,10 @@ class DashboardController extends Controller
             COUNT(DISTINCT CASE WHEN(o.spclty='06') THEN o.operation_id END) AS 'ENT', #โสต ศอ นาสิก
             COUNT(DISTINCT CASE WHEN(o.spclty='07') THEN o.operation_id END) AS 'EYE', #จักษุ
             COUNT(DISTINCT CASE WHEN(o.spclty='08') THEN o.operation_id END) AS 'ORTHO', #ออร์โธ
-            COUNT(DISTINCT CASE WHEN(o.spclty='11') THEN o.operation_id END) AS 'DEN', #ทันตกรรม
-            COUNT(DISTINCT CASE WHEN(o.spclty IS NULL OR o.spclty='' OR o.spclty NOT IN ('02','03','04','06','07','08','11')) THEN o.operation_id END) AS 'OTH' #ไม่ระบุ
-            FROM operation_detail o
-            LEFT JOIN operation_list ol ON (o.operation_id = ol.operation_id)
-            LEFT JOIN operation_team ot ON (o.operation_detail_id=ot.operation_detail_id AND ot.position_id='1')
-            LEFT JOIN operation_item oi ON (o.operation_item_id = oi.operation_item_id)
-            LEFT JOIN doctor d1 ON (ol.request_doctor = d1.`code`)
-            LEFT JOIN doctor d2 ON (ot.doctor = d2.`code`)
-            LEFT JOIN spclty s ON (o.spclty=s.spclty)
+            COUNT(DISTINCT CASE WHEN(o.spclty='22') THEN o.operation_id END) AS 'NEURO', #ประสาท
+            COUNT(DISTINCT CASE WHEN(o.spclty='11') THEN o.operation_id END) AS 'MAXILLO', #ทันตกรรม
+            COUNT(DISTINCT CASE WHEN(o.spclty IS NULL OR o.spclty='' OR o.spclty NOT IN ('02','03','04','06','07','08','11','22')) THEN o.operation_id END) AS 'OTH' #ไม่ระบุ
+            FROM operation_detail o 
             WHERE (DATE(o.begin_datetime) BETWEEN ? AND ?) ";
 
         return $res->withJson(DB::select($sql, [$sdate, $edate]));

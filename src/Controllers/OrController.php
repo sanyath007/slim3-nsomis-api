@@ -32,17 +32,17 @@ class OrController extends Controller
         $edate = $args['year']. '-09-30';
         
         $sql="SELECT
-            COUNT(DISTINCT CASE WHEN (request_doctor IN ('0102','0065','0867','1073')) THEN operation_id END) as 'eye',
-            COUNT(DISTINCT CASE WHEN (request_doctor IN ('0489','0371','0869','0570')) THEN operation_id END) as 'ออร์โธฯ',
-            COUNT(DISTINCT CASE WHEN (request_doctor IN ('0120','0220','0568','0865')) THEN operation_id END) as 'C/S',
-            COUNT(DISTINCT CASE WHEN (request_doctor NOT IN (
-                                                        '0102','0065','0867','1073',
-                                                        '0489','0371','0869','0570',
-                                                        '0120','0220','0568','0865'
-            )) THEN operation_id END) as 'อื่นๆ'
-            FROM operation_list 
-            WHERE (operation_date BETWEEN ? AND ?)
-            AND (status_id=3) ";
+            COUNT(DISTINCT CASE WHEN(o.spclty='02') THEN o.operation_id END) AS 'SUR', #ศัลยกรรม
+            COUNT(DISTINCT CASE WHEN(o.spclty='03') THEN o.operation_id END) AS 'OBS', #สูติกรรม
+            COUNT(DISTINCT CASE WHEN(o.spclty='04') THEN o.operation_id END) AS 'GYN', #นรีเวชกรรม
+            COUNT(DISTINCT CASE WHEN(o.spclty='06') THEN o.operation_id END) AS 'ENT', #โสต ศอ นาสิก
+            COUNT(DISTINCT CASE WHEN(o.spclty='07') THEN o.operation_id END) AS 'EYE', #จักษุ
+            COUNT(DISTINCT CASE WHEN(o.spclty='08') THEN o.operation_id END) AS 'ORTHO', #ออร์โธ
+            COUNT(DISTINCT CASE WHEN(o.spclty='22') THEN o.operation_id END) AS 'NEURO', #ประสาท
+            COUNT(DISTINCT CASE WHEN(o.spclty='11') THEN o.operation_id END) AS 'MAXILLO', #ทันตกรรม
+            COUNT(DISTINCT CASE WHEN(o.spclty IS NULL OR o.spclty='' OR o.spclty NOT IN ('02','03','04','06','07','08','11','22')) THEN o.operation_id END) AS 'OTH' #ไม่ระบุ
+            FROM operation_detail o 
+            WHERE (DATE(o.begin_datetime) BETWEEN ? AND ?) ";
 
         return $res->withJson([
             'ortype' => DB::select($sql, [$sdate, $edate]),
