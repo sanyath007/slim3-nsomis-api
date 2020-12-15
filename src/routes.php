@@ -16,6 +16,8 @@ $app->get('/dashboard/ip-visit-month/{month}', 'DashboardController:ipVisitMonth
 $app->get('/dashboard/ip-class-month/{month}', 'DashboardController:ipClassMonth');
 $app->get('/dashboard/referin-month/{month}', 'DashboardController:referInMonth');
 $app->get('/dashboard/referout-month/{month}', 'DashboardController:referOutMonth');
+$app->get('/dashboard/or-visit/{month}', 'DashboardController:orVisitMonth');
+$app->get('/dashboard/or-type/{month}', 'DashboardController:orTypeMonth');
 $app->get('/dashboard/ip-visit-year/{year}', 'DashboardController:ipVisitYear');
 $app->get('/dashboard/ip-class-year/{year}', 'DashboardController:ipClassYear');
 
