@@ -233,15 +233,14 @@ class DashboardController extends Controller
         $sdate = $args['month']. '-01';
         $edate = $args['month']. '-31';
         
-        $sql="SELECT CAST(DAY(operation_date) AS SIGNED) AS d, 
-            COUNT(DISTINCT CASE WHEN (operation_type_id=1) THEN operation_id END) as miner,
-            COUNT(DISTINCT CASE WHEN (operation_type_id IN (2,3,5)) THEN operation_id END) as major,
-            COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,2,3,5) OR operation_type_id is null) THEN operation_id END) as other
-            FROM operation_list 
-            WHERE (operation_date BETWEEN ? AND ?)
-            AND (status_id=3)
-            GROUP BY CAST(DAY(operation_date) AS SIGNED) 
-            ORDER BY CAST(DAY(operation_date) AS SIGNED) ";
+        $sql="SELECT CAST(DAY(o.begin_datetime) AS SIGNED) AS d,
+            COUNT(DISTINCT CASE WHEN (o.operation_type_id=1) THEN o.operation_id END) as minor,
+            COUNT(DISTINCT CASE WHEN (o.operation_type_id IN (2,3,5)) THEN o.operation_id END) as major,
+            COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,2,3,5) OR o.operation_type_id IS NULL OR o.operation_type_id='') THEN o.operation_id END) as other
+            FROM operation_detail o
+            WHERE (DATE(o.begin_datetime) BETWEEN ? AND ?)
+            GROUP BY CAST(DAY(o.begin_datetime) AS SIGNED) 
+            ORDER BY CAST(DAY(o.begin_datetime) AS SIGNED) ";
 
         return $res->withJson(DB::select($sql, [$sdate, $edate]));
     }

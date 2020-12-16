@@ -12,14 +12,13 @@ class OrController extends Controller
         $sdate = ($args['year'] - 1). '-10-01';
         $edate = $args['year']. '-09-30';
         
-        $sql="SELECT CONCAT(YEAR(operation_date),'-', MONTH(operation_date)) AS yearmonth, 
-            COUNT(DISTINCT CASE WHEN (operation_type_id=1) THEN operation_id END) as miner,
-            COUNT(DISTINCT CASE WHEN (operation_type_id IN (2,3,5)) THEN operation_id END) as major,
-            COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,2,3,5) OR operation_type_id is null) THEN operation_id END) as other
-            FROM operation_list 
-            WHERE (operation_date BETWEEN ? AND ?)
-            AND (status_id=3)
-            GROUP BY CONCAT(YEAR(operation_date),'-', MONTH(operation_date)) ";
+        $sql="SELECT CONCAT(YEAR(DATE(o.begin_datetime)),'-', MONTH(DATE(o.begin_datetime))) AS yearmonth, 
+            COUNT(DISTINCT CASE WHEN (o.operation_type_id=1) THEN o.operation_id END) as minor,
+            COUNT(DISTINCT CASE WHEN (o.operation_type_id IN (2,3,5)) THEN o.operation_id END) as major,
+            COUNT(DISTINCT CASE WHEN (o.operation_type_id NOT IN (1,2,3,5) OR o.operation_type_id IS NULL OR o.operation_type_id='') THEN o.operation_id END) as other
+            FROM operation_detail o
+            WHERE (DATE(o.begin_datetime) BETWEEN ? AND ?)
+            GROUP BY CONCAT(YEAR(DATE(o.begin_datetime)),'-', MONTH(DATE(o.begin_datetime))) ";
 
         return $res->withJson([
             'visit' => DB::select($sql, [$sdate, $edate]),
