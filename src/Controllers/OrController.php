@@ -13,9 +13,9 @@ class OrController extends Controller
         $edate = $args['year']. '-09-30';
         
         $sql="SELECT CONCAT(YEAR(operation_date),'-', MONTH(operation_date)) AS yearmonth, 
-            COUNT(DISTINCT CASE WHEN (operation_type_id=1) THEN operation_id END) as small,
-            COUNT(DISTINCT CASE WHEN (operation_type_id=3) THEN operation_id END) as large,
-            COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,3) OR operation_type_id is null) THEN operation_id END) as other
+            COUNT(DISTINCT CASE WHEN (operation_type_id=1) THEN operation_id END) as miner,
+            COUNT(DISTINCT CASE WHEN (operation_type_id IN (2,3,5)) THEN operation_id END) as major,
+            COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,2,3,5) OR operation_type_id is null) THEN operation_id END) as other
             FROM operation_list 
             WHERE (operation_date BETWEEN ? AND ?)
             AND (status_id=3)
@@ -51,27 +51,27 @@ class OrController extends Controller
     
     public function numDay($req, $res, $args)
     {        
-        $sql="SELECT operation_date, 
-				COUNT(DISTINCT operation_id) as num, 
-				COUNT(DISTINCT CASE WHEN (operation_type_id=1) THEN operation_id END) as small,
-				COUNT(DISTINCT CASE WHEN (operation_type_id=3) THEN operation_id END) as large,
-				COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,3) OR operation_type_id is null) THEN operation_id END) as other,
-				COUNT(DISTINCT CASE WHEN (request_doctor IN ('0102','0065','0867','1073')) THEN operation_id END) as eye,
-				COUNT(DISTINCT CASE WHEN (request_doctor IN ('0489','0371','0869','0570')) THEN operation_id END) as orth,
-                COUNT(DISTINCT CASE WHEN (request_doctor IN ('0120','0220','0568','0865')) THEN operation_id END) as 'cs',
-                COUNT(DISTINCT CASE WHEN (request_doctor NOT IN (
-                                                            '0102','0065','0867','1073',
-                                                            '0489','0371','0869','0570',
-                                                            '0120','0220','0568','0865'
-                )) THEN operation_id END) as 'gen',
-				COUNT(DISTINCT CASE WHEN (leave_time BETWEEN '08:00:00' AND '12:00:00') THEN operation_id END) as morning,
-				COUNT(DISTINCT CASE WHEN (leave_time BETWEEN '12:00:01' AND '16:00:00') THEN operation_id END) as afternoon,
-				COUNT(DISTINCT CASE WHEN (leave_time BETWEEN '16:01:00' AND '23:59:59') THEN operation_id END) as evening,
-				COUNT(DISTINCT CASE WHEN (leave_time BETWEEN '00:00:01' AND '07:59:59') THEN operation_id END) as night
-				FROM operation_list 
-				WHERE (operation_date BETWEEN ? and ?)
-				AND (status_id=3)
-				GROUP BY operation_date";
+        $sql="SELECT DATE(o.begin_datetime) as operation_date, 
+				COUNT(DISTINCT o.operation_id) as num, 
+				COUNT(DISTINCT CASE WHEN (o.operation_type_id=1) THEN o.operation_id END) as miner,
+				COUNT(DISTINCT CASE WHEN (o.operation_type_id IN (2,3,5)) THEN o.operation_id END) as major,
+				COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,2,3,5) OR o.operation_type_id IS NULL OR o.operation_type_id='') THEN o.operation_id END) as other,
+				COUNT(DISTINCT CASE WHEN(o.spclty='02') THEN o.operation_id END) AS 'sur', #ศัลยกรรม
+                COUNT(DISTINCT CASE WHEN(o.spclty='03') THEN o.operation_id END) AS 'obs', #สูติกรรม
+                COUNT(DISTINCT CASE WHEN(o.spclty='04') THEN o.operation_id END) AS 'gyn', #นรีเวชกรรม
+                COUNT(DISTINCT CASE WHEN(o.spclty='06') THEN o.operation_id END) AS 'ent', #โสต ศอ นาสิก
+                COUNT(DISTINCT CASE WHEN(o.spclty='07') THEN o.operation_id END) AS 'eye', #จักษุ
+                COUNT(DISTINCT CASE WHEN(o.spclty='08') THEN o.operation_id END) AS 'ort', #ออร์โธ
+                COUNT(DISTINCT CASE WHEN(o.spclty='22') THEN o.operation_id END) AS 'neu', #ประสาท
+                COUNT(DISTINCT CASE WHEN(o.spclty='11') THEN o.operation_id END) AS 'max', #ทันตกรรม
+                COUNT(DISTINCT CASE WHEN(o.spclty NOT IN ('02','03','04','06','07','08','11','22') OR o.spclty IS NULL OR o.spclty='') THEN o.operation_id END) AS 'oth', #ไม่ระบุ
+				COUNT(DISTINCT CASE WHEN (TIME(o.begin_datetime) BETWEEN '08:00:00' AND '12:00:00') THEN o.operation_id END) as morning,
+				COUNT(DISTINCT CASE WHEN (TIME(o.begin_datetime) BETWEEN '12:00:01' AND '16:00:00') THEN o.operation_id END) as afternoon,
+				COUNT(DISTINCT CASE WHEN (TIME(o.begin_datetime) BETWEEN '16:01:00' AND '23:59:59') THEN o.operation_id END) as evening,
+				COUNT(DISTINCT CASE WHEN (TIME(o.begin_datetime) BETWEEN '00:00:01' AND '07:59:59') THEN o.operation_id END) as night
+				FROM operation_detail o
+				WHERE (DATE(o.begin_datetime) BETWEEN ? and ?)
+				GROUP BY DATE(o.begin_datetime)";
 
         return $res->withJson([
             'numdays' => DB::select($sql, [$args['sdate'], $args['edate']]),

@@ -234,9 +234,9 @@ class DashboardController extends Controller
         $edate = $args['month']. '-31';
         
         $sql="SELECT CAST(DAY(operation_date) AS SIGNED) AS d, 
-            COUNT(DISTINCT CASE WHEN (operation_type_id=1) THEN operation_id END) as small,
-            COUNT(DISTINCT CASE WHEN (operation_type_id=3) THEN operation_id END) as large,
-            COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,3) OR operation_type_id is null) THEN operation_id END) as other
+            COUNT(DISTINCT CASE WHEN (operation_type_id=1) THEN operation_id END) as miner,
+            COUNT(DISTINCT CASE WHEN (operation_type_id IN (2,3,5)) THEN operation_id END) as major,
+            COUNT(DISTINCT CASE WHEN (operation_type_id NOT IN (1,2,3,5) OR operation_type_id is null) THEN operation_id END) as other
             FROM operation_list 
             WHERE (operation_date BETWEEN ? AND ?)
             AND (status_id=3)
