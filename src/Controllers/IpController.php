@@ -48,4 +48,32 @@ class IpController extends Controller
             'classes' => DB::select($sql, [$args['sdate'], $args['edate']]),
         ]);
     }
+
+    public function ptDchByWard($req, $res, $args)
+    {
+        $sql="SELECT a.an, a.hn, pat.cid,
+            CONCAT(a.pttype,' - ',ptt.name) AS pttype, 
+            a.regdate, a.regtime, a.dchdate, a.dchtime,
+            CONCAT(
+                CONVERT(pat.pname, char(5)), 
+                CONVERT(pat.fname, char(20)), space(2), 
+                CONVERT(pat.lname, char(20))
+            ) AS patname, dx.icd10 AS pdx, icd.name AS des, w.name AS wardname, i.admdate
+            FROM ipt a 
+            LEFT JOIN an_stat i ON (i.an=a.an) 
+            LEFT JOIN patient pat ON (a.hn=pat.hn) 
+            LEFT JOIN iptdiag dx ON (a.an=dx.an AND dx.diagtype='1') 
+            LEFT JOIN icd101 icd ON (dx.icd10=icd.code) 
+            LEFT JOIN pttype ptt ON (a.pttype=ptt.pttype)
+            LEFT JOIN ward w ON (a.ward=w.ward)
+            WHERE (a.dchdate BETWEEN ? AND ?) AND (a.ward=?) 
+            ORDER BY a.dchdate";
+        
+        $sqlWard = "SELECT * FROM ward where (ward=?) ";
+
+        return $res->withJson([
+            'data' => DB::select($sql, [$args['sdate'], $args['edate'], $args['ward']]),
+            'ward' => DB::table('ward')->where('ward', $args['ward'])->first()
+        ]);
+    }
 }
