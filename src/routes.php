@@ -24,6 +24,7 @@ $app->get('/dashboard/ip-class-year/{year}', 'DashboardController:ipClassYear');
 $app->get('/ip/class/{sdate}/{edate}', 'IpController:ipclass')->setName('ipclass');
 $app->get('/ip/admdate/{sdate}/{edate}', 'IpController:admdate')->setName('admdate');
 $app->get('/ip/ptdchbyward/{sdate}/{edate}/{ward}', 'IpController:ptDchByWard');
+$app->get('/ip/ptlosbycare/{sdate}/{edate}/{ward}', 'IpController:ptLosByCare');
 
 $app->get('/op/visit/{year}', 'OpController:opvisit')->setName('opvisit');
 $app->get('/op/visit-type/{year}', 'OpController:opVisitType')->setName('opVisitType');

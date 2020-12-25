@@ -68,8 +68,35 @@ class IpController extends Controller
             LEFT JOIN ward w ON (a.ward=w.ward)
             WHERE (a.dchdate BETWEEN ? AND ?) AND (a.ward=?) 
             ORDER BY a.dchdate";
-        
-        $sqlWard = "SELECT * FROM ward where (ward=?) ";
+
+        return $res->withJson([
+            'data' => DB::select($sql, [$args['sdate'], $args['edate'], $args['ward']]),
+            'ward' => DB::table('ward')->where('ward', $args['ward'])->first()
+        ]);
+    }
+
+    
+    public function ptLosByCare($req, $res, $args)
+    {
+        $sql="SELECT a.an,a.hn,pat.cid,
+            CONCAT(a.pttype,' - ',ptt.name) AS pttype, 
+            a.regdate, a.regtime, a.dchdate, a.dchtime, 
+            CONCAT(
+                convert(pat.pname,char(5)), 
+                convert(pat.fname,char(20)), 
+                space(2), 
+                convert(pat.lname,char(20))) AS patname, 
+            dx.icd10 AS pdx, icd.name AS des, w.name AS wardname, ws.admdate, ws.admit_hour
+            FROM ipt_ward_stat ws
+            LEFT JOIN ipt a  ON (a.an=ws.an) 
+            LEFT JOIN patient pat ON (a.hn=pat.hn) 
+            LEFT JOIN iptdiag dx ON (a.an=dx.an and dx.diagtype='1') 
+            LEFT JOIN icd101 icd ON (dx.icd10=icd.code) 
+            LEFT JOIN pttype ptt ON (a.pttype=ptt.pttype)
+            LEFT JOIN ward w ON (a.ward=w.ward)
+            WHERE (ws.an IN (SELECT an FROM ipt WHERE (dchdate BETWEEN  ? AND ?)))
+            AND (ws.ward=?) 
+            ORDER BY regdate";
 
         return $res->withJson([
             'data' => DB::select($sql, [$args['sdate'], $args['edate'], $args['ward']]),
