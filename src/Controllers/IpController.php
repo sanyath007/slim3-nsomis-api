@@ -19,6 +19,7 @@ class IpController extends Controller
             LEFT JOIN an_stat a ON (ip.an=a.an)				
             WHERE (ip.dchdate BETWEEN ? AND ?)
             AND (ip.ward<>'05')
+            AND (ip.an NOT IN (SELECT an FROM ipt_newborn))
             GROUP BY ip.ward, w.name ";
                     
         $q = "SELECT * FROM ipt_ward_stat
