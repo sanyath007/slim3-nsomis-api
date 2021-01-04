@@ -17,11 +17,12 @@ class IpController extends Controller
             FROM ipt ip
             LEFT JOIN ward w ON (ip.ward=w.ward)
             LEFT JOIN an_stat a ON (ip.an=a.an)				
-            WHERE (ip.dchdate BETWEEN ? AND ?)				
+            WHERE (ip.dchdate BETWEEN ? AND ?)
+            AND (ip.ward<>'05')
             GROUP BY ip.ward, w.name ";
                     
         $q = "SELECT * FROM ipt_ward_stat
-            WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?)";
+            WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?) ";
 
         return $res->withJson([
             'admdate' => DB::select($sql, [$sdate, $edate]),
