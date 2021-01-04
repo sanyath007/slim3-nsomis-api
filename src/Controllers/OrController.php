@@ -79,19 +79,45 @@ class OrController extends Controller
 
     public function expenses($req, $res, $args)
     {
-        $sql = "select sd.income, i.name,
+        $sql = "select sd.income, i.name, oi.price,
                 sum(oi.qty) as sum_qty,
-                sum(oi.price) as sum_price
+                sum(oi.total_price) as sum_total
                 from hos2.operation_invent oi 
                 left join hos2.operation_list ol on (oi.operation_id=ol.operation_id)
                 left join hos2.s_drugitems sd on (oi.icode=sd.icode)
                 left join hos2.nondrugitems nd on (oi.icode=nd.icode)
                 left join hos2.income i on (sd.income=i.income)
-                where (ol.operation_date between '2020-12-30' and '2020-12-30')
+                where (ol.operation_date between ? and ?)
                 and (substring(oi.icode, 1, 1) <> 1)
                 group by sd.income, i.name
                 order by sd.income, i.name";
 
         return $res->withJson(DB::select($sql, [$args['sdate'], $args['edate']]));
+    }
+    
+    public function expensesDetail($req, $res, $args)
+    {
+        $sql = "select oi.icode, sd.name, oi.price, 
+                sum(oi.qty) as sum_qty, 
+                sum(total_price) as sum_total
+                from hos2.operation_invent oi 
+                left join hos2.operation_list ol on (oi.operation_id=ol.operation_id)
+                left join hos2.s_drugitems sd on (oi.icode=sd.icode)
+                left join hos2.nondrugitems nd on (oi.icode=nd.icode)
+                left join hos2.income i on (sd.income=i.income)
+                where (ol.operation_date between ? and ?)
+                and (sd.income=?)
+                and (substring(oi.icode, 1, 1) <> 1)
+                group by oi.icode, sd.name
+                order by sd.name ";
+
+        return $res->withJson([
+            'expenses' => DB::select($sql, [
+                $args['sdate'],
+                $args['edate'],
+                $args['income']
+            ]),
+            'income' => DB::table('income')->where('income', $args['income'])->first()
+        ]);
     }
 }
