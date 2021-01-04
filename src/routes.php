@@ -36,6 +36,7 @@ $app->get('/er/sum-period/{sdate}/{edate}', 'ErController:sumPeriod')->setName('
 $app->get('/or/visit/{year}', 'OrController:orvisit')->setName('orvisit');
 $app->get('/or/or-type/{year}', 'OrController:orType')->setName('orType');
 $app->get('/or/num-day/{sdate}/{edate}', 'OrController:numDay')->setName('orNumDay');
+$app->get('/or/expenses/{sdate}/{edate}', 'OrController:expenses');
 
 $app->get('/refer/referin-year/{year}', 'ReferController:referInYear')->setName('referInYear');
 $app->get('/refer/referout-year/{year}', 'ReferController:referOutYear')->setName('referOutYear');
