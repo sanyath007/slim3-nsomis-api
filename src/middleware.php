@@ -6,6 +6,7 @@ $container = $app->getContainer();
 
 $capsule = new Illuminate\Database\Capsule\Manager;
 $capsule->addConnection($container['settings']['db']);
+$capsule->addConnection($container['settings']['pharma_db'], 'pharma');
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
