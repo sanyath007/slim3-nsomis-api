@@ -44,6 +44,9 @@ $app->get('/refer/referout-year/{year}', 'ReferController:referOutYear')->setNam
 $app->get('/refer/referin-month/{month}', 'ReferController:referInMonth')->setName('referInMonth');
 $app->get('/refer/referout-month/{month}', 'ReferController:referOutMonth')->setName('referOutMonth');
 
+$app->get('/pharma/op/{sdate}/{edate}', 'PharmaController:opMonth');
+$app->get('/pharma/ip/{sdate}/{edate}', 'PharmaController:ipMonth');
+
 $app->group('/api', function(Slim\App $app) { 
     $app->get('/users', 'UserController:index')->setName('userList');
     $app->get('/users/{loginname}', 'UserController:getUser')->setName('getUser');

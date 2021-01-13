@@ -94,3 +94,7 @@ $container['OrController'] = function($c) {
 $container['ReferController'] = function($c) {
     return new App\Controllers\ReferController($c);
 };
+
+$container['PharmaController'] = function($c) {
+    return new App\Controllers\PharmaController($c);
+};
