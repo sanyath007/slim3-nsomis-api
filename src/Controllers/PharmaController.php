@@ -17,16 +17,18 @@ class PharmaController extends Controller
 
     public function storeUserDrugList($req, $res, $args)
     {
-        $post = (array)$request->getParsedBody();
+        $post = (array)$req->getParsedBody();
 
         $item = new UserDrugList;
         $item->user_id = $post['user_id'];
         $item->type = $post['type'];
         $item->icodes = $post['icodes'];
-
-        // if($item->save()) {
-
-        // }
+        
+        if($item->save()) {
+            return $res->withJson([
+                'drugList' => $item
+            ]);
+        }
     }
 
     public function opMonth($req, $res, $args)
