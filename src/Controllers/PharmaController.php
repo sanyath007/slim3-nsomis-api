@@ -15,6 +15,20 @@ class PharmaController extends Controller
         return $drugLists;
     }
 
+    public function storeUserDrugList($req, $res, $args)
+    {
+        $post = (array)$request->getParsedBody();
+
+        $item = new UserDrugList;
+        $item->user_id = $post['user_id'];
+        $item->type = $post['type'];
+        $item->icodes = $post['icodes'];
+
+        // if($item->save()) {
+
+        // }
+    }
+
     public function opMonth($req, $res, $args)
     {
         $drugLists = UserDrugList::where(['user_id' => 'sanyath'])->first();

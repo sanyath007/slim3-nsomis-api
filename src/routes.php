@@ -46,6 +46,7 @@ $app->get('/refer/referout-month/{month}', 'ReferController:referOutMonth')->set
 
 $app->get('/pharma/op/{sdate}/{edate}', 'PharmaController:opMonth');
 $app->get('/pharma/ip/{sdate}/{edate}', 'PharmaController:ipMonth');
+$app->post('/pharma/store-drug-list', 'PharmaController:storeUserDrugList');
 
 $app->get('/drug-items', 'DrugItemController:getAll');
 

@@ -8,13 +8,6 @@ use App\Models\DrugItem;
 
 class DrugItemController extends Controller
 {
-    private function createDrugListsSQL($icodes)
-    {
-        $drugLists = implode("', '", $icodes);
-
-        return $drugLists;
-    }
-
     public function getAll($req, $res, $args)
     {
         $drugItems = DrugItem::all();
