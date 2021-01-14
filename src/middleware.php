@@ -99,3 +99,7 @@ $container['ReferController'] = function($c) {
 $container['PharmaController'] = function($c) {
     return new App\Controllers\PharmaController($c);
 };
+
+$container['DrugItemController'] = function($c) {
+    return new App\Controllers\DrugItemController($c);
+};
