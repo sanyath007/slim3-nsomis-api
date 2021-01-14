@@ -21,6 +21,7 @@ class PharmaController extends Controller
 
         $item = new UserDrugList;
         $item->user_id = $post['user_id'];
+        $item->name = $post['name'];
         $item->type = $post['type'];
         $item->icodes = $post['icodes'];
         
