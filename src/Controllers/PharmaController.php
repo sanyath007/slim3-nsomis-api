@@ -32,11 +32,20 @@ class PharmaController extends Controller
         }
     }
 
+    public function getUserDrugList($req, $res, $args)
+    {
+        $userDrugLists = UserDrugList::where(['user_id' => $args['user']])->get();
+
+        return $res->withJson([
+            'userDrugLists' => $userDrugLists
+        ]);
+    }
+
     public function opMonth($req, $res, $args)
     {
-        $drugLists = UserDrugList::where(['user_id' => 'sanyath'])->first();
+        $drugLists = UserDrugList::where(['id' => $args['listId']])->first();
         $icodes = $drugLists->icodes;
-
+        
         $sql="SELECT o.icode, (SELECT dd.name FROM drugitems dd WHERE (o.icode = dd.icode)) AS drugName,
             (SELECT dd.strength FROM drugitems dd WHERE (o.icode = dd.icode)) AS drugStrength,
             SUM(qty) AS sum_qty,
@@ -55,7 +64,7 @@ class PharmaController extends Controller
     
     public function ipMonth($req, $res, $args)
     {
-        $drugLists = UserDrugList::where(['user_id' => 'sanyath'])->first();
+        $drugLists = UserDrugList::where(['id' => $args['listId']])->first();
         $icodes = $drugLists->icodes;
 
         $sql="SELECT (SELECT dd.name FROM drugitems dd WHERE (o.icode = dd.icode)) AS drugName,
