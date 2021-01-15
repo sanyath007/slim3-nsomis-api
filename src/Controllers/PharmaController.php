@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
 use App\Models\UserDrugList;
+use App\Models\DrugItem;
 
 class PharmaController extends Controller
 {
@@ -38,6 +39,20 @@ class PharmaController extends Controller
 
         return $res->withJson([
             'userDrugLists' => $userDrugLists
+        ]);
+    }
+    
+    public function getUserDrugListDetail($req, $res, $args)
+    {
+        $userDrugLists = UserDrugList::find($args['id']);
+
+        $sql = "SELECT icode, name, strength, units, unitprice 
+                FROM drugitems WHERE (icode IN (". $userDrugLists->icodes ."))";
+
+        //TODO: create pagination object
+
+        return $res->withJson([
+            'drugItems' => DB::select($sql)
         ]);
     }
 
