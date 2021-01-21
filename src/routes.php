@@ -49,6 +49,7 @@ $app->get('/pharma/ip/{listId}/{sdate}/{edate}', 'PharmaController:ipMonth');
 $app->get('/pharma/user-drug-list/{user}', 'PharmaController:getUserDrugList');
 $app->get('/pharma/user-drug-list/{id}/detail', 'PharmaController:getUserDrugListDetail');
 $app->post('/pharma/store-drug-list', 'PharmaController:storeUserDrugList');
+$app->get('/pharma/store-drug-list-file', 'PharmaController:storeUserDrugListFile');
 
 $app->get('/drug-items', 'DrugItemController:getAll');
 

@@ -32,6 +32,42 @@ class PharmaController extends Controller
             ]);
         }
     }
+    
+    public function storeUserDrugListFile($req, $res, $args)
+    {
+        /** File handling: Read text file and get line of data to array */
+        $icodeLines = [];
+        $fp = fopen('./uploads/delivery_drug.txt', 'r') or die('fopen failed!!');
+        
+        while(!feof($fp)) {
+            array_push($icodeLines, trim(fgets($fp)));
+        }
+
+        fclose($fp);
+        /** File handling */
+        
+        $icodes = "";
+        $i = 0;
+        for($i; $i < count($icodeLines) - 1; $i++) {
+            if($i !== count($icodeLines) - 2) {
+                $icodes .= "'" .$icodeLines[$i]. "', ";
+            } else {
+                $icodes .= "'" .$icodeLines[$i]. "'";
+            }
+        }
+
+        $item = new UserDrugList;
+        $item->user_id = 'sumran';
+        $item->name = 'sumran-opd';
+        $item->type = 'OPD';
+        $item->icodes = $icodes;
+        
+        if($item->save()) {
+            return $res->withJson([
+                'drugList' => $item
+            ]);
+        }
+    }
 
     public function getUserDrugList($req, $res, $args)
     {
