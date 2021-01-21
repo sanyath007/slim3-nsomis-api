@@ -9,11 +9,28 @@ use App\Models\DrugItem;
 
 class PharmaController extends Controller
 {
-    private function createDrugListsSQL($icodes)
+    private function drugListsToSQL($icodesArray=[])
     {
-        $drugLists = implode("', '", $icodes);
+        $i = 0;
+        $icodes = "";
+        for($i; $i < count($icodesArray) - 1; $i++) {
+            if($i !== count($icodesArray) - 2) {
+                $icodes .= "'" .$icodesArray[$i]. "', ";
+            } else {
+                $icodes .= "'" .$icodesArray[$i]. "'";
+            }
+        }
 
-        return $drugLists;
+        return $icodes;
+    }
+
+    private function drugListsToArray($icodesStr)
+    {
+        $cb = function($str) {
+            return (int)str_replace('\'', '', $str);
+        };
+
+        return array_map($cb, explode(',', $icodesStr));
     }
 
     public function storeUserDrugList($req, $res, $args)
@@ -45,22 +62,12 @@ class PharmaController extends Controller
 
         fclose($fp);
         /** File handling */
-        
-        $icodes = "";
-        $i = 0;
-        for($i; $i < count($icodeLines) - 1; $i++) {
-            if($i !== count($icodeLines) - 2) {
-                $icodes .= "'" .$icodeLines[$i]. "', ";
-            } else {
-                $icodes .= "'" .$icodeLines[$i]. "'";
-            }
-        }
 
         $item = new UserDrugList;
         $item->user_id = 'sumran';
         $item->name = 'sumran-opd';
         $item->type = 'OPD';
-        $item->icodes = $icodes;
+        $item->icodes = $this->drugListsToSQL($icodeLines);
         
         if($item->save()) {
             return $res->withJson([
@@ -77,19 +84,27 @@ class PharmaController extends Controller
             'userDrugLists' => $userDrugLists
         ]);
     }
-    
+
     public function getUserDrugListDetail($req, $res, $args)
     {
         $userDrugLists = UserDrugList::find($args['id']);
+        
+        $link = 'http://localhost'. $req->getServerParam('REDIRECT_URL');
+        $page = (int)$req->getQueryParam('page');
 
-        $sql = "SELECT icode, name, strength, units, unitprice 
-                FROM drugitems WHERE (icode IN (". $userDrugLists->icodes ."))";
+        $data = null;
+        $icodes = $this->drugListsToArray($userDrugLists->icodes);
+        $model = DB::table('drugitems')
+                    ->select('icode', 'name', 'strength', 'units', 'unitprice')
+                    ->whereIn('icode', $icodes);
 
-        //TODO: create pagination object
+        if ($page) {
+            $data = paginate($model, 'icode', 10, $page, $link);
+        } else {
+            $data = DB::select($sql);
+        }
 
-        return $res->withJson([
-            'drugItems' => DB::select($sql)
-        ]);
+        return $res->withJson($data);
     }
 
     public function opMonth($req, $res, $args)
