@@ -96,6 +96,10 @@ $container['ReferController'] = function($c) {
     return new App\Controllers\ReferController($c);
 };
 
+$container['ErrorDataController'] = function($c) {
+    return new App\Controllers\ErrorDataController($c);
+};
+
 $container['PharmaController'] = function($c) {
     return new App\Controllers\PharmaController($c);
 };
