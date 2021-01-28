@@ -284,11 +284,11 @@ class DashboardController extends Controller
     public function errorOpDay($req, $res, $args)
     {
         // Check if current month, set sdate to yesterday
-        if (date('Y-m') == date('Y-m', strtotime($args['day']))) {
-            $sdate = date('Y-m-d', strtotime("-1 days", strtotime($args['day'])));
-        } else {
+        // if (date('Y-m') == date('Y-m', strtotime($args['day']))) {
+        //     $sdate = date('Y-m-d', strtotime("-1 days", strtotime($args['day'])));
+        // } else {
             $sdate = $args['day'];
-        }
+        // }
         
         $data = [];
         foreach($this->clinics as $key => $cl) {
@@ -325,7 +325,7 @@ class DashboardController extends Controller
         $sdate =  date('Y-m', strtotime($args['day'])). '-01';
         //Check when case that was discharged for 7 day ago
         $edate = date('Y-m-d', strtotime("-7 days", strtotime($args['day'])));
-        
+
         $sql="SELECT ip.ward, w.name,
             COUNT(case when (DATEDIFF(now(), ip.dchdate) < 7) then ip.an end) AS les7,
             COUNT(case when (DATEDIFF(now(), ip.dchdate) between 7 and 14) then ip.an end) AS gr7to14,
@@ -333,7 +333,7 @@ class DashboardController extends Controller
             COUNT(case when (DATEDIFF(now(), ip.dchdate) > 21) then ip.an end) AS gr21
             FROM hos2.ipt ip
             LEFT JOIN hos2.ward w ON (ip.ward=w.ward)
-            LEFT JOIN hos2.an_stat a ON (ip.an=a.an)				
+            LEFT JOIN hos2.an_stat a ON (ip.an=a.an)
             WHERE (ip.dchdate between ? and ?)
             and (ip.chart_state=1)
             GROUP BY ip.ward, w.name ";
