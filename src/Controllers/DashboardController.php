@@ -264,6 +264,7 @@ class DashboardController extends Controller
     public function orTypeMonth($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
+        $edate = $args['month']. '-31';
         
         $sql="SELECT
             COUNT(DISTINCT CASE WHEN(o.spclty='02') THEN o.operation_id END) AS 'SUR', #ศัลยกรรม
@@ -353,7 +354,7 @@ class DashboardController extends Controller
         }
         
         $data = [];
-        foreach($clinics as $key => $cl) {
+        foreach($this->clinics as $key => $cl) {
             $sql="SELECT 
                 COUNT(case when (vn.pdx='' or vn.pdx is null) then vn.vn END) as nodx,
                 COUNT(case when (vn.vn in (select vn from opdscreen where (cc is null and pe is null and bpd is null and bps is null and pulse is null 	and temperature is null and rr is null))) then vn.vn end) as noscreen,
