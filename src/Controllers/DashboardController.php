@@ -7,6 +7,22 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 class DashboardController extends Controller
 {
+    protected $clinics = [
+        '01' => ['OPD ชั้น 1', " '003','004','010','021','035','057','062','111','112','114','117','118','124','125','142','063','110' "],
+        '02' => ['OPD ชั้น 2', " '113','115','116','128','092','034','061','059','036', '060','129','130','131','143','144','145','037','050','091','093','099','100','056','071' "],
+        '03' => ['ห้อง ER'," '011','070','135' "],
+        '04' => ['คลินิก NCD/Asthma/COPD/Wafarin'," '001','002','065','066','043','067','064','132' "],		
+        '05' => ['คลีนิก ARV', " '045' "],
+        '06' => ['คลีนิก TB'," '055' "],
+        '07' => ['ศูนย์ไตเทียม'," '058','120' "],
+        '08' => ['OPD ตา'," '031' "],            
+        '09' => ['ห้องคลอด'," '017' "],
+        '10' => ['ห้องผ่าตัด'," '014' "],
+        '11' => ['ห้องส่องกล้อง',"'097'"],
+        '12' => ['OPD นอกเวลา'," '133' "],
+        '13' => ['ER-POOL'," '134'"],
+    ];
+
     public function opVisitDay($req, $res, $args)
     {       
         $sql="SELECT CAST(HOUR(vsttime) AS SIGNED) AS hhmm,
@@ -248,7 +264,6 @@ class DashboardController extends Controller
     public function orTypeMonth($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
-        $edate = $args['month']. '-31';
         
         $sql="SELECT
             COUNT(DISTINCT CASE WHEN(o.spclty='02') THEN o.operation_id END) AS 'SUR', #ศัลยกรรม
@@ -266,6 +281,66 @@ class DashboardController extends Controller
         return $res->withJson(DB::select($sql, [$sdate, $edate]));
     }
 
+    public function errorOpDay($req, $res, $args)
+    {
+        // Check if current month, set sdate to yesterday
+        if (date('Y-m') == date('Y-m', strtotime($args['day']))) {
+            $sdate = date('Y-m-d', strtotime("-1 days", strtotime($args['day'])));
+        } else {
+            $sdate = $args['day'];
+        }
+        
+        $data = [];
+        foreach($this->clinics as $key => $cl) {
+            $sql="SELECT 
+                COUNT(case when (vn.pdx='' or vn.pdx is null) then vn.vn END) as nodx,
+                COUNT(case when (vn.vn in (select vn from opdscreen where (cc is null and pe is null and bpd is null and bps is null and pulse is null 	and temperature is null and rr is null))) then vn.vn end) as noscreen,
+                COUNT(case when ((vn.age_y > 3) 
+                    and (vn.vn in (select vn from opdscreen)) 
+                    and (vn.vn in (select vn from opdscreen where (pulse is null or temperature is null or bpd is null or bps is null or rr is null)))
+                    and (vn.vn not in (select vn from opdscreen where (cc LIKE '%รับยาแทน%')))) 
+                then vn.vn end) as inc_screen
+                FROM hos2.vn_stat vn 
+                LEFT JOIN hos2.ovst vs ON (vn.vn=vs.vn)
+                WHERE (vn.vstdate=?) 
+                AND (vs.main_dep IN (" .$cl[1]. "))
+                AND (vs.an is null or vs.an='')";
+
+            $errorData = DB::select($sql, [$sdate]);
+            array_push($data, [
+                'id' => $key,
+                'name' => $cl[0], 
+                'nodx' => $errorData[0]->nodx,
+                'noscreen' => $errorData[0]->noscreen,
+                'inc_screen' => $errorData[0]->inc_screen,
+            ]);
+        }
+
+        return $res->withJson($data);
+    }
+    
+    public function errorIpDay($req, $res, $args)
+    {
+        //sdate equal to the day of started budget year
+        $sdate =  date('Y-m', strtotime($args['day'])). '-01';
+        //Check when case that was discharged for 7 day ago
+        $edate = date('Y-m-d', strtotime("-7 days", strtotime($args['day'])));
+        
+        $sql="SELECT ip.ward, w.name,
+            COUNT(case when (DATEDIFF(now(), ip.dchdate) < 7) then ip.an end) AS les7,
+            COUNT(case when (DATEDIFF(now(), ip.dchdate) between 7 and 14) then ip.an end) AS gr7to14,
+            COUNT(case when (DATEDIFF(now(), ip.dchdate) between 15 and 21) then ip.an end) AS gr15to21,
+            COUNT(case when (DATEDIFF(now(), ip.dchdate) > 21) then ip.an end) AS gr21
+            FROM hos2.ipt ip
+            LEFT JOIN hos2.ward w ON (ip.ward=w.ward)
+            LEFT JOIN hos2.an_stat a ON (ip.an=a.an)				
+            WHERE (ip.dchdate between ? and ?)
+            and (ip.chart_state=1)
+            GROUP BY ip.ward, w.name ";
+
+        return $res->withJson(DB::select($sql, [$sdate, $edate]));
+    }
+
     public function errorOpMonth($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
@@ -277,22 +352,6 @@ class DashboardController extends Controller
             $edate = $args['month']. '-31';
         }
         
-        $clinics = [
-            '01' => ['OPD ชั้น 1', " '003','004','010','021','035','057','062','111','112','114','117','118','124','125','142','063','110' "],
-            '02' => ['OPD ชั้น 2', " '113','115','116','128','092','034','061','059','036', '060','129','130','131','143','144','145','037','050','091','093','099','100','056','071' "],
-            '03' => ['ห้อง ER'," '011','070','135' "],
-            '04' => ['คลินิก NCD/Asthma/COPD/Wafarin'," '001','002','065','066','043','067','064','132' "],		
-            '05' => ['คลีนิก ARV', " '045' "],
-            '06' => ['คลีนิก TB'," '055' "],
-            '07' => ['ศูนย์ไตเทียม'," '058','120' "],
-            '08' => ['OPD ตา'," '031' "],            
-            '09' => ['ห้องคลอด'," '017' "],
-            '10' => ['ห้องผ่าตัด'," '014' "],
-            '11' => ['ห้องส่องกล้อง',"'097'"],
-            '12' => ['OPD นอกเวลา'," '133' "],
-            '13' => ['ER-POOL'," '134'"],
-        ];
-
         $data = [];
         foreach($clinics as $key => $cl) {
             $sql="SELECT 
