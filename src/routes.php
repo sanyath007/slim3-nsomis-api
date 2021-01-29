@@ -57,7 +57,7 @@ $app->get('/er/sum-period/{sdate}/{edate}', 'ErController:sumPeriod');
 
 $app->get('/or/visit/{year}', 'OrController:orvisit');
 $app->get('/or/or-type/{year}', 'OrController:orType');
-$app->get('/or/num-day/{sdate}/{edate}', 'OrController:numDay');
+$app->get('/or/sum-year/{year}', 'OrController:getSumYear');
 $app->get('/or/emergency-year/{year}', 'OrController:getEmergencyYear');
 $app->get('/or/expenses/{sdate}/{edate}', 'OrController:expenses');
 $app->get('/or/expenses/{income}/{sdate}/{edate}', 'OrController:expensesDetail');
