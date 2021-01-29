@@ -43,28 +43,29 @@ $app->get('/dashboard/error-ip-month/{month}', 'DashboardController:errorIpMonth
 $app->get('/dashboard/ip-visit-year/{year}', 'DashboardController:ipVisitYear');
 $app->get('/dashboard/ip-class-year/{year}', 'DashboardController:ipClassYear');
 
-$app->get('/ip/class/{sdate}/{edate}', 'IpController:ipclass')->setName('ipclass');
-$app->get('/ip/admdate/{sdate}/{edate}', 'IpController:admdate')->setName('admdate');
+$app->get('/ip/class/{sdate}/{edate}', 'IpController:ipclass');
+$app->get('/ip/admdate/{sdate}/{edate}', 'IpController:admdate');
 $app->get('/ip/ptdchbyward/{sdate}/{edate}/{ward}', 'IpController:ptDchByWard');
 $app->get('/ip/ptlosbycare/{sdate}/{edate}/{ward}', 'IpController:ptLosByCare');
 
-$app->get('/op/visit/{year}', 'OpController:opvisit')->setName('opvisit');
-$app->get('/op/visit-type/{year}', 'OpController:opVisitType')->setName('opVisitType');
+$app->get('/op/visit/{year}', 'OpController:opvisit');
+$app->get('/op/visit-type/{year}', 'OpController:opVisitType');
 
-$app->get('/er/visit/{year}', 'ErController:ervisit')->setName('ervisit');
-$app->get('/er/emergency/{year}', 'ErController:emergency')->setName('emergency');
-$app->get('/er/sum-period/{sdate}/{edate}', 'ErController:sumPeriod')->setName('sumPeriod');
+$app->get('/er/visit/{year}', 'ErController:ervisit');
+$app->get('/er/emergency/{year}', 'ErController:emergency');
+$app->get('/er/sum-period/{sdate}/{edate}', 'ErController:sumPeriod');
 
-$app->get('/or/visit/{year}', 'OrController:orvisit')->setName('orvisit');
-$app->get('/or/or-type/{year}', 'OrController:orType')->setName('orType');
-$app->get('/or/num-day/{sdate}/{edate}', 'OrController:numDay')->setName('orNumDay');
+$app->get('/or/visit/{year}', 'OrController:orvisit');
+$app->get('/or/or-type/{year}', 'OrController:orType');
+$app->get('/or/num-day/{sdate}/{edate}', 'OrController:numDay');
+$app->get('/or/emergency-year/{year}', 'OrController:getEmergencyYear');
 $app->get('/or/expenses/{sdate}/{edate}', 'OrController:expenses');
 $app->get('/or/expenses/{income}/{sdate}/{edate}', 'OrController:expensesDetail');
 
-$app->get('/refer/referin-year/{year}', 'ReferController:referInYear')->setName('referInYear');
-$app->get('/refer/referout-year/{year}', 'ReferController:referOutYear')->setName('referOutYear');
-$app->get('/refer/referin-month/{month}', 'ReferController:referInMonth')->setName('referInMonth');
-$app->get('/refer/referout-month/{month}', 'ReferController:referOutMonth')->setName('referOutMonth');
+$app->get('/refer/referin-year/{year}', 'ReferController:referInYear');
+$app->get('/refer/referout-year/{year}', 'ReferController:referOutYear');
+$app->get('/refer/referin-month/{month}', 'ReferController:referInMonth');
+$app->get('/refer/referout-month/{month}', 'ReferController:referOutMonth');
 
 $app->get('/error/chart-send/{sdate}/{edate}', 'ErrorDataController:chartSend');
 
@@ -78,8 +79,8 @@ $app->get('/pharma/store-drug-list-file', 'PharmaController:storeUserDrugListFil
 $app->get('/drug-items', 'DrugItemController:getAll');
 
 $app->group('/api', function(Slim\App $app) { 
-    $app->get('/users', 'UserController:index')->setName('userList');
-    $app->get('/users/{loginname}', 'UserController:getUser')->setName('getUser');
+    $app->get('/users', 'UserController:index');
+    $app->get('/users/{loginname}', 'UserController:getUser');
 });
 
 // Catch-all route to serve a 404 Not Found page if none of the routes match

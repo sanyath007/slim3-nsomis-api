@@ -76,6 +76,33 @@ class OrController extends Controller
             'numdays' => DB::select($sql, [$args['sdate'], $args['edate']]),
         ]);
     }
+    
+    public function getEmergencyYear($req, $res, $args)
+    {
+        $sdate = ((int)$args['year']-1). '-10-01';
+        $edate = $args['year']. '-09-31';
+
+        $sql="select
+            concat(year(operation_date), month(operation_date)) as 'yymm',
+            count(case when (ol.emergency_id=1 and (ol.leave_time between '00:00:00' and '07:59:59')) then ol.operation_id end) as emergency_n,
+            count(case when (ol.emergency_id=2 and (ol.leave_time between '00:00:00' and '07:59:59')) then ol.operation_id end) as elective_n,
+            count(case when (ol.leave_time between '00:00:00' and '07:59:59') then ol.operation_id end) as all_n,
+            count(case when (ol.emergency_id=1 and (ol.leave_time between '08:00:00' and '16:00:00')) then ol.operation_id end) as emergency_m,
+            count(case when (ol.emergency_id=2 and (ol.leave_time between '08:00:00' and '16:00:00')) then ol.operation_id end) as elective_m,
+            count(case when (ol.leave_time between '08:00:00' and '16:00:00') then ol.operation_id end) as all_m,
+            count(case when (ol.emergency_id=1 and (ol.leave_time between '16:00:01' and '23:59:59')) then ol.operation_id end) as emergency_e,
+            count(case when (ol.emergency_id=2 and (ol.leave_time between '16:00:01' and '23:59:59')) then ol.operation_id end) as elective_e,
+            count(case when (ol.leave_time between '16:00:01' and '23:59:59') then ol.operation_id end) as all_e,
+            count(case when (ol.emergency_id=1) then ol.operation_id end) as emergency,
+            count(case when (ol.emergency_id=2) then ol.operation_id end) as elective,
+            count(ol.operation_id) as total
+            from hos2.operation_list ol 
+            where (ol.operation_date between ? and ?)
+            and (ol.status_id=3)
+            group by concat(year(operation_date), month(operation_date)) ";
+
+        return $res->withJson(DB::select($sql, [$sdate, $edate]));
+    }
 
     public function expenses($req, $res, $args)
     {
