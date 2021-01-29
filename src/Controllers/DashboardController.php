@@ -385,8 +385,13 @@ class DashboardController extends Controller
     public function errorIpMonth($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
-        $edate = $args['month']. '-31';
-        
+        //Check when case that was discharged for 7 day ago
+        if (date('d') > 7) {
+            $edate = date('Y-m-d', strtotime("-7 days"));
+        } else {
+            $edate = $args['month']. '-' .date('d');
+        }
+
         $sql="SELECT ip.ward, w.name,
             COUNT(ip.an) as total,
             COUNT(case when (ip.chart_state=2) then ip.an end) AS send,
