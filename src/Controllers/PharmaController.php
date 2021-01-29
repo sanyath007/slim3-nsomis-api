@@ -89,7 +89,7 @@ class PharmaController extends Controller
     {
         $userDrugLists = UserDrugList::find($args['id']);
         
-        $link = 'http://localhost'. $req->getServerParam('REDIRECT_URL');
+        $link = 'http://'.$req->getServerParam('SERVER_NAME').$req->getServerParam('REDIRECT_URL');
         $page = (int)$req->getQueryParam('page');
 
         $data = null;
