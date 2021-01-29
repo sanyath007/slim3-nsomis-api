@@ -83,7 +83,7 @@ class OrController extends Controller
         $edate = $args['year']. '-09-31';
 
         $sql="select
-            concat(year(operation_date), month(operation_date)) as 'yymm',
+            concat(year(operation_date), '-', month(operation_date)) as 'yymm',
             count(case when (ol.emergency_id=1 and (ol.leave_time between '00:00:00' and '07:59:59')) then ol.operation_id end) as emergency_n,
             count(case when (ol.emergency_id=2 and (ol.leave_time between '00:00:00' and '07:59:59')) then ol.operation_id end) as elective_n,
             count(case when (ol.leave_time between '00:00:00' and '07:59:59') then ol.operation_id end) as all_n,
