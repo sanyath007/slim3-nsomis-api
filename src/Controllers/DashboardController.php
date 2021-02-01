@@ -322,13 +322,13 @@ class DashboardController extends Controller
     
     public function errorIpDay($req, $res, $args)
     {
-        //sdate equal to the day of started budget year
-        $sdate =  date('Y-m', strtotime($args['day'])). '-01';
+        //sdate equal to the day of started day of month of edate
+        $sdate =  date('Y-m', strtotime("-1 days", strtotime($args['day']))). '-01';
         //Check when case that was discharged for 7 day ago
-        $edate = date('Y-m-d', strtotime("-7 days", strtotime($args['day'])));
+        $edate = date('Y-m-d', strtotime("-1 days", strtotime($args['day'])));
 
         $sql="SELECT ip.ward, w.name,
-            COUNT(case when (DATEDIFF(now(), ip.dchdate) < 7) then ip.an end) AS les7,
+            COUNT(case when (DATEDIFF(now(), ip.dchdate) < 7) then ip.an end) AS less7,
             COUNT(case when (DATEDIFF(now(), ip.dchdate) between 7 and 14) then ip.an end) AS gr7to14,
             COUNT(case when (DATEDIFF(now(), ip.dchdate) between 15 and 21) then ip.an end) AS gr15to21,
             COUNT(case when (DATEDIFF(now(), ip.dchdate) > 21) then ip.an end) AS gr21
@@ -384,6 +384,7 @@ class DashboardController extends Controller
     
     public function errorIpMonth($req, $res, $args)
     {
+        //sdate equal to the day of started budget year
         $sdate = $args['month']. '-01';
         //Check when case that was discharged for 7 day ago
         if (date('d') > 7) {
