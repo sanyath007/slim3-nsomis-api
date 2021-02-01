@@ -387,10 +387,10 @@ class DashboardController extends Controller
         //sdate equal to the day of started budget year
         $sdate = $args['month']. '-01';
         //Check when case that was discharged for 7 day ago
-        if (date('d') > 7) {
-            $edate = date('Y-m-d', strtotime("-7 days"));
+        if (date('Y-m') == $args['month']) {
+            $edate = (date('d') > 1) ? date('Y-m-d', strtotime("-1 days")) : $args['month']. '-01';
         } else {
-            $edate = $args['month']. '-' .date('d');
+            $edate = date('Y-m-t', strtotime($sdate));
         }
 
         $sql="SELECT ip.ward, w.name,
