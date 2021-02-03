@@ -62,6 +62,8 @@ $app->get('/or/emergency-year/{year}', 'OrController:getEmergencyYear');
 $app->get('/or/expenses/{sdate}/{edate}', 'OrController:expenses');
 $app->get('/or/expenses/{income}/{sdate}/{edate}', 'OrController:expensesDetail');
 
+$app->get('/scope/sum-year/{year}', 'ScopeController:getSumYear');
+
 $app->get('/refer/referin-year/{year}', 'ReferController:referInYear');
 $app->get('/refer/referout-year/{year}', 'ReferController:referOutYear');
 $app->get('/refer/referin-month/{month}', 'ReferController:referInMonth');

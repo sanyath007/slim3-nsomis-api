@@ -96,6 +96,10 @@ $container['ReferController'] = function($c) {
     return new App\Controllers\ReferController($c);
 };
 
+$container['ScopeController'] = function($c) {
+    return new App\Controllers\ScopeController($c);
+};
+
 $container['ErrorDataController'] = function($c) {
     return new App\Controllers\ErrorDataController($c);
 };
