@@ -76,6 +76,30 @@ class PharmaController extends Controller
         }
     }
 
+    public function removeUserDrugList($req, $res, $args)
+    {
+        if (!$args['id']) {
+            return $res->withStatus(500)->withJson([
+                'status' => 0,
+                'message' => 'พบข้อผิดพลาด ไม่สามารถลบข้อมูลได้'
+            ]);
+        } else {
+            $udl = UserDrugList::find($args['id']);
+
+            if ($udl->delete()) {
+                return $res->withStatus(200)->withJson([
+                    'status' => 1,
+                    'message' => 'ลบข้อมูลเรียบร้อยแล้ว'
+                ]);
+            } else {
+                return $res->withStatus(500)->withJson([
+                    'status' => 0,
+                    'message' => 'พบข้อผิดพลาด ไม่สามารถลบข้อมูลได้'
+                ]);
+            }
+        }
+    }
+
     public function getUserDrugList($req, $res, $args)
     {
         $userDrugLists = UserDrugList::where(['user_id' => $args['user']])->get();

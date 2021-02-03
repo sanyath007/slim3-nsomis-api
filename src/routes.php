@@ -77,6 +77,7 @@ $app->get('/pharma/user-drug-list/{user}', 'PharmaController:getUserDrugList');
 $app->get('/pharma/user-drug-list/{id}/detail', 'PharmaController:getUserDrugListDetail');
 $app->post('/pharma/store-drug-list', 'PharmaController:storeUserDrugList');
 $app->get('/pharma/store-drug-list-file', 'PharmaController:storeUserDrugListFile');
+$app->delete('/pharma/user-drug-list/{id}', 'PharmaController:removeUserDrugList');
 
 $app->get('/drug-items', 'DrugItemController:getAll');
 
