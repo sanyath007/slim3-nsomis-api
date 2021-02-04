@@ -151,4 +151,27 @@ class OrController extends Controller
             'income' => DB::table('income')->where('income', $args['income'])->first()
         ]);
     }
+
+    public function getOrCataractList($req, $res, $args)
+    {
+        $sql = "SELECT a.an,a.hn,pat.cid,
+                CONCAT(a.pttype,'-',ptt.name) AS pttype, a.regdate, a.regtime, a.dchdate, a.dchtime,
+                CONCAT(
+                    CONVERT(pat.pname,char(5)), 
+                    CONVERT(pat.fname,char(20)), space(2), 
+                    CONVERT(pat.lname,char(20))
+                ) AS patname, dx.icd10 AS pdx, icd.name AS dx_des, w.name AS wardname 
+                FROM ipt a 
+                LEFT JOIN patient pat ON (a.hn=pat.hn) 
+                LEFT JOIN iptdiag dx ON (a.an=dx.an and dx.diagtype='1') 
+                LEFT JOIN icd101 icd ON (dx.icd10=icd.code) 
+                LEFT JOIN pttype ptt ON (a.pttype=ptt.pttype)
+                LEFT JOIN ward w ON (a.ward=w.ward)
+                WHERE (dchdate BETWEEN ? AND ?)
+                AND (dx.icd10='H250')
+                ORDER BY regdate ";
+        
+        return $res->withJson(DB::select($sql, [$args['sdate'], $args['edate']]));
+
+    }
 }

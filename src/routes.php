@@ -61,6 +61,7 @@ $app->get('/or/sum-year/{year}', 'OrController:getSumYear');
 $app->get('/or/emergency-year/{year}', 'OrController:getEmergencyYear');
 $app->get('/or/expenses/{sdate}/{edate}', 'OrController:expenses');
 $app->get('/or/expenses/{income}/{sdate}/{edate}', 'OrController:expensesDetail');
+$app->get('/or/cataract-list/{sdate}/{edate}', 'OrController:getOrCataractList');
 
 $app->get('/scope/sum-year/{year}', 'ScopeController:getSumYear');
 
