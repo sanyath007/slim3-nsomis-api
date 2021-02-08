@@ -13,7 +13,10 @@ class IpController extends Controller
         $edate = $args['edate'];
         
         $sql="SELECT 
-            ip.ward, w.name, SUM(ip.rw) AS rw, COUNT(ip.an) AS dc_num, SUM(a.admdate) as admdate		
+            ip.ward, w.name, 
+            SUM(ip.rw) AS rw, 
+            COUNT(ip.an) AS dc_num, 
+            SUM(a.admdate) as admdate
             FROM ipt ip
             LEFT JOIN ward w ON (ip.ward=w.ward)
             LEFT JOIN an_stat a ON (ip.an=a.an)				
