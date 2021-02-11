@@ -20,6 +20,18 @@ class NurseController extends Controller
         ]);
     }
     
+    public function getGenList($req, $res, $args)
+    {
+        $nurses = Nurse::with('hosppay18:hospcode,name')
+                    ->with('person:person_firstname,person_lastname,person_birth')
+                    ->with('person.prefix','person.position','academic')
+                    ->get();
+
+        return $res->withJson([
+            'nurses' => $nurses
+        ]);
+    }
+    
     public function updateDB($req, $res, $args)
     {
         $nurses = Nurse::all();

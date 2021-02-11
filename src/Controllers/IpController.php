@@ -9,8 +9,8 @@ class IpController extends Controller
 {
     public function admdate($req, $res, $args)
     {
-        $sdate = $args['sdate'];
-        $edate = $args['edate'];
+        $sdate = $args['month']. '-01';
+        $edate = date('Y-m-t', strtotime($sdate));
         
         $sql="SELECT 
             ip.ward, w.name, 

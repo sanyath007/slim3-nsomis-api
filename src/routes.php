@@ -44,7 +44,7 @@ $app->get('/dashboard/ip-visit-year/{year}', 'DashboardController:ipVisitYear');
 $app->get('/dashboard/ip-class-year/{year}', 'DashboardController:ipClassYear');
 
 $app->get('/ip/class/{sdate}/{edate}', 'IpController:ipclass');
-$app->get('/ip/admdate/{sdate}/{edate}', 'IpController:admdate');
+$app->get('/ip/admdate/{month}', 'IpController:admdate');
 $app->get('/ip/ptdchbyward/{sdate}/{edate}/{ward}', 'IpController:ptDchByWard');
 $app->get('/ip/ptlosbycare/{sdate}/{edate}/{ward}', 'IpController:ptLosByCare');
 
@@ -83,6 +83,7 @@ $app->delete('/pharma/user-drug-list/{id}', 'PharmaController:removeUserDrugList
 $app->get('/drug-items', 'DrugItemController:getAll');
 
 $app->get('/nurses', 'NurseController:getAll');
+$app->get('/nurses/gen-list', 'NurseController:getGenList');
 $app->get('/nurses-update', 'NurseController:updateDB');
 
 $app->group('/api', function(Slim\App $app) { 
