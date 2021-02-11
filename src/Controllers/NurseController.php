@@ -23,6 +23,17 @@ class NurseController extends Controller
         return $res->withJson($data);
     }
     
+    public function getProfile($req, $res, $args)
+    {
+        $nurse = Nurse::where('cid', '=', $args['id'])
+                    ->with('hosppay18:hospcode,name')
+                    ->with('person:person_firstname,person_lastname,person_birth')
+                    ->with('person.prefix','person.position','academic', 'depart')
+                    ->first();
+        
+        return $res->withJson($nurse);
+    }
+    
     public function getGenList($req, $res, $args)
     {
         $nurses = Nurse::with('hosppay18:hospcode,name')

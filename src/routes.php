@@ -84,6 +84,7 @@ $app->delete('/pharma/user-drug-list/{id}', 'PharmaController:removeUserDrugList
 $app->get('/drug-items', 'DrugItemController:getAll');
 
 $app->get('/nurses', 'NurseController:getAll');
+$app->get('/nurses/profile/{id}', 'NurseController:getProfile');
 $app->get('/nurses/gen-list', 'NurseController:getGenList');
 $app->get('/nurses-update', 'NurseController:updateDB');
 
