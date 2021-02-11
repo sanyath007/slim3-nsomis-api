@@ -82,6 +82,9 @@ $app->delete('/pharma/user-drug-list/{id}', 'PharmaController:removeUserDrugList
 
 $app->get('/drug-items', 'DrugItemController:getAll');
 
+$app->get('/nurses', 'NurseController:getAll');
+$app->get('/nurses-update', 'NurseController:updateDB');
+
 $app->group('/api', function(Slim\App $app) { 
     $app->get('/users', 'UserController:index');
     $app->get('/users/{loginname}', 'UserController:getUser');

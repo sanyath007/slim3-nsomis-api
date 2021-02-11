@@ -6,6 +6,7 @@ $container = $app->getContainer();
 
 $capsule = new Illuminate\Database\Capsule\Manager;
 $capsule->addConnection($container['settings']['db']);
+$capsule->addConnection($container['settings']['person_db'], 'person');
 $capsule->addConnection($container['settings']['pharma_db'], 'pharma');
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
@@ -110,4 +111,8 @@ $container['PharmaController'] = function($c) {
 
 $container['DrugItemController'] = function($c) {
     return new App\Controllers\DrugItemController($c);
+};
+
+$container['NurseController'] = function($c) {
+    return new App\Controllers\NurseController($c);
 };

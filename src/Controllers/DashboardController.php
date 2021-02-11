@@ -287,8 +287,9 @@ class DashboardController extends Controller
         // Check if current month, set sdate to yesterday
         // if (date('Y-m') == date('Y-m', strtotime($args['day']))) {
         //     $sdate = date('Y-m-d', strtotime("-1 days", strtotime($args['day'])));
-        // } else {
+        // } else { 
             $sdate = $args['day'];
+            $curTime = date('h:m:s'); // TODO: time must increase 7 hour.
         // }
         
         $data = [];
