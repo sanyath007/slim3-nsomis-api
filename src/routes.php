@@ -44,7 +44,8 @@ $app->get('/dashboard/ip-visit-year/{year}', 'DashboardController:ipVisitYear');
 $app->get('/dashboard/ip-class-year/{year}', 'DashboardController:ipClassYear');
 
 $app->get('/ip/class/{sdate}/{edate}', 'IpController:ipclass');
-$app->get('/ip/admdate/{month}', 'IpController:admdate');
+$app->get('/ip/admdate-month/{month}', 'IpController:getAdmdateMonth');
+$app->get('/ip/bedocc-year/{year}', 'IpController:getBedoccYear');
 $app->get('/ip/ptdchbyward/{sdate}/{edate}/{ward}', 'IpController:ptDchByWard');
 $app->get('/ip/ptlosbycare/{sdate}/{edate}/{ward}', 'IpController:ptLosByCare');
 
