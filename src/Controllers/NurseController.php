@@ -9,15 +9,18 @@ use App\Models\Nurse;
 class NurseController extends Controller
 {
     public function getAll($req, $res, $args)
-    {
-        $nurses = Nurse::with('hosppay18:hospcode,name')
-                    ->with('person:person_firstname,person_lastname,person_birth')
-                    ->with('person.prefix','person.position','academic')
-                    ->get();
+    {        
+        $link = 'http://'.$req->getServerParam('SERVER_NAME').$req->getServerParam('REDIRECT_URL');
+        $page = (int)$req->getQueryParam('page');
 
-        return $res->withJson([
-            'nurses' => $nurses
-        ]);
+        $model = Nurse::whereNotIn('depart_id', [20,21,22,66])
+                    ->with('hosppay18:hospcode,name')
+                    ->with('person:person_firstname,person_lastname,person_birth')
+                    ->with('person.prefix','person.position','academic', 'depart');
+
+        $data = paginate($model, 'depart_id', 20, $page, $link);
+        
+        return $res->withJson($data);
     }
     
     public function getGenList($req, $res, $args)

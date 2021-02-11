@@ -18,6 +18,11 @@ class Nurse extends Model
     {
         return $this->belongsTo(Academic::class, 'ac_id', 'ac_id');
     }
+    
+    public function depart()
+    {
+        return $this->belongsTo(Depart::class, 'depart_id', 'depart_id');
+    }
 
     public function hosp()
     {
