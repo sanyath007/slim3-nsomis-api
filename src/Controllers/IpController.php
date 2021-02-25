@@ -60,6 +60,39 @@ class IpController extends Controller
             'wardStat' => DB::select($q, [$sdate, $edate]),
         ]);
     }
+    
+    public function getBedEmptyDay($req, $res, $args)
+    {
+        $sql="SELECT ic.ward, w.name as wardname,
+            COUNT(CASE WHEN (
+                (
+                    (ic.regdate = '" .$args['date']. "' AND ic.regtime <= '23:59:59')
+                    AND (
+                        (ic.dchdate is null)
+                        OR (ic.dchdate = '" .$args['date']. "' AND ic.dchtime > '16:00:00')
+                        OR (ic.dchdate > '" .$args['date']. "')
+                    )
+                )
+                OR (
+                    (ic.regdate < '" .$args['date']. "')
+                    AND (
+                        (ic.dchdate is null)
+                        OR (ic.dchdate = '" .$args['date']. "' AND ic.dchtime > '16:00:00')
+                        OR (ic.dchdate > '" .$args['date']. "')
+                    )
+                )
+            ) THEN ic.an END) AS num_pt 
+            FROM (
+                select an,hn,regdate,regtime,dchdate,dchtime,ward 
+                from ipt where ((dchdate >= ?) or (dchdate is null))
+                and (an not in (select an from ipt_newborn))
+                ORDER BY regdate
+            ) as ic 
+            LEFT JOIN ward w ON (ic.ward=w.ward) 
+            GROUP BY ic.ward, w.name ORDER BY ic.ward, w.name ";
+
+        return $res->withJson(DB::select($sql, [$args['date']]));
+    }
 
     public function ipclass($req, $res, $args)
     {        

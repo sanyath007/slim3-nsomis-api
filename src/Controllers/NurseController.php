@@ -36,7 +36,9 @@ class NurseController extends Controller
     
     public function getGenList($req, $res, $args)
     {
-        $nurses = Nurse::with('hosppay18:hospcode,name')
+        $nurses = Nurse::whereNotIn('depart_id', [20,21,22,66])
+                    ->whereNotIn('status', [2,3])
+                    ->with('hosppay18:hospcode,name')
                     ->with('person:person_firstname,person_lastname,person_birth')
                     ->with('person.prefix','person.position','academic')
                     ->get();
