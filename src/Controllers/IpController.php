@@ -43,17 +43,16 @@ class IpController extends Controller
             ip.ward, w.name, 
             SUM(ip.rw) AS rw, 
             COUNT(ip.an) AS dc_num, 
-            SUM(a.admdate) as admdate
+            SUM(a.admdate) as admdate 
             FROM ipt ip
             LEFT JOIN ward w ON (ip.ward=w.ward)
             LEFT JOIN an_stat a ON (ip.an=a.an)				
             WHERE (ip.dchdate BETWEEN ? AND ?)
-            AND (ip.ward<>'05')
-            AND (ip.an NOT IN (SELECT an FROM ipt_newborn))
+            #AND (ip.ward<>'05')
+            #AND (ip.an NOT IN (SELECT an FROM ipt_newborn))
             GROUP BY ip.ward, w.name ";
                     
-        $q = "SELECT * FROM ipt_ward_stat
-            WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?) ";
+        $q = "SELECT * FROM ipt_ward_stat WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?) ";
 
         return $res->withJson([
             'admdate' => DB::select($sql, [$sdate, $edate]),
