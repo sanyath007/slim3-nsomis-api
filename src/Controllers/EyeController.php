@@ -40,7 +40,7 @@ class EyeController extends Controller
             WHERE (o.hn = ?) AND (o.vn > ?) 
             AND (o.clinic='007') ";
 
-        if($args['isAdmit'] === 1) {
+        if($args['isAdmit'] == 1) {
             $sql .= "AND (o.an IS NOT NULL) ";
         }    
             
