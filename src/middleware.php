@@ -116,3 +116,7 @@ $container['DrugItemController'] = function($c) {
 $container['NurseController'] = function($c) {
     return new App\Controllers\NurseController($c);
 };
+
+$container['EyeController'] = function($c) {
+    return new App\Controllers\EyeController($c);
+};
