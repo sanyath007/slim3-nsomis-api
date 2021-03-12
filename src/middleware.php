@@ -8,6 +8,7 @@ $capsule = new Illuminate\Database\Capsule\Manager;
 $capsule->addConnection($container['settings']['db']);
 $capsule->addConnection($container['settings']['person_db'], 'person');
 $capsule->addConnection($container['settings']['pharma_db'], 'pharma');
+$capsule->addConnection($container['settings']['payarrear_db'], 'arrear');
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
@@ -97,6 +98,10 @@ $container['ReferController'] = function($c) {
     return new App\Controllers\ReferController($c);
 };
 
+$container['EyeController'] = function($c) {
+    return new App\Controllers\EyeController($c);
+};
+
 $container['ScopeController'] = function($c) {
     return new App\Controllers\ScopeController($c);
 };
@@ -117,6 +122,6 @@ $container['NurseController'] = function($c) {
     return new App\Controllers\NurseController($c);
 };
 
-$container['EyeController'] = function($c) {
-    return new App\Controllers\EyeController($c);
+$container['ArearController'] = function($c) {
+    return new App\Controllers\ArearController($c);
 };

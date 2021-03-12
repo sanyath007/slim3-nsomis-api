@@ -74,5 +74,28 @@ return [
                 PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' .getenv("DB_PHARMA_CHARSET"). ' COLLATE ' .getenv("DB_PHARMA_COLLATE")
             ],
         ],
+        'payarrear_db' => [
+            'driver'    => getenv("DB_ARREAR_DRIVER"),
+            'host'      => getenv("DB_ARREAR_HOST"),
+            'database'  => getenv("DB_ARREAR_NAME"),
+            'username'  => getenv("DB_ARREAR_USER"),
+            'password'  => getenv("DB_ARREAR_PASS"),
+            'port'      => getenv("DB_ARREAR_PORT"),
+            'charset'   => getenv("DB_ARREAR_CHARSET"), //utf8, tis620
+            'collation' => getenv("DB_ARREAR_COLLATE"), //utf8_general_ci, tis620_thai_ci
+            'prefix'    => getenv("DB_ARREAR_PREFIX"),
+            'options' => [
+                // Turn off persistent connections
+                PDO::ATTR_PERSISTENT => false,
+                // Enable exceptions
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                // Emulate prepared statements
+                PDO::ATTR_EMULATE_PREPARES => true,
+                // Set default fetch mode to array
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                // Set character set
+                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' .getenv("DB_ARREAR_CHARSET"). ' COLLATE ' .getenv("DB_ARREAR_COLLATE")
+            ],
+        ],
     ]
 ];
