@@ -302,11 +302,11 @@ class DashboardController extends Controller
                     and (vn.vn in (select vn from opdscreen where (pulse is null or temperature is null or bpd is null or bps is null or rr is null)))
                     and (vn.vn not in (select vn from opdscreen where (cc LIKE '%รับยาแทน%')))) 
                 then vn.vn end) as inc_screen
-                FROM hos2.vn_stat vn 
-                LEFT JOIN hos2.ovst vs ON (vn.vn=vs.vn)
+                FROM vn_stat vn 
+                LEFT JOIN ovst vs ON (vn.vn=vs.vn)
                 WHERE (vn.vstdate=?) 
                 AND (vs.main_dep IN (" .$cl[1]. "))
-                AND (vs.an is null or vs.an='')";
+                #AND (vs.an is null or vs.an='') //นับเฉพาะผู้ป่วยที่ไม่ได้ Admit";
 
             $errorData = DB::select($sql, [$sdate]);
             array_push($data, [
@@ -364,11 +364,11 @@ class DashboardController extends Controller
                     and (vn.vn in (select vn from opdscreen where (pulse is null or temperature is null or bpd is null or bps is null or rr is null)))
                     and (vn.vn not in (select vn from opdscreen where (cc LIKE '%รับยาแทน%')))) 
                 then vn.vn end) as inc_screen
-                FROM hos2.vn_stat vn 
-                LEFT JOIN hos2.ovst vs ON (vn.vn=vs.vn)
+                FROM vn_stat vn 
+                LEFT JOIN ovst vs ON (vn.vn=vs.vn)
                 WHERE (vn.vstdate BETWEEN ? AND ?) 
                 AND (vs.main_dep IN (" .$cl[1]. "))
-                AND (vs.an is null or vs.an='')";
+                #AND (vs.an is null or vs.an='') //นับเฉพาะผู้ป่วยที่ไม่ได้ Admit";
 
             $errorData = DB::select($sql, [$sdate, $edate]);
             array_push($data, [
