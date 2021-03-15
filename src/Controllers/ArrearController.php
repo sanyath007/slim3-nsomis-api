@@ -91,7 +91,7 @@ class ArrearController extends Controller
         $validation = $this->validator->validate($req, [
             'bill_no' => v::notEmpty(),
             'paid_date' => v::notEmpty(),
-            'paid_time' => v::notEmpty(),
+            // 'paid_time' => v::notEmpty(),
             'paid_amount' => v::notEmpty()->notOptional()->floatVal(),
             'cashier' => v::notEmpty(),
         ]);
@@ -121,7 +121,7 @@ class ArrearController extends Controller
         $paid->paid_no = $post['paid_no'];
         $paid->bill_no = $post['bill_no'];
         $paid->paid_date = $post['paid_date'];
-        $paid->paid_time = $post['paid_time'];
+        // $paid->paid_time = $post['paid_time'];
         $paid->paid_amount = $post['paid_amount'];
         $paid->remain = $post['remain'];
         $paid->cashier = $post['cashier'];
