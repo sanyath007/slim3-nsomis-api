@@ -6,7 +6,7 @@ use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
 use App\Models\ArrearPaid;
 
-class ArearController extends Controller
+class ArrearController extends Controller
 {
     public function getIpArears($req, $res, $args)
     {

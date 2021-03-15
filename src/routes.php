@@ -92,10 +92,10 @@ $app->get('/nurses/profile/{id}', 'NurseController:getProfile');
 $app->get('/nurses/gen-list', 'NurseController:getGenList');
 $app->get('/nurses-update', 'NurseController:updateDB');
 
-$app->get('/arrears-op/{sdate}/{edate}', 'ArearController:getOpArears');
-$app->get('/arrears-ip/{sdate}/{edate}', 'ArearController:getIpArears');
-$app->get('/arrears-payment/{type}/{vn}/{hn}', 'ArearController:getPaymentArears');
-$app->post('/arrears-payment/{vn}/{hn}', 'ArearController:storeArrear');
+$app->get('/arrears-op/{sdate}/{edate}', 'ArrearController:getOpArears');
+$app->get('/arrears-ip/{sdate}/{edate}', 'ArrearController:getIpArears');
+$app->get('/arrears-payment/{type}/{vn}/{hn}', 'ArrearController:getPaymentArears');
+$app->post('/arrears-payment/{vn}/{hn}', 'ArrearController:storeArrear');
 
 $app->group('/api', function(Slim\App $app) { 
     $app->get('/users', 'UserController:index');

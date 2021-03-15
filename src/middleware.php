@@ -122,6 +122,6 @@ $container['NurseController'] = function($c) {
     return new App\Controllers\NurseController($c);
 };
 
-$container['ArearController'] = function($c) {
-    return new App\Controllers\ArearController($c);
+$container['ArrearController'] = function($c) {
+    return new App\Controllers\ArrearController($c);
 };
