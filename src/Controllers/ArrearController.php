@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
+use Respect\Validation\Validator as v;
 use App\Models\ArrearPaid;
 
 class ArrearController extends Controller
@@ -87,6 +88,30 @@ class ArrearController extends Controller
 
     public function storeArrear($req, $res, $args)
     {
+        $validation = $this->validator->validate($req, [
+            'bill_no' => v::notEmpty(),
+            'paid_date' => v::notEmpty(),
+            'paid_time' => v::notEmpty(),
+            'paid_amount' => v::notEmpty()->notOptional()->floatVal(),
+            'cashier' => v::notEmpty(),
+        ]);
+        
+        if ($validation->failed()) {
+            $data = [
+                'status' => 0,
+                'errors' => $validation->getMessages(),
+                'message' => 'Validation Error!!'
+            ];
+
+            return $res->withStatus(200)
+                    ->withHeader("Content-Type", "application/json")
+                    ->write(json_encode([
+                        'status' => 0,
+                        'errors' => $validation->getMessages(),
+                        'message' => 'Validation Error!!'
+                    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
+        }
+
         $post = (array)$req->getParsedBody();
 
         $paid = new ArrearPaid();
@@ -103,9 +128,14 @@ class ArrearController extends Controller
         $paid->remark = $post['remark'];
 
         if($paid->save()) {
-            return $res->withJson([
-                'paid' => $paid
-            ]);
+            return $res->withStatus(200)
+                    ->withHeader("Content-Type", "application/json")
+                    ->write(json_encode([
+                        'status' => 1,
+                        'errors' => '',
+                        'message' => 'Insertion successfully',
+                        'paid' => $paid
+                    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
         }
     }
 }

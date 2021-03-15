@@ -31,6 +31,10 @@ $container['auth'] = function($c) {
     return new App\Auth\Auth;
 };
 
+$container['validator'] = function($c) {
+    return new App\Validations\Validator;
+};
+
 $container['logger'] = function($c) {
     $logger = new Monolog\Logger('My_logger');
     $file_handler = new Monolog\Handler\StreamHandler('../logs/app.log');
