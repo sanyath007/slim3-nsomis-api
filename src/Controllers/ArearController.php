@@ -100,6 +100,7 @@ class ArearController extends Controller
         $paid->paid_amount = $post['paid_amount'];
         $paid->remain = $post['remain'];
         $paid->cashier = $post['cashier'];
+        $paid->remark = $post['remark'];
 
         if($paid->save()) {
             return $res->withJson([
