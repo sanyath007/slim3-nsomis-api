@@ -13,7 +13,7 @@ class ArrearController extends Controller
     {
         $sql="select a.an,a.hn,a.regdate,a.dchdate,
             concat(convert(pat.pname,char(5)),convert(pat.fname,char(20)),space(2),convert(pat.lname,char(20))) as patname,
-            a.pttype,ptt.name as pttname,a.paid_money,a.uc_money, a.income,
+            a.pttype,ptt.name as pttname,a.paid_money,a.uc_money, a.income,a.rcpt_money,
             concat(a.ward,'-',w.name) as ward, a.admdate 
             from an_stat a 
             left join patient pat on (a.hn=pat.hn) 
@@ -63,7 +63,7 @@ class ArrearController extends Controller
         } else {
             $visit = "select a.an,a.hn,a.regdate,a.dchdate,pt.cid,
                 concat(convert(pt.pname,char(5)),convert(pt.fname,char(20)),space(2),convert(pt.lname,char(20))) as patname,
-                a.pttype,ptt.name as pttname,a.paid_money,a.uc_money,a.income, a.rcpt_money,
+                a.pttype,ptt.name as pttname,a.paid_money,a.uc_money,a.income,a.rcpt_money,
                 concat(a.ward,'-',w.name) as ward, a.admdate 
                 from an_stat a 
                 left join patient pt on (a.hn=pt.hn) 
@@ -137,5 +137,16 @@ class ArrearController extends Controller
                         'paid' => $paid
                     ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
         }
+    }
+
+    public function getArrearPaid($req, $res, $args)
+    {
+        if($args['type'] === 'op') {
+            $sql = "select sum(paid_amount) as total_paid from arrear_paid where (vn = ?) and (hn = ?) group by an, hn";
+        } else if($args['type'] === 'ip') {
+            $sql = "select sum(paid_amount) as total_paid from arrear_paid where (an = ?) and (hn = ?) group by an, hn";
+        }
+
+        return $res->withJson(collect(DB::connection('arrear')->select($sql, [$args['vn'], $args['hn']]))->first());
     }
 }

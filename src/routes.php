@@ -96,6 +96,7 @@ $app->get('/arrears-op/{sdate}/{edate}', 'ArrearController:getOpArears');
 $app->get('/arrears-ip/{sdate}/{edate}', 'ArrearController:getIpArears');
 $app->get('/arrears-payment/{type}/{vn}/{hn}', 'ArrearController:getPaymentArears');
 $app->post('/arrears-payment/{vn}/{hn}', 'ArrearController:storeArrear');
+$app->get('/arrears-paid/{type}/{vn}/{hn}', 'ArrearController:getArrearPaid');
 
 $app->group('/api', function(Slim\App $app) { 
     $app->get('/users', 'UserController:index');
