@@ -50,6 +50,9 @@ $app->get('/ip/bedempty-day/{date}', 'IpController:getBedEmptyDay');
 $app->get('/ip/ptdchbyward/{sdate}/{edate}/{ward}', 'IpController:ptDchByWard');
 $app->get('/ip/ptlosbycare/{sdate}/{edate}/{ward}', 'IpController:ptLosByCare');
 
+$app->get('/ip/product-ward/{date}/{ward}', 'ProductivityController:getProductWard');
+$app->get('/ip/product-sum/{month}', 'ProductivityController:getSummary');
+
 $app->get('/op/visit/{year}', 'OpController:opvisit');
 $app->get('/op/visit-type/{year}', 'OpController:opVisitType');
 
