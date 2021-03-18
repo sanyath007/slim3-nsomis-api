@@ -6,26 +6,63 @@ use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
 use Respect\Validation\Validator as v;
 use App\Models\Productivity;
+use App\Models\Ward;
 
 class ProductivityController extends Controller
 {
     public function getProductWard($req, $res, $args)
     {
-        $sql="select a.an,a.hn,a.regdate,a.dchdate,
-            concat(convert(pat.pname,char(5)),convert(pat.fname,char(20)),space(2),convert(pat.lname,char(20))) as patname,
-            a.pttype,ptt.name as pttname,a.paid_money,a.uc_money, a.income,a.rcpt_money,
-            concat(a.ward,'-',w.name) as ward, a.admdate 
-            from an_stat a 
-            left join patient pat on (a.hn=pat.hn) 
-            left join pttype ptt on (a.pttype=ptt.pttype) 
-            left join ward w on (a.ward=w.ward) 
-            where (a.dchdate between ? and ?)
-            and (a.pttype in ('10','20','21','42','45','46'))
-            and (a.an not in (select vn from rcpt_print)) 
-            order by a.ward,a.dchdate,a.pttype,a.an";
+        $sql="select * from productivities where (product_date <= ? and ward = ?)";
+
+        return $res->withJson(DB::connection('pharma')->select($sql, [$args['date'], $args['ward']]));
+    }
+    
+    public function getProductAdd($req, $res, $args)
+    {
+        return $res->withJson(Ward::all());
+    }
+
+    public function getWorkload($req, $res, $args)
+    {
+        $sql = "SELECT
+                COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='1'))) THEN ip.an END) AS type1,
+                COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='2'))) THEN ip.an END) AS type2,
+                COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='3'))) THEN ip.an END) AS type3,
+                COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='4'))) THEN ip.an END) AS type4,
+                COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='5'))) THEN ip.an END) AS type5,
+                COUNT(CASE WHEN (ip.an not IN (select an from ipt_icnp)) THEN ip.an END) AS 'unknown',
+                COUNT(ip.an) AS 'all'
+                FROM (
+                    select an,hn,regdate,regtime,dchdate,dchtime,ward 
+                    from ipt where ((dchdate >= ?) or (dchdate is null))
+                    and (ward = ?)
+                    ORDER BY regdate
+                ) as ip ";
+        
+        $staff = null;
+        if($args['period'] === 1) {
+            $staff = [
+                'rn' => 4,
+                'pn' => 3,
+                'total' => 7
+            ];
+        } if($args['period'] === 2) {
+            $staff = [
+                'rn' => 4,
+                'pn' => 3,
+                'total' => 7
+            ];
+        } else {
+            $staff = [
+                'rn' => 3,
+                'pn' => 2,
+                'total' => 5
+            ];
+        }
 
         return $res->withJson([
-            'ips' => DB::select($sql, [$args['date'], $args['ward']]),
+            'workload' => collect(DB::select($sql, [$args['date'], $args['ward']]))->first(),
+            'staff' => $staff
         ]);
     }
 
