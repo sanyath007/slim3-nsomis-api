@@ -14,51 +14,65 @@ class ProductivityController extends Controller
     {
         $sql="select * from productivities where (product_date <= ? and ward = ?)";
 
-        return $res->withJson(DB::connection('pharma')->select($sql, [$args['date'], $args['ward']]));
+        return $res->withJson([
+            'product' => DB::connection('pharma')->select($sql, [$args['date'], $args['ward']]),
+            'wards' => Ward::where('ward', '<>', '03')->get(),
+        ]);
     }
     
     public function getProductAdd($req, $res, $args)
     {
-        return $res->withJson(Ward::all());
+        return $res->withJson(Ward::where('ward', '<>', '03')->get());
     }
 
     public function getWorkload($req, $res, $args)
     {
-        $sql = "SELECT
-                COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='1'))) THEN ip.an END) AS type1,
-                COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='2'))) THEN ip.an END) AS type2,
-                COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='3'))) THEN ip.an END) AS type3,
-                COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='4'))) THEN ip.an END) AS type4,
-                COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='5'))) THEN ip.an END) AS type5,
-                COUNT(CASE WHEN (ip.an not IN (select an from ipt_icnp)) THEN ip.an END) AS 'unknown',
-                COUNT(ip.an) AS 'all'
-                FROM (
-                    select an,hn,regdate,regtime,dchdate,dchtime,ward 
-                    from ipt where ((dchdate >= ?) or (dchdate is null))
-                    and (ward = ?)
-                    ORDER BY regdate
-                ) as ip ";
-        
+        $period = '';
         $staff = null;
-        if($args['period'] === 1) {
+        if($args['period'] == 1) {
+            $period = '16:00:00';
             $staff = [
                 'rn' => 4,
                 'pn' => 3,
                 'total' => 7
             ];
-        } if($args['period'] === 2) {
+        } else if($args['period'] == 2) {
+            $period = '23:59:59';
             $staff = [
                 'rn' => 4,
                 'pn' => 3,
                 'total' => 7
             ];
-        } else {
+        } else if($args['period'] == 3) {
+            $period = '07:59:59';
             $staff = [
                 'rn' => 3,
                 'pn' => 2,
                 'total' => 5
             ];
         }
+        
+        $sql = "SELECT 
+                COUNT(CASE WHEN (ip.icnp_classification_id='1') THEN ip.an END) AS type1,
+                COUNT(CASE WHEN (ip.icnp_classification_id='2') THEN ip.an END) AS type2,
+                COUNT(CASE WHEN (ip.icnp_classification_id='3') THEN ip.an END) AS type3,
+                COUNT(CASE WHEN (ip.icnp_classification_id='4') THEN ip.an END) AS type4,
+                COUNT(CASE WHEN (ip.icnp_classification_id='5') THEN ip.an END) AS type5,
+                COUNT(CASE WHEN (ip.icnp_classification_id='' or ip.icnp_classification_id is null) THEN ip.an END) AS 'unknow',
+                COUNT(ip.an) AS 'all'
+                FROM (
+                    select i.an,i.hn,i.regdate,i.regtime,i.dchdate,i.dchtime,i.ward,t.icnp_classification_id 
+                    from ipt i
+                    left join ipt_icnp t on (i.an=t.an)
+                    where (
+                        (i.regdate < ? and i.dchdate is null)
+                        or ((i.regdate = '".$args['date']."' and i.regtime <= '".$period."') and i.dchdate is null)
+                        or (i.regdate <= '".$args['date']."' and (i.dchdate > '".$args['date']."'))
+                        or (i.regdate <= '".$args['date']."' and (i.dchdate = '".$args['date']."' and i.dchtime > '".$period."') 
+                        )
+                    )
+                    and (i.ward = ?)
+                ) AS ip ";
 
         return $res->withJson([
             'workload' => collect(DB::select($sql, [$args['date'], $args['ward']]))->first(),
@@ -106,20 +120,11 @@ class ProductivityController extends Controller
     public function store($req, $res, $args)
     {
         $validation = $this->validator->validate($req, [
-            'bill_no' => v::notEmpty(),
-            'paid_date' => v::notEmpty(),
-            // 'paid_time' => v::notEmpty(),
-            'paid_amount' => v::notEmpty()->notOptional()->floatVal(),
-            'cashier' => v::notEmpty(),
+            'ward' => v::notEmpty(),
+            'period' => v::notEmpty(),
         ]);
         
         if ($validation->failed()) {
-            $data = [
-                'status' => 0,
-                'errors' => $validation->getMessages(),
-                'message' => 'Validation Error!!'
-            ];
-
             return $res->withStatus(200)
                     ->withHeader("Content-Type", "application/json")
                     ->write(json_encode([
@@ -131,27 +136,38 @@ class ProductivityController extends Controller
 
         $post = (array)$req->getParsedBody();
 
-        $paid = new ArrearPaid();
-        $paid->vn = $post['vn'];
-        $paid->an = $post['an'];
-        $paid->hn = $post['hn'];
-        $paid->paid_no = $post['paid_no'];
-        $paid->bill_no = $post['bill_no'];
-        $paid->paid_date = $post['paid_date'];
-        // $paid->paid_time = $post['paid_time'];
-        $paid->paid_amount = $post['paid_amount'];
-        $paid->remain = $post['remain'];
-        $paid->cashier = $post['cashier'];
-        $paid->remark = $post['remark'];
+        $product = new Productivity();
+        $product->ward = $post['ward'];
+        $product->period = $post['period'];
+        $product->product_date = $post['product_date'];
+        $product->total_patient = $post['total_patient'];
+        $product->t1 = $post['t1'];
+        $product->t2 = $post['t2'];
+        $product->t3 = $post['t3'];
+        $product->t4 = $post['t4'];
+        $product->t5 = $post['t5'];
+        $product->tx10 = $post['tx10'];
+        $product->tx35 = $post['tx35'];
+        $product->tx55 = $post['tx55'];
+        $product->tx75 = $post['tx75'];
+        $product->tx120 = $post['tx120'];
+        $product->txtotal = $post['txtotal'];
+        $product->rn = $post['rn'];
+        $product->pn = $post['pn'];
+        $product->total_staff = $post['total_staff'];
+        $product->staff_x7 = $post['staff_x7'];
+        $product->productivity = $post['productivity'];
+        $product->created_user = $post['user'];
+        $product->updated_user = $post['user'];
 
-        if($paid->save()) {
+        if($product->save()) {
             return $res->withStatus(200)
                     ->withHeader("Content-Type", "application/json")
                     ->write(json_encode([
                         'status' => 1,
                         'errors' => '',
                         'message' => 'Insertion successfully',
-                        'paid' => $paid
+                        'product' => $product
                     ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
         }
     }
