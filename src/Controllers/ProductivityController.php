@@ -6,6 +6,7 @@ use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
 use Respect\Validation\Validator as v;
 use App\Models\Productivity;
+use App\Models\PeriodStaff;
 use App\Models\Ward;
 
 class ProductivityController extends Controller
@@ -28,28 +29,12 @@ class ProductivityController extends Controller
     public function getWorkload($req, $res, $args)
     {
         $period = '';
-        $staff = null;
         if($args['period'] == 1) {
-            $period = '16:00:00';
-            $staff = [
-                'rn' => 4,
-                'pn' => 3,
-                'total' => 7
-            ];
+            $period = '16:00:00';            
         } else if($args['period'] == 2) {
             $period = '23:59:59';
-            $staff = [
-                'rn' => 4,
-                'pn' => 3,
-                'total' => 7
-            ];
         } else if($args['period'] == 3) {
             $period = '07:59:59';
-            $staff = [
-                'rn' => 3,
-                'pn' => 2,
-                'total' => 5
-            ];
         }
         
         $sql = "SELECT 
@@ -76,7 +61,7 @@ class ProductivityController extends Controller
 
         return $res->withJson([
             'workload' => collect(DB::select($sql, [$args['date'], $args['ward']]))->first(),
-            'staff' => $staff
+            'staff' => PeriodStaff::where(['ward' => $args['ward'], 'period' => $args['period']])->first(),
         ]);
     }
 
@@ -128,7 +113,8 @@ class ProductivityController extends Controller
     }
 
     public function store($req, $res, $args)
-    {
+    {   
+        // Check validation data
         $validation = $this->validator->validate($req, [
             'ward' => v::notEmpty(),
             'period' => v::notEmpty(),
@@ -138,7 +124,7 @@ class ProductivityController extends Controller
             return $res->withStatus(200)
                     ->withHeader("Content-Type", "application/json")
                     ->write(json_encode([
-                        'status' => 0,
+                        'status' => 1,
                         'errors' => $validation->getMessages(),
                         'message' => 'Validation Error!!'
                     ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
@@ -146,26 +132,43 @@ class ProductivityController extends Controller
 
         $post = (array)$req->getParsedBody();
 
+        // Check duplicate data
+        $chkProduct = Productivity::where([
+                            'ward' => $post['ward'],
+                            'period' => $post['period'],
+                            'product_date' => $post['product_date'],
+                        ])->get();
+
+        if ($chkProduct->count() > 0) {
+            return $res->withStatus(200)
+                    ->withHeader("Content-Type", "application/json")
+                    ->write(json_encode([
+                        'status' => 2,
+                        'errors' => '',
+                        'message' => 'Duplication Error!!'
+                    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
+        }
+
         $product = new Productivity();
         $product->ward = $post['ward'];
         $product->period = $post['period'];
         $product->product_date = $post['product_date'];
         $product->total_patient = $post['total_patient'];
-        $product->t1 = $post['t1'];
-        $product->t2 = $post['t2'];
-        $product->t3 = $post['t3'];
-        $product->t4 = $post['t4'];
-        $product->t5 = $post['t5'];
-        $product->tx10 = $post['tx10'];
-        $product->tx35 = $post['tx35'];
-        $product->tx55 = $post['tx55'];
-        $product->tx75 = $post['tx75'];
-        $product->tx120 = $post['tx120'];
-        $product->txtotal = $post['txtotal'];
+        $product->type1 = $post['type1'];
+        $product->type2 = $post['type2'];
+        $product->type3 = $post['type3'];
+        $product->type4 = $post['type4'];
+        $product->type5 = $post['type5'];
+        $product->xtype1 = $post['xtype1'];
+        $product->xtype2 = $post['xtype2'];
+        $product->xtype3 = $post['xtype3'];
+        $product->xtype4 = $post['xtype4'];
+        $product->xtype5 = $post['xtype5'];
+        $product->xtotal = $post['xtotal'];
         $product->rn = $post['rn'];
         $product->pn = $post['pn'];
         $product->total_staff = $post['total_staff'];
-        $product->staff_x7 = $post['staff_x7'];
+        $product->xstaff = $post['xstaff'];
         $product->productivity = $post['productivity'];
         $product->created_user = $post['user'];
         $product->updated_user = $post['user'];
@@ -174,7 +177,7 @@ class ProductivityController extends Controller
             return $res->withStatus(200)
                     ->withHeader("Content-Type", "application/json")
                     ->write(json_encode([
-                        'status' => 1,
+                        'status' => 0,
                         'errors' => '',
                         'message' => 'Insertion successfully',
                         'product' => $product
