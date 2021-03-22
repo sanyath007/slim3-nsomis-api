@@ -11,6 +11,6 @@ class Productivity extends Model
 
     public function ward()
     {
-        return $this->belongsTo(Ward::class, 'ward', 'ward');
+        return $this->setConnection('default')->belongsTo(Ward::class, 'ward', 'ward');
     }
 }

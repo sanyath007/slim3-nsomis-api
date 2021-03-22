@@ -70,45 +70,26 @@ class ProductivityController extends Controller
         $sdate = $args['month']. '-01';
         $edate = $args['month']. '-31';
 
-        $sql = "SELECT ward, period,
-                case when (day(product_date) = '01') then productivity end as '1',
-                case when (day(product_date) = '02') then productivity end as '2',
-                case when (day(product_date) = '03') then productivity end as '3',
-                case when (day(product_date) = '04') then productivity end as '4',
-                case when (day(product_date) = '05') then productivity end as '5',
-                case when (day(product_date) = '06') then productivity end as '6',
-                case when (day(product_date) = '07') then productivity end as '7',
-                case when (day(product_date) = '08') then productivity end as '8',
-                case when (day(product_date) = '09') then productivity end as '9',
-                case when (day(product_date) = '10') then productivity end as '10',
-                case when (day(product_date) = '11') then productivity end as '11',
-                case when (day(product_date) = '12') then productivity end as '12',
-                case when (day(product_date) = '13') then productivity end as '13',
-                case when (day(product_date) = '14') then productivity end as '14',
-                case when (day(product_date) = '15') then productivity end as '15',
-                case when (day(product_date) = '16') then productivity end as '16',
-                case when (day(product_date) = '17') then productivity end as '17',
-                case when (day(product_date) = '18') then productivity end as '18',
-                case when (day(product_date) = '19') then productivity end as '19',
-                case when (day(product_date) = '20') then productivity end as '20',
-                case when (day(product_date) = '21') then productivity end as '21',
-                case when (day(product_date) = '22') then productivity end as '22',
-                case when (day(product_date) = '23') then productivity end as '23',
-                case when (day(product_date) = '24') then productivity end as '24',
-                case when (day(product_date) = '25') then productivity end as '25',
-                case when (day(product_date) = '26') then productivity end as '26',
-                case when (day(product_date) = '27') then productivity end as '27',
-                case when (day(product_date) = '28') then productivity end as '28',
-                case when (day(product_date) = '29') then productivity end as '29',
-                case when (day(product_date) = '30') then productivity end as '30',
-                case when (day(product_date) = '31') then productivity end as '31'
+        $sql = "SELECT ward, period, day(product_date) as product_day, productivity
                 FROM productivities
                 WHERE (product_date between ? and ?)
-                group by ward, period order by ward, period ";
+                order by ward, period ";
+        
+        $wards = [];
+        $ws = Ward::where('ward', '<>', '03')->orderBy('ward')->get(['ward', 'name']);
+        foreach ($ws as $key => $value) {
+            for($p = 1; $p <= 3; $p++){
+                array_push($wards, [
+                    'ward'  => $value->ward,
+                    'name'  => $value->name,
+                    'period'  => $p,
+                ]);
+            }
+        }
 
         return $res->withJson([
             'product' => DB::connection('pharma')->select($sql, [$sdate, $edate]),
-            'wards' => Ward::where('ward', '<>', '03')->get(),
+            'wards' => $wards,
         ]);
     }
 
