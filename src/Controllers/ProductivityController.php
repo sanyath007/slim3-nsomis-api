@@ -93,6 +93,39 @@ class ProductivityController extends Controller
         ]);
     }
 
+    public function getUnknowType($req, $res, $args)
+    {
+        $period = '';
+        if($args['period'] == 1) {
+            $period = '16:00:00';            
+        } else if($args['period'] == 2) {
+            $period = '23:59:59';
+        } else if($args['period'] == 3) {
+            $period = '07:59:59';
+        }
+
+        $sql = "SELECT ip.*,concat(p.pname,p.fname,' ',p.lname) as patient_name,
+                p.birthday, w.name as ward_name
+                FROM (
+                    select i.an,i.hn,i.regdate,i.regtime,i.dchdate,i.dchtime,i.ward,t.icnp_classification_id 
+                    from ipt i
+                    left join ipt_icnp t on (i.an=t.an)
+                    where (
+                        (i.regdate < ? and i.dchdate is null)
+                        or ((i.regdate = '".$args['date']."' and i.regtime <= '".$period."') and i.dchdate is null)
+                        or (i.regdate <= '".$args['date']."' and (i.dchdate > '".$args['date']."'))
+                        or (i.regdate <= '".$args['date']."' and (i.dchdate = '".$args['date']."' and i.dchtime > '".$period."') 
+                        )
+                    )
+                    and (i.ward = ?)
+                ) AS ip 
+                left join patient p on (ip.hn=p.hn)
+                left join ward w on (ip.ward=w.ward)
+                where (ip.icnp_classification_id='' or ip.icnp_classification_id is null)";
+
+        return $res->withJson(DB::select($sql, [$args['date'], $args['ward']]));
+    }
+
     public function store($req, $res, $args)
     {   
         // Check validation data

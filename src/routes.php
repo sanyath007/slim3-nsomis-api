@@ -55,6 +55,7 @@ $app->get('/product-add', 'ProductivityController:getProductAdd');
 $app->get('/product-workload/{date}/{period}/{ward}', 'ProductivityController:getWorkload');
 $app->post('/product-store', 'ProductivityController:store');
 $app->get('/product-sum/{month}', 'ProductivityController:getSummary');
+$app->get('/unknow-type/{date}/{period}/{ward}', 'ProductivityController:getUnknowType');
 
 $app->get('/op/visit/{year}', 'OpController:opvisit');
 $app->get('/op/visit-type/{year}', 'OpController:opVisitType');
