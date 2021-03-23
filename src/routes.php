@@ -50,7 +50,7 @@ $app->get('/ip/bedempty-day/{date}', 'IpController:getBedEmptyDay');
 $app->get('/ip/ptdchbyward/{sdate}/{edate}/{ward}', 'IpController:ptDchByWard');
 $app->get('/ip/ptlosbycare/{sdate}/{edate}/{ward}', 'IpController:ptLosByCare');
 
-$app->get('/product-ward/{date}/{ward}', 'ProductivityController:getProductWard');
+$app->get('/product-ward/{month}/{ward}', 'ProductivityController:getProductWard');
 $app->get('/product-add', 'ProductivityController:getProductAdd');
 $app->get('/product-workload/{date}/{period}/{ward}', 'ProductivityController:getWorkload');
 $app->post('/product-store', 'ProductivityController:store');

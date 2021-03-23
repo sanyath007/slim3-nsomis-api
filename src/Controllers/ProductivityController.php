@@ -13,10 +13,16 @@ class ProductivityController extends Controller
 {
     public function getProductWard($req, $res, $args)
     {
-        $sql="select * from productivities where (product_date <= ? and ward = ?)";
+        $sdate = $args['month']. '-01';
+        $edate = $args['month']. '-31';
+
+        $sql="SELECT * from productivities 
+                WHERE (product_date BETWEEN ? AND ?)
+                AND (ward = ?) 
+                ORDER BY product_date, period";
 
         return $res->withJson([
-            'product' => DB::connection('pharma')->select($sql, [$args['date'], $args['ward']]),
+            'product' => DB::connection('pharma')->select($sql, [$sdate, $edate, $args['ward']]),
             'wards' => Ward::where('ward', '<>', '03')->get(),
         ]);
     }
