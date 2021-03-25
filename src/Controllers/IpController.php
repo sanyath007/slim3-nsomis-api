@@ -79,13 +79,10 @@ class IpController extends Controller
                     OR (ip.dchdate > '" .$args['date']. "')
                 )
             ) THEN ip.an END) AS num_pt 
-            FROM (
-                select an,hn,regdate,regtime,dchdate,dchtime,ward 
-                from ipt 
-                where (an not in (select an from ipt_newborn))
-                and (ward <> '03')
-            ) as ip 
-            LEFT JOIN ward w ON (ip.ward=w.ward) 
+            FROM ipt ip
+            LEFT JOIN ward w ON (ip.ward=w.ward)
+            WHERE (ip.an not in (select an from ipt_newborn))
+            AND (ip.ward <> '03')
             GROUP BY ip.ward, w.name ORDER BY ip.ward, w.name ";
 
         return $res->withJson(DB::select($sql));
@@ -98,28 +95,6 @@ class IpController extends Controller
         } else {
             $dchtime = '23:59:59';
         }
-
-        // $sql="SELECT ip.*,
-        //     concat(p.pname,p.fname,' ',p.lname) as patient_name,p.birthday,
-        //     w.name as ward_name
-        //     FROM (
-        //         select an,hn,regdate,regtime,dchdate,dchtime,ward 
-        //         from ipt 
-        //         where (
-        //             (regdate = '" .$args['date']. "' AND regtime <= '23:59:59')
-        //             OR (regdate < '" .$args['date']. "')
-        //         ) 
-        //         and (
-        //             (dchdate is null)
-        //             OR (dchdate = '" .$args['date']. "' AND dchtime > '".$dchtime."')
-        //             OR (dchdate > '" .$args['date']. "')
-        //         )
-        //         and (an NOT IN (select an from ipt_newborn))
-        //         and (ward = ?)
-        //     ) as ip
-        //     LEFT JOIN patient p ON (ip.hn=p.hn)
-        //     LEFT JOIN ward w ON (ip.ward=w.ward)
-        //     ORDER BY ip.regdate ";
 
         $link = 'http://'.$req->getServerParam('SERVER_NAME').$req->getServerParam('REDIRECT_URL');
         $page = (int)$req->getQueryParam('page');
