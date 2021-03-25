@@ -62,35 +62,103 @@ class IpController extends Controller
     
     public function getBedEmptyDay($req, $res, $args)
     {
-        $sql="SELECT ic.ward, w.name as wardname,
+        if($args['date'] == date('Y-m-d')) {
+            $dchtime = date("H:i:s");
+        } else {
+            $dchtime = '23:59:59';
+        }
+
+        $sql="SELECT ip.ward, w.name as wardname,
             COUNT(CASE WHEN (
                 (
-                    (ic.regdate = '" .$args['date']. "' AND ic.regtime <= '23:59:59')
-                    AND (
-                        (ic.dchdate is null)
-                        OR (ic.dchdate = '" .$args['date']. "' AND ic.dchtime > '16:00:00')
-                        OR (ic.dchdate > '" .$args['date']. "')
-                    )
+                    (ip.regdate = '" .$args['date']. "' AND ip.regtime <= '23:59:59')
+                    OR (ip.regdate < '" .$args['date']. "')
+                ) AND (
+                    (ip.dchdate is null)
+                    OR (ip.dchdate = '" .$args['date']. "' AND ip.dchtime > '".$dchtime."')
+                    OR (ip.dchdate > '" .$args['date']. "')
                 )
-                OR (
-                    (ic.regdate < '" .$args['date']. "')
-                    AND (
-                        (ic.dchdate is null)
-                        OR (ic.dchdate = '" .$args['date']. "' AND ic.dchtime > '16:00:00')
-                        OR (ic.dchdate > '" .$args['date']. "')
-                    )
-                )
-            ) THEN ic.an END) AS num_pt 
+            ) THEN ip.an END) AS num_pt 
             FROM (
                 select an,hn,regdate,regtime,dchdate,dchtime,ward 
-                from ipt where ((dchdate >= ?) or (dchdate is null))
-                and (an not in (select an from ipt_newborn))
-                ORDER BY regdate
-            ) as ic 
-            LEFT JOIN ward w ON (ic.ward=w.ward) 
-            GROUP BY ic.ward, w.name ORDER BY ic.ward, w.name ";
+                from ipt 
+                where (an not in (select an from ipt_newborn))
+                and (ward <> '03')
+            ) as ip 
+            LEFT JOIN ward w ON (ip.ward=w.ward) 
+            GROUP BY ip.ward, w.name ORDER BY ip.ward, w.name ";
 
-        return $res->withJson(DB::select($sql, [$args['date']]));
+        return $res->withJson(DB::select($sql));
+    }
+
+    public function getIpList($req, $res, $args)
+    {
+        if($args['date'] == date('Y-m-d')) {
+            $dchtime = date("H:i:s");
+        } else {
+            $dchtime = '23:59:59';
+        }
+
+        // $sql="SELECT ip.*,
+        //     concat(p.pname,p.fname,' ',p.lname) as patient_name,p.birthday,
+        //     w.name as ward_name
+        //     FROM (
+        //         select an,hn,regdate,regtime,dchdate,dchtime,ward 
+        //         from ipt 
+        //         where (
+        //             (regdate = '" .$args['date']. "' AND regtime <= '23:59:59')
+        //             OR (regdate < '" .$args['date']. "')
+        //         ) 
+        //         and (
+        //             (dchdate is null)
+        //             OR (dchdate = '" .$args['date']. "' AND dchtime > '".$dchtime."')
+        //             OR (dchdate > '" .$args['date']. "')
+        //         )
+        //         and (an NOT IN (select an from ipt_newborn))
+        //         and (ward = ?)
+        //     ) as ip
+        //     LEFT JOIN patient p ON (ip.hn=p.hn)
+        //     LEFT JOIN ward w ON (ip.ward=w.ward)
+        //     ORDER BY ip.regdate ";
+
+        $link = 'http://'.$req->getServerParam('SERVER_NAME').$req->getServerParam('REDIRECT_URL');
+        $page = (int)$req->getQueryParam('page');
+        
+        $argsDate = $args['date'];
+        $argsWard = $args['ward'];
+        $model = DB::table('ipt')
+                    ->leftJoin('patient', 'ipt.hn', '=', 'patient.hn')
+                    ->leftJoin('ward', 'ipt.ward', '=', 'ward.ward')
+                    ->leftJoin('ipt_icnp', 'ipt.an', '=', 'ipt_icnp.an')
+                    ->where(function($query) use ($argsDate) {
+                        $query->where(function($q) use ($argsDate) {
+                            $q->where('ipt.regdate', $argsDate)
+                                ->where('ipt.regtime', '<=', '23:59:59');
+                        })
+                        ->orWhere(function($q) use ($argsDate) {
+                            $q->where('regdate', '<', $argsDate);
+                        });
+                    })
+                    ->where(function($query) use ($argsDate, $dchtime) {
+                        $query->whereNull('ipt.dchdate')
+                            ->orWhere(function($q) use ($argsDate, $dchtime) {
+                                $q->where('ipt.dchdate', $argsDate)->where('ipt.dchtime', '>', $dchtime);
+                            })
+                            ->orWhere(function($q) use ($argsDate, $dchtime) {
+                                $q->where('ipt.dchdate', '>', $argsDate);
+                            });
+                    })
+                    ->where(function($query) use ($argsWard) {
+                        $query->where('ipt.ward', $argsWard);
+                    })
+                    ->whereRaw('ipt.an not in (select an from ipt_newborn)')
+                    ->select('ipt.an','ipt.hn','ipt.regdate','ipt.regtime','ipt.dchdate','ipt.dchtime','ipt.ward',
+                        DB::raw('concat(patient.pname,patient.fname, " ",patient.lname) as patient_name'),
+                        'patient.birthday','ward.name as ward_name','ipt_icnp.icnp_classification_id');
+
+        $data = paginate($model, 'ipt.regdate', 10, $page, $link);
+
+        return $res->withJson($data);
     }
 
     public function ipclass($req, $res, $args)

@@ -10,6 +10,8 @@ class Controller
 
     public function __construct(ContainerInterface  $container)
     {
+        date_default_timezone_set("Asia/Bangkok");
+        
         $this->container = $container;
     }
 
