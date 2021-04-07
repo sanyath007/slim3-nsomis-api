@@ -23,7 +23,7 @@ class ProductivityController extends Controller
 
         return $res->withJson([
             'product' => DB::connection('pharma')->select($sql, [$sdate, $edate, $args['ward']]),
-            'wards' => Ward::whereNotIn('ward', ['03','04','05'])->get(),
+            'wards' => Ward::whereNotIn('ward', ['03','04','13','14','15','17'])->get(),
         ]);
     }
 
@@ -74,7 +74,7 @@ class ProductivityController extends Controller
 
     public function getProductAdd($req, $res, $args)
     {
-        return $res->withJson(Ward::whereNotIn('ward', ['03','04','05'])->get());
+        return $res->withJson(Ward::whereNotIn('ward', ['03','04','13','14','15','17'])->get());
     }
 
     public function getWorkload($req, $res, $args)
@@ -132,7 +132,7 @@ class ProductivityController extends Controller
                 order by ward, period ";
         
         $wards = [];
-        $ws = Ward::whereNotIn('ward', ['03','04','05'])->orderBy('ward')->get(['ward', 'name']);
+        $ws = Ward::whereNotIn('ward', ['03','04','13','14','15','17'])->orderBy('ward')->get(['ward', 'name']);
         foreach ($ws as $key => $value) {
             for($p = 1; $p <= 3; $p++){
                 array_push($wards, [
