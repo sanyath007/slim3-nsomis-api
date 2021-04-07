@@ -83,9 +83,19 @@ class ProductivityController extends Controller
                     AND (i.dchdate is null
                         or (i.dchdate > '".$args['date']."')
                         or (i.dchdate = '".$args['date']."' AND i.dchtime >= '".$dchtime."')
-                    )
-                    AND (i.ward = ?)
-                ) AS ip 
+                    )";
+
+                    if($args['ward'] == '01') {
+                        $sql .= "and (i.ward in ('01','14'))";
+                    } else if($args['ward'] == '02') {
+                        $sql .= "and (i.ward in ('02','17'))";
+                    } else if($args['ward'] == '08') {
+                        $sql .= "and (i.ward in ('08','13','15'))";
+                    } else {
+                        $sql .= "and (i.ward = '".$args['ward']."')";
+                    }
+
+        $sql .= ") AS ip 
                 left join patient p on (ip.hn=p.hn)
                 left join ward w on (ip.ward=w.ward)";
 
@@ -97,7 +107,7 @@ class ProductivityController extends Controller
 
                 $sql .= "ORDER BY ip.regdate ";
 
-        return $res->withJson(DB::select($sql, [$args['ward']]));
+        return $res->withJson(DB::select($sql));
     }
 
     public function getProductAdd($req, $res, $args)
@@ -139,12 +149,22 @@ class ProductivityController extends Controller
                     AND (i.dchdate is null
                         or (i.dchdate > '".$args['date']."')
                         or (i.dchdate = '".$args['date']."' AND i.dchtime >= '".$dchtime."')
-                    )
-                    and (i.ward = ?)
-                ) AS ip ";
+                    )";
+
+                    if($args['ward'] == '01') {
+                        $sql .= "and (i.ward in ('01','14'))";
+                    } else if($args['ward'] == '02') {
+                        $sql .= "and (i.ward in ('02','17'))";
+                    } else if($args['ward'] == '08') {
+                        $sql .= "and (i.ward in ('08','13','15'))";
+                    } else {
+                        $sql .= "and (i.ward = '".$args['ward']."')";
+                    }
+
+                $sql .= ") AS ip ";
 
         return $res->withJson([
-            'workload' => collect(DB::select($sql, [$args['ward']]))->first(),
+            'workload' => collect(DB::select($sql))->first(),
             'staff' => PeriodStaff::where(['ward' => $args['ward'], 'period' => $args['period']])->first(),
         ]);
     }
