@@ -11,6 +11,34 @@ use App\Models\Ward;
 
 class ProductivityController extends Controller
 {
+    public function getSummary($req, $res, $args)
+    {
+        $sdate = $args['month']. '-01';
+        $edate = $args['month']. '-31';
+
+        $sql = "SELECT ward, period, day(product_date) as product_day, productivity
+                FROM productivities
+                WHERE (product_date between ? and ?)
+                order by ward, period ";
+        
+        $wards = [];
+        $ws = Ward::whereNotIn('ward', ['03','04','13','14','15','17'])->orderBy('ward')->get(['ward', 'name']);
+        foreach ($ws as $key => $value) {
+            for($p = 1; $p <= 3; $p++){
+                array_push($wards, [
+                    'ward'  => $value->ward,
+                    'name'  => $value->name,
+                    'period'  => $p,
+                ]);
+            }
+        }
+
+        return $res->withJson([
+            'product' => DB::connection('pharma')->select($sql, [$sdate, $edate]),
+            'wards' => $wards,
+        ]);
+    }
+
     public function getProductWard($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
@@ -118,34 +146,6 @@ class ProductivityController extends Controller
         return $res->withJson([
             'workload' => collect(DB::select($sql, [$args['ward']]))->first(),
             'staff' => PeriodStaff::where(['ward' => $args['ward'], 'period' => $args['period']])->first(),
-        ]);
-    }
-
-    public function getSummary($req, $res, $args)
-    {
-        $sdate = $args['month']. '-01';
-        $edate = $args['month']. '-31';
-
-        $sql = "SELECT ward, period, day(product_date) as product_day, productivity
-                FROM productivities
-                WHERE (product_date between ? and ?)
-                order by ward, period ";
-        
-        $wards = [];
-        $ws = Ward::whereNotIn('ward', ['03','04','13','14','15','17'])->orderBy('ward')->get(['ward', 'name']);
-        foreach ($ws as $key => $value) {
-            for($p = 1; $p <= 3; $p++){
-                array_push($wards, [
-                    'ward'  => $value->ward,
-                    'name'  => $value->name,
-                    'period'  => $p,
-                ]);
-            }
-        }
-
-        return $res->withJson([
-            'product' => DB::connection('pharma')->select($sql, [$sdate, $edate]),
-            'wards' => $wards,
         ]);
     }
 
