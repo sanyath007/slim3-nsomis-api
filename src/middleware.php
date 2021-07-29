@@ -133,3 +133,7 @@ $container['ArrearController'] = function($c) {
 $container['ProductivityController'] = function($c) {
     return new App\Controllers\ProductivityController($c);
 };
+
+$container['CovidController'] = function($c) {
+    return new App\Controllers\CovidController($c);
+};
