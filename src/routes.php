@@ -107,6 +107,7 @@ $app->post('/arrears-payment/{vn}/{hn}', 'ArrearController:storeArrear');
 $app->get('/arrears-paid/{type}/{vn}/{hn}', 'ArrearController:getArrearPaid');
 
 $app->get('/covid/num-tambon/{date}', 'CovidController:getNumTambon');
+$app->get('/covid/{tambon}/tambon', 'CovidController:getPatientsTambon');
 
 $app->group('/api', function(Slim\App $app) { 
     $app->get('/users', 'UserController:index');
