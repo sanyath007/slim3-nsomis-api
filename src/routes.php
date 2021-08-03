@@ -110,6 +110,7 @@ $app->get('/covid/num-tambon/{date}', 'CovidController:getNumTambon');
 $app->get('/covid/{tambon}/tambon', 'CovidController:getPatientsTambon');
 $app->get('/covid/num-bed', 'CovidController:getNumBed');
 $app->get('/covid/card-stat', 'CovidController:getCardStat');
+$app->get('/covid/{ward}/ward', 'CovidController:getPatientsward');
 
 $app->group('/api', function(Slim\App $app) { 
     $app->get('/users', 'UserController:index');

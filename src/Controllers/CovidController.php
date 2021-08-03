@@ -23,7 +23,7 @@ class CovidController extends Controller
 
         return $res->withJson(DB::select($sql)); //, [$args['date']]
     }
-    
+
     public function getPatientsTambon($req, $res, $args)
     {
         $sql="SELECT i.an, i.hn, i.regdate, i.regtime, concat(i.ward, '-', w.name) AS ward,
@@ -56,6 +56,27 @@ class CovidController extends Controller
                 ORDER BY COUNT(i.an) DESC";
 
         return $res->withJson(DB::select($sql));
+    }
+
+    public function getPatientsward($req, $res, $args)
+    {
+        $sql="SELECT i.an, i.hn, i.regdate, i.regtime, concat(i.ward, '-', w.name) AS ward,
+                concat(p.pname, p.fname, ' ', p.lname) AS ptname,
+                t.full_name AS address, p.addrpart, p.moopart, a.pdx, i.prediag
+                FROM ipt i 
+                LEFT JOIN an_stat a ON (i.an=a.an)
+                LEFT JOIN patient p ON (p.hn=i.hn)
+                LEFT JOIN ward w ON (i.ward=w.ward)
+                LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
+                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                AND (i.an IN (select an from iptdiag where icd10='B342'))
+                AND (i.dchdate is null)
+                AND (i.ward=?)";
+
+        return $res->withJson([
+            'ward'    => collect(DB::select("SELECT * FROM ward WHERE ward=?", [$args['ward']]))->first(),
+            'patients'  => DB::select($sql, [$args['ward']])
+        ]);
     }
 
     public function getCardStat($req, $res, $args)
