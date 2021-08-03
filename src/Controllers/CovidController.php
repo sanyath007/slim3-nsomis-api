@@ -28,8 +28,9 @@ class CovidController extends Controller
     {
         $sql="SELECT i.an, i.hn, i.regdate, i.regtime, concat(i.ward, '-', w.name) AS ward,
                 concat(p.pname, p.fname, ' ', p.lname) AS ptname,
-                t.full_name AS address, p.addrpart, p.moopart
+                t.full_name AS address, p.addrpart, p.moopart, a.pdx, i.prediag
                 FROM ipt i 
+                LEFT JOIN an_stat a ON (i.an=a.an)
                 LEFT JOIN patient p ON (p.hn=i.hn)
                 LEFT JOIN ward w ON (i.ward=w.ward)
                 LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
