@@ -41,4 +41,30 @@ class CovidController extends Controller
             'patients'  => DB::select($sql, [$args['tambon']])
         ]);
     }
+
+    public function getNumBed($req, $res, $args)
+    {
+        $sql="SELECT i.ward, w.name, count(i.an) as num_pt
+                FROM ipt i 
+                LEFT JOIN ward w ON (i.ward=w.ward)
+                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                AND (i.dchdate is null)
+                GROUP BY i.ward, w.name
+                ORDER BY count(i.an) DESC";
+
+        return $res->withJson(DB::select($sql));
+    }
+
+    public function getCardStat($req, $res, $args)
+    {
+        $sql="SELECT DATE(NOW()) as today, 
+                COUNT(CASE WHEN (i.regdate = DATE(NOW())) THEN i.an END) AS new_case,
+                COUNT(CASE WHEN (i.regdate < DATE(NOW()) AND i.dchdate is null) THEN i.an end) AS top_case,
+                COUNT(CASE WHEN (i.dchdate = DATE(NOW())) THEN i.an END) AS discharge,
+                COUNT(CASE WHEN (i.dchdate is null) THEN i.an END) AS still
+                FROM ipt i LEFT JOIN ward w ON (i.ward=w.ward)
+                WHERE (i.ward IN ('00', '06', '10', '11', '12')) ";
+
+        return $res->withJson(collect(DB::select($sql))->first());
+    }
 }
