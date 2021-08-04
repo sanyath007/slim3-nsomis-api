@@ -79,6 +79,43 @@ class CovidController extends Controller
             'patients'  => DB::select($sql, [$args['ward']])
         ]);
     }
+    
+    public function getPatientsAll($req, $res, $args)
+    {
+        $sql="SELECT i.an, i.hn, i.regdate, i.regtime, i.dchdate, i.dchtime,
+                concat(i.ward, '-', w.name) AS ward,
+                concat(p.pname, p.fname, ' ', p.lname) AS ptname,
+                t.full_name AS address, p.addrpart, p.moopart, a.pdx, i.prediag
+                FROM ipt i 
+                LEFT JOIN an_stat a ON (i.an=a.an)
+                LEFT JOIN patient p ON (p.hn=i.hn)
+                LEFT JOIN ward w ON (i.ward=w.ward)
+                LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
+                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                AND (i.an IN (select an from iptdiag where icd10='B342')) ";
+
+        $type = "";
+        if ($args['type'] == '1') {
+            $sql .= "AND (i.regdate < DATE(NOW()) AND i.dchdate is null) ";
+            $type = "ยกมา";
+        } else if ($args['type'] == '2') {
+            $sql .= "AND (i.regdate = DATE(NOW())) ";
+            $type = "ใหม่";
+        } else if ($args['type'] == '3') {
+            $sql .= "AND (i.dchdate = DATE(NOW())) ";
+            $type = "จำหน่าย";
+        } else if ($args['type'] == '0') {
+            $sql .= "AND (i.dchdate is null) ";
+            $type = "คงพยาบาล";
+        }
+        
+        $sql .= "ORDER BY i.regdate, i.an ";
+
+        return $res->withJson([
+            'type'    => $type,
+            'patients'  => DB::select($sql)
+        ]);
+    }
 
     public function getCardStat($req, $res, $args)
     {
