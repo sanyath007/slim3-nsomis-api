@@ -137,3 +137,7 @@ $container['ProductivityController'] = function($c) {
 $container['CovidController'] = function($c) {
     return new App\Controllers\CovidController($c);
 };
+
+$container['PersonController'] = function($c) {
+    return new App\Controllers\PersonController($c);
+};

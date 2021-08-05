@@ -23,4 +23,9 @@ class Person extends Model
     {
         return $this->belongsTo(Position::class, 'position_id', 'position_id');
     }
+    
+    public function academic()
+    {
+        return $this->belongsTo(Academic::class, 'ac_id', 'ac_id');
+    }
 }

@@ -113,6 +113,8 @@ $app->get('/covid/card-stat', 'CovidController:getCardStat');
 $app->get('/covid/{ward}/ward', 'CovidController:getPatientsward');
 $app->get('/covid/{type}/all', 'CovidController:getPatientsAll');
 
+$app->get('/persons', 'PersonController:getAll');
+
 $app->group('/api', function(Slim\App $app) { 
     $app->get('/users', 'UserController:index');
     $app->get('/users/{loginname}', 'UserController:getUser');
