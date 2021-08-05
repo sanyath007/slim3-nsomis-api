@@ -100,6 +100,9 @@ $app->get('/nurses/init/form', 'NurseController:getInitForm');
 $app->get('/nurses/profile/{id}', 'NurseController:getProfile');
 $app->get('/nurses/gen-list', 'NurseController:getGenList');
 $app->get('/nurses-update', 'NurseController:updateDB');
+$app->post('/nurses', 'NurseController:store');
+$app->put('/nurses/{id}', 'NurseController:update');
+$app->delete('/nurses/{id}', 'NurseController:delete');
 
 $app->get('/arrears-op/{sdate}/{edate}', 'ArrearController:getOpArears');
 $app->get('/arrears-ip/{sdate}/{edate}', 'ArrearController:getIpArears');

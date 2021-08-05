@@ -33,7 +33,7 @@ class NurseController extends Controller
         return $res->withJson([
             'prefixes'      => Prefix::all(),
             'positions'     => Position::where('position_id', '22')->get(),
-            'academics'     => Academic::all(),
+            'academics'     => Academic::where('typeac_id', '1')->get(),
             'hospPay18s'    => Hospcode::where('chwpart', '30')->get(),
             'departs'       => Depart::where('faction_id', '5')->get(),
         ]);
@@ -64,6 +64,66 @@ class NurseController extends Controller
         ]);
     }
     
+    public function store($req, $res, $args)
+    {
+        $post = (array)$req->getParsedBody();
+        
+        try {
+            $nurse = new Nurse;
+            $nurse->cid         = $post['cid'];
+            $nurse->position_id = $post['position'];
+            $nurse->ac_id       = $post['academic'];
+            $nurse->hospcode    = '23839';
+            $nurse->hosp_pay18  = $post['hosp_pay18'];
+            $nurse->depart_id   = $post['depart'];
+            $nurse->chkin_date  = $post['checkin_date'];
+            $nurse->start_date  = $post['start_date'];
+            $nurse->cert_no     = $post['cert_no'];
+            $nurse->position_no = $post['position_no'];
+            $nurse->status      = 1;
+            
+            if($nurse->save()) {
+                return $res->withJson([
+                    'nurse' => $nurse
+                ]);
+            } else {
+                //throw error handler
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
+    public function update($req, $res, $args)
+    {
+        $post = (array)$req->getParsedBody();
+        
+        try {
+            $nurse  = Nurse::find($args['id']);
+            $nurse->cid         = $post['cid'];
+            $nurse->position_id = $post['position'];
+            $nurse->ac_id       = $post['academic'];
+            $nurse->hospcode    = '23839';
+            $nurse->hosp_pay18  = $post['hosp_pay18'];
+            $nurse->depart_id   = $post['depart'];
+            $nurse->chkin_date  = $post['checkin_date'];
+            $nurse->start_date  = $post['start_date'];
+            $nurse->cert_no     = $post['cert_no'];
+            $nurse->position_no = $post['position_no'];
+            $nurse->status      = 1;
+            
+            if($nurse->save()) {
+                return $res->withJson([
+                    'nurse' => $nurse
+                ]);
+            } else {
+                //throw error handler
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
     public function updateDB($req, $res, $args)
     {
         $nurses = Nurse::all();
