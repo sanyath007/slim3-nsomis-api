@@ -5,6 +5,11 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
 use App\Models\Nurse;
+use App\Models\Prefix;
+use App\Models\Position;
+use App\Models\Academic;
+use App\Models\Hospcode;
+use App\Models\Depart;
 
 class NurseController extends Controller
 {
@@ -22,7 +27,18 @@ class NurseController extends Controller
         
         return $res->withJson($data);
     }
-    
+
+    public function getInitForm($req, $res, $args)
+    {
+        return $res->withJson([
+            'prefixes'      => Prefix::all(),
+            'positions'     => Position::where('position_id', '22')->get(),
+            'academics'     => Academic::all(),
+            'hospPay18s'    => Hospcode::where('chwpart', '30')->get(),
+            'departs'       => Depart::where('faction_id', '5')->get(),
+        ]);
+    }
+
     public function getProfile($req, $res, $args)
     {
         $nurse = Nurse::where('cid', '=', $args['id'])
