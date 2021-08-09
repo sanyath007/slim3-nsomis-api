@@ -25,10 +25,10 @@ class NurseController extends Controller
                     ->whereNotIn('person_state', [6,7,8])
                     ->join('level', 'personal.person_id', '=', 'level.person_id')
                     ->where('level.faction_id', '5')
-                    ->when($depart, function($q) use ($depart) {
+                    ->when(!empty($depart), function($q) use ($depart) {
                         $q->where('level.depart_id', $depart);
                     })
-                    ->when($fname, function($q) use ($fname) {
+                    ->when(!empty($fname), function($q) use ($fname) {
                         $q->where('person_firstname', $fname);
                     })
                     ->with('prefix','position','academic','office','memberOf','memberOf.depart');
