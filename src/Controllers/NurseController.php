@@ -16,21 +16,24 @@ class NurseController extends Controller
 {
     public function getAll($req, $res, $args)
     {        
-        $link = 'http://'.$req->getServerParam('SERVER_NAME').$req->getServerParam('REDIRECT_URL');
-        $page = (int)$req->getQueryParam('page');
+        $link   = 'http://'.$req->getServerParam('SERVER_NAME').$req->getServerParam('REDIRECT_URL');
+        $page   = (int)$req->getQueryParam('page');
+        $depart = $req->getQueryParam('depart');
+        $fname  = $req->getQueryParam('fname');
 
-        // $levels = MemberOf::where('faction_id', '5')
-        // $model = Nurse::whereNotIn('depart_id', [20,21,22,66])
-        //             ->with('hosppay18:hospcode,name')
-        //             ->with('person:person_firstname,person_lastname,person_birth')
-        //             ->with('person.prefix','person.position','academic', 'depart');
         $model = Person::where('profession_id', '4')
-                    ->whereNotIn('person_state', [6,7])
+                    ->whereNotIn('person_state', [6,7,8])
                     ->join('level', 'personal.person_id', '=', 'level.person_id')
                     ->where('level.faction_id', '5')
+                    ->when($depart, function($q) use ($depart) {
+                        $q->where('level.depart_id', $depart);
+                    })
+                    ->when($fname, function($q) use ($fname) {
+                        $q->where('person_firstname', $fname);
+                    })
                     ->with('prefix','position','academic','office','memberOf','memberOf.depart');
 
-        $data = paginate($model, 'person_singin', 20, $page, $link);
+        $data = paginate($model, 'person_birth', 20, $page, $link);
         
         return $res->withJson($data);
     }
