@@ -29,7 +29,7 @@ class NurseController extends Controller
                         $q->where('level.depart_id', $depart);
                     })
                     ->when(!empty($fname), function($q) use ($fname) {
-                        $q->where('person_firstname', $fname);
+                        $q->where('person_firstname', 'like', $fname. '%');
                     })
                     ->with('prefix','position','academic','office','memberOf','memberOf.depart');
 
