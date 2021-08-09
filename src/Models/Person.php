@@ -28,4 +28,14 @@ class Person extends Model
     {
         return $this->belongsTo(Academic::class, 'ac_id', 'ac_id');
     }
+    
+    public function office()
+    {
+        return $this->belongsTo(Office::class, 'office_id', 'ward_id');
+    }
+    
+    public function memberOf()
+    {
+        return $this->belongsTo(MemberOf::class, 'person_id', 'person_id');
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
 use App\Models\Nurse;
+use App\Models\Person;
 use App\Models\Prefix;
 use App\Models\Position;
 use App\Models\Academic;
@@ -18,12 +19,18 @@ class NurseController extends Controller
         $link = 'http://'.$req->getServerParam('SERVER_NAME').$req->getServerParam('REDIRECT_URL');
         $page = (int)$req->getQueryParam('page');
 
-        $model = Nurse::whereNotIn('depart_id', [20,21,22,66])
-                    ->with('hosppay18:hospcode,name')
-                    ->with('person:person_firstname,person_lastname,person_birth')
-                    ->with('person.prefix','person.position','academic', 'depart');
+        // $levels = MemberOf::where('faction_id', '5')
+        // $model = Nurse::whereNotIn('depart_id', [20,21,22,66])
+        //             ->with('hosppay18:hospcode,name')
+        //             ->with('person:person_firstname,person_lastname,person_birth')
+        //             ->with('person.prefix','person.position','academic', 'depart');
+        $model = Person::where('profession_id', '4')
+                    ->whereNotIn('person_state', [6,7])
+                    ->join('level', 'personal.person_id', '=', 'level.person_id')
+                    ->where('level.faction_id', '5')
+                    ->with('prefix','position','academic','office','memberOf','memberOf.depart');
 
-        $data = paginate($model, 'depart_id', 20, $page, $link);
+        $data = paginate($model, 'person_singin', 20, $page, $link);
         
         return $res->withJson($data);
     }
