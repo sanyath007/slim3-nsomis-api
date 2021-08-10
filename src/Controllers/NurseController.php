@@ -12,6 +12,7 @@ use App\Models\Academic;
 use App\Models\Hospcode;
 use App\Models\Depart;
 use App\Models\Division;
+use App\Models\Duty;
 
 class NurseController extends Controller
 {
@@ -47,7 +48,8 @@ class NurseController extends Controller
             'academics'     => Academic::where('typeac_id', '1')->get(),
             'hospPay18s'    => Hospcode::where('chwpart', '30')->get(),
             'departs'       => Depart::where('faction_id', '5')->get(),
-            'divisions'       => Division::all(),
+            'divisions'     => Division::all(),
+            'duties'        => Duty::all(),
         ]);
     }
 
