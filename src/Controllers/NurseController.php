@@ -11,6 +11,7 @@ use App\Models\Position;
 use App\Models\Academic;
 use App\Models\Hospcode;
 use App\Models\Depart;
+use App\Models\Division;
 
 class NurseController extends Controller
 {
@@ -46,6 +47,7 @@ class NurseController extends Controller
             'academics'     => Academic::where('typeac_id', '1')->get(),
             'hospPay18s'    => Hospcode::where('chwpart', '30')->get(),
             'departs'       => Depart::where('faction_id', '5')->get(),
+            'divisions'       => Division::all(),
         ]);
     }
 
@@ -134,6 +136,52 @@ class NurseController extends Controller
         }
     }
 
+    public function move($req, $res, $args)
+    {
+        $post = (array)$req->getParsedBody();
+        
+        try {
+            $nurse  = Nurse::find($args['id']);
+            $nurse->cid         = $post['cid'];
+            $nurse->position_id = $post['position'];
+            $nurse->ac_id       = $post['academic'];
+            $nurse->hospcode    = '23839';
+            $nurse->hosp_pay18  = $post['hosp_pay18'];
+            
+            if($nurse->save()) {
+                return $res->withJson([
+                    'nurse' => $nurse
+                ]);
+            } else {
+                //throw error handler
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
+    public function transfer($req, $res, $args)
+    {
+        $post = (array)$req->getParsedBody();
+        
+        try {
+            $nurse  = Nurse::find($args['id']);
+            $nurse->hospcode    = '23839';
+            $nurse->hosp_pay18  = $post['hosp_pay18'];
+            $nurse->status      = 8;
+            
+            if($nurse->save()) {
+                return $res->withJson([
+                    'nurse' => $nurse
+                ]);
+            } else {
+                //throw error handler
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
     public function updateDB($req, $res, $args)
     {
         $nurses = Nurse::all();
@@ -156,6 +204,7 @@ class NurseController extends Controller
         // ]);
     }
 
+    
     protected function modDbYear($date)
     {
         $arr = explode('-', $date);
