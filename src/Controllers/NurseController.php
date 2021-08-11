@@ -13,6 +13,9 @@ use App\Models\Hospcode;
 use App\Models\Depart;
 use App\Models\Division;
 use App\Models\Duty;
+use App\Models\Move;
+use App\Models\Transfer;
+use App\Models\MemberOf;
 
 class NurseController extends Controller
 {
@@ -143,14 +146,34 @@ class NurseController extends Controller
         $post = (array)$req->getParsedBody();
         
         try {
-            $nurse  = Nurse::find($args['id']);
-            $nurse->cid         = $post['cid'];
-            $nurse->position_id = $post['position'];
-            $nurse->ac_id       = $post['academic'];
-            $nurse->hospcode    = '23839';
-            $nurse->hosp_pay18  = $post['hosp_pay18'];
-            
-            if($nurse->save()) {
+            $old     = $post['nurse']['member_of'];
+            $nurse  = Person::where('person_id', $args['id']);
+
+            /** ประวัติการย้ายภายใน */
+            $move = new Move;
+            $move->move_person      = $nurse->person_id;
+            $move->move_date        = $post['move_date'];
+            $move->move_doc_no      = $post['move_doc_no'];
+            $move->move_doc_date    = $post['move_doc_date'];
+            $move->old_duty         = $old['duty_id'];
+            $move->old_depart       = $old['faction_id'];
+            $move->old_depart       = $old['depart_id'];
+            $move->old_division     = $old['ward_id'];
+            $move->new_duty         = $post['move_duty'];
+            $move->new_depart       = $post['move_faction'];
+            $move->new_depart       = $post['move_depart'];
+            $move->new_division     = $post['move_division'];
+            $move->is_active        = 1;
+            var_dump($move);
+
+            if($move->save()) {
+                /** อัพเดตหน่วยงานปัจจุบัน */
+                $current  = MemberOf::where('person_id', $nurse->person_id);
+                $current->duty_id   = $post['move_duty'];
+                $current->depart_id = $post['move_depart'];
+                $current->ward_id   = $post['move_division'];
+                $current->save();
+
                 return $res->withJson([
                     'nurse' => $nurse
                 ]);
