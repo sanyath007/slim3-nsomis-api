@@ -147,7 +147,7 @@ class NurseController extends Controller
         
         try {
             $old     = $post['nurse']['member_of'];
-            $nurse  = Person::where('person_id', $args['id']);
+            $nurse  = Person::where('person_id', $args['id'])->first();
 
             /** ประวัติการย้ายภายใน */
             $move = new Move;
@@ -156,7 +156,7 @@ class NurseController extends Controller
             $move->move_doc_no      = $post['move_doc_no'];
             $move->move_doc_date    = $post['move_doc_date'];
             $move->old_duty         = $old['duty_id'];
-            $move->old_depart       = $old['faction_id'];
+            $move->old_faction      = $old['faction_id'];
             $move->old_depart       = $old['depart_id'];
             $move->old_division     = $old['ward_id'];
             $move->new_duty         = $post['move_duty'];
@@ -167,11 +167,12 @@ class NurseController extends Controller
             var_dump($move);
 
             if($move->save()) {
-                /** อัพเดตหน่วยงานปัจจุบัน */
-                $current  = MemberOf::where('person_id', $nurse->person_id);
-                $current->duty_id   = $post['move_duty'];
-                $current->depart_id = $post['move_depart'];
-                $current->ward_id   = $post['move_division'];
+                /** อัพเดตสังกัดหน่วยงานปัจจุบัน */
+                $current  = MemberOf::where('level_id', $old['level_id'])->first();
+                $current->duty_id       = $post['move_duty'];
+                $current->faction_id    = $post['move_faction'];
+                $current->depart_id     = $post['move_depart'];
+                $current->ward_id       = $post['move_division'];
                 $current->save();
 
                 return $res->withJson([

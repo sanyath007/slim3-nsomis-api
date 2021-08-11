@@ -6,8 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class MemberOf extends Model
 {
-    protected $connection = "person";
-    protected $table = "level";
+    protected $connection   = "person";
+    protected $table        = "level";
+    protected $primaryKey   = "level_id";
+    // public $incrementing = false; //ไม่ใช้ options auto increment
+    public $timestamps = false; //ไม่ใช้ field updated_at และ created_at
 
     public function person()
     {
