@@ -22,13 +22,18 @@ class MemberOf extends Model
         return $this->belongsTo(Duty::class, 'duty_id', 'duty_id');
     }
 
+    public function faction()
+    {
+        return $this->belongsTo(Faction::class, 'faction_id', 'faction_id');
+    }
+
     public function depart()
     {
         return $this->belongsTo(Depart::class, 'depart_id', 'depart_id');
     }
 
-    public function faction()
+    public function division()
     {
-        return $this->belongsTo(Faction::class, 'faction_id', 'faction_id');
+        return $this->belongsTo(Division::class, 'ward_id', 'ward_id');
     }
 }
