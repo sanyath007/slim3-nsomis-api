@@ -36,7 +36,7 @@ class NurseController extends Controller
                     ->when(!empty($fname), function($q) use ($fname) {
                         $q->where('person_firstname', 'like', $fname. '%');
                     })
-                    ->with('prefix','position','academic','office','memberOf','memberOf.depart');
+                    ->with('prefix','position','academic','office','memberOf','memberOf.depart','memberOf.division');
 
         $data = paginate($model, 'person_birth', 20, $page, $link);
         
