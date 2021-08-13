@@ -191,12 +191,21 @@ class NurseController extends Controller
         $post = (array)$req->getParsedBody();
         
         try {
-            $nurse  = Nurse::find($args['id']);
-            $nurse->hospcode    = '23839';
-            $nurse->hosp_pay18  = $post['hosp_pay18'];
-            $nurse->status      = 8;
-            
+            $old     = $post['nurse']['member_of'];
+            /** อัพเดตข้อมูลพยาบาล */
+            $nurse  = Person::where('person_id', $args['id'])->first();
+            $nurse->person_state = '8';
+
             if($nurse->save()) {
+                /** ประวัติการโอนย้าย */
+                $transfer = new Tranfer;
+                $transfer->transfer_person      = $nurse->person_id;
+                $transfer->transfer_date        = $post['transfer_date'];
+                $transfer->transfer_doc_no      = $post['transfer_doc_no'];
+                $transfer->transfer_doc_date    = $post['transfer_doc_date'];
+                $transfer->transfer_to          = $post['transfer_to'];
+                $transfer->save();
+
                 return $res->withJson([
                     'nurse' => $nurse
                 ]);
