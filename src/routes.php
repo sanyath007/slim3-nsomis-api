@@ -105,6 +105,7 @@ $app->put('/nurses/{id}', 'NurseController:update');
 $app->delete('/nurses/{id}', 'NurseController:delete');
 $app->put('/nurses/{id}/move', 'NurseController:move');
 $app->put('/nurses/{id}/transfer', 'NurseController:transfer');
+$app->get('/nurses/card-stat', 'NurseController:getCardStat');
 
 $app->get('/arrears-op/{sdate}/{edate}', 'ArrearController:getOpArears');
 $app->get('/arrears-ip/{sdate}/{edate}', 'ArrearController:getIpArears');
