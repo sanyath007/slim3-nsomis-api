@@ -115,6 +115,7 @@ $app->get('/arrears-paid/{type}/{vn}/{hn}', 'ArrearController:getArrearPaid');
 
 $app->get('/covid/num-tambon/{date}', 'CovidController:getNumTambon');
 $app->get('/covid/{tambon}/tambon', 'CovidController:getPatientsTambon');
+$app->get('/covid/discharge/{tambon}/tambon', 'CovidController:getDischargesTambon');
 $app->get('/covid/num-bed', 'CovidController:getNumBed');
 $app->get('/covid/card-stat', 'CovidController:getCardStat');
 $app->get('/covid/{ward}/ward', 'CovidController:getPatientsward');

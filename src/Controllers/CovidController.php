@@ -9,19 +9,20 @@ class CovidController extends Controller
 {
     public function getNumTambon($req, $res, $args)
     {
-        $sql="SELECT t.addressid, t.name, count(i.an) as num_pt
+        $sql="SELECT t.addressid, t.name, 
+                count(case when (i.dchdate is null) then i.an end) as num_pt, 
+                count(case when (i.dchdate=?) then i.an end) as dc_num
                 FROM ipt i 
                 LEFT JOIN patient p ON (p.hn=i.hn)
                 LEFT JOIN ward w ON (i.ward=w.ward)
                 LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
                 WHERE (i.ward IN ('00', '06', '10', '11', '12'))
-                AND (i.dchdate is null)
                 AND (i.an in (select an from iptdiag where icd10='B342'))
                 AND (p.chwpart='30' AND p.amppart='01')
                 GROUP BY t.addressid, t.name
                 ORDER BY count(i.an) DESC";
 
-        return $res->withJson(DB::select($sql)); //, [$args['date']]
+        return $res->withJson(DB::select($sql, [$args['date']]));
     }
 
     public function getPatientsTambon($req, $res, $args)
@@ -37,6 +38,28 @@ class CovidController extends Controller
                 WHERE (i.ward IN ('00', '06', '10', '11', '12'))
                 AND (i.an IN (select an from iptdiag where icd10='B342'))
                 AND (i.dchdate is null)
+                AND (t.addressid=?)";
+
+        return $res->withJson([
+            'tambon'    => collect(DB::select("SELECT * FROM thaiaddress WHERE addressid=?", [$args['tambon']]))->first(),
+            'patients'  => DB::select($sql, [$args['tambon']])
+        ]);
+    }
+
+    public function getDischargesTambon($req, $res, $args)
+    {
+        $sql="SELECT i.an, i.hn, i.regdate, i.regtime, i.dchdate, i.dchtime,
+                concat(i.ward, '-', w.name) AS ward,
+                concat(p.pname, p.fname, ' ', p.lname) AS ptname,
+                t.full_name AS address, p.addrpart, p.moopart, a.pdx, i.prediag, a.admdate
+                FROM ipt i 
+                LEFT JOIN an_stat a ON (i.an=a.an)
+                LEFT JOIN patient p ON (p.hn=i.hn)
+                LEFT JOIN ward w ON (i.ward=w.ward)
+                LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
+                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                AND (i.an IN (select an from iptdiag where icd10='B342'))
+                AND (i.dchdate=DATE(NOW()))
                 AND (t.addressid=?)";
 
         return $res->withJson([
