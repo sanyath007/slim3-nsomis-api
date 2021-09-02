@@ -23,6 +23,7 @@ class NurseController extends Controller
     {
         $page   = (int)$req->getQueryParam('page');
         $depart = $req->getQueryParam('depart');
+        $division = $req->getQueryParam('division');
         $fname  = $req->getQueryParam('fname');
 
         $model = Person::where('profession_id', '4')
@@ -32,13 +33,16 @@ class NurseController extends Controller
                     ->when(!empty($depart), function($q) use ($depart) {
                         $q->where('level.depart_id', $depart);
                     })
+                    ->when(!empty($division), function($q) use ($division) {
+                        $q->where('level.ward_id', $division);
+                    })
                     ->when(!empty($fname), function($q) use ($fname) {
                         $q->where('person_firstname', 'like', $fname. '%');
                     })
                     ->with('prefix','position','academic','office','memberOf','memberOf.depart','memberOf.division')
                     ->orderBy('person_birth');
                     
-        $data = paginate($model, 20, $page, $req);
+        $data = paginate($model, 50, $page, $req);
         
         return $res->withJson($data);
     }
@@ -51,7 +55,7 @@ class NurseController extends Controller
             'academics'     => Academic::where('typeac_id', '1')->get(),
             'hospPay18s'    => Hospcode::where('chwpart', '30')->get(),
             'departs'       => Depart::where('faction_id', '5')->get(),
-            'divisions'     => Division::all(),
+            'divisions'     => Division::orderBy('ward_name')->get(),
             'duties'        => Duty::all(),
         ]);
     }
