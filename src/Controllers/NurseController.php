@@ -27,7 +27,7 @@ class NurseController extends Controller
         $fname  = $req->getQueryParam('fname');
 
         $model = Person::where('profession_id', '4')
-                    ->whereNotIn('person_state', [6,7,8])
+                    ->whereNotIn('person_state', [6,7,8,9])
                     ->join('level', 'personal.person_id', '=', 'level.person_id')
                     ->where('level.faction_id', '5')
                     ->when(!empty($depart), function($q) use ($depart) {
@@ -152,19 +152,22 @@ class NurseController extends Controller
             /** ประวัติการย้ายภายใน */
             $move = new Move;
             $move->move_person      = $nurse->person_id;
-            $move->move_date        = $post['move_date'];
-            $move->move_doc_no      = $post['move_doc_no'];
-            $move->move_doc_date    = $post['move_doc_date'];
+
+            if ($post['move_doc_no'] != '') {
+                $move->move_date        = $post['move_date'];
+                $move->move_doc_no      = $post['move_doc_no'];
+                $move->move_doc_date    = $post['move_doc_date'];
+            }
+
             $move->old_duty         = $old['duty_id'];
             $move->old_faction      = $old['faction_id'];
             $move->old_depart       = $old['depart_id'];
             $move->old_division     = $old['ward_id'];
             $move->new_duty         = $post['move_duty'];
-            $move->new_depart       = $post['move_faction'];
+            $move->new_faction       = $post['move_faction'];
             $move->new_depart       = $post['move_depart'];
             $move->new_division     = $post['move_division'];
             $move->is_active        = 1;
-            var_dump($move);
 
             if($move->save()) {
                 /** อัพเดตสังกัดหน่วยงานปัจจุบัน */
@@ -193,17 +196,23 @@ class NurseController extends Controller
         try {
             $old     = $post['nurse']['member_of'];
             /** อัพเดตข้อมูลพยาบาล */
-            $nurse  = Person::where('person_id', $args['id'])->first();
-            $nurse->person_state = '8';
-
-            if($nurse->save()) {
-                /** ประวัติการโอนย้าย */
-                $transfer = new Tranfer;
-                $transfer->transfer_person      = $nurse->person_id;
+            $nurse  = Person::where('person_id', $args['id'])->update(['person_state' => '8']);
+            if($nurse > 0) {
+            //     /** ประวัติการโอนย้าย */
+                $transfer = new Transfer;
+                $transfer->transfer_person      = $args['id'];
                 $transfer->transfer_date        = $post['transfer_date'];
-                $transfer->transfer_doc_no      = $post['transfer_doc_no'];
-                $transfer->transfer_doc_date    = $post['transfer_doc_date'];
+
+                if ($post['transfer_doc_no'] != '') {
+                    $transfer->transfer_doc_no      = $post['transfer_doc_no'];
+                    $transfer->transfer_doc_date    = $post['transfer_doc_date'];
+                }
+
                 $transfer->transfer_to          = $post['transfer_to'];
+                $transfer->old_duty             = $old['duty_id'];
+                $transfer->old_faction          = $old['faction_id'];
+                $transfer->old_depart           = $old['depart_id'];
+                $transfer->old_division         = $old['ward_id'];
                 $transfer->save();
 
                 return $res->withJson([
