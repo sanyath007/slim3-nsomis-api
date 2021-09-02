@@ -107,6 +107,17 @@ $app->put('/nurses/{id}/move', 'NurseController:move');
 $app->put('/nurses/{id}/transfer', 'NurseController:transfer');
 $app->get('/nurses/card-stat', 'NurseController:getCardStat');
 
+$app->get('/supports', 'SupportController:getAll');
+$app->get('/supports/init/form', 'SupportController:getInitForm');
+$app->get('/supports/{id}/profile', 'SupportController:getProfile');
+$app->get('/supports/gen-list', 'SupportController:getGenList');
+$app->get('/supports-update', 'SupportController:updateDB');
+$app->post('/supports', 'SupportController:store');
+$app->put('/supports/{id}', 'SupportController:update');
+$app->delete('/supports/{id}', 'SupportController:delete');
+$app->put('/supports/{id}/move', 'SupportController:move');
+$app->put('/supports/{id}/transfer', 'SupportController:transfer');
+
 $app->get('/arrears-op/{sdate}/{edate}', 'ArrearController:getOpArears');
 $app->get('/arrears-ip/{sdate}/{edate}', 'ArrearController:getIpArears');
 $app->get('/arrears-payment/{type}/{vn}/{hn}', 'ArrearController:getPaymentArears');
