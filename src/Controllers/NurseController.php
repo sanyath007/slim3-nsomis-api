@@ -20,8 +20,7 @@ use App\Models\MemberOf;
 class NurseController extends Controller
 {
     public function getAll($req, $res, $args)
-    {        
-        $link   = 'http://'.$req->getServerParam('SERVER_NAME').$req->getServerParam('REDIRECT_URL');
+    {
         $page   = (int)$req->getQueryParam('page');
         $depart = $req->getQueryParam('depart');
         $fname  = $req->getQueryParam('fname');
@@ -36,9 +35,10 @@ class NurseController extends Controller
                     ->when(!empty($fname), function($q) use ($fname) {
                         $q->where('person_firstname', 'like', $fname. '%');
                     })
-                    ->with('prefix','position','academic','office','memberOf','memberOf.depart','memberOf.division');
-
-        $data = paginate($model, 'person_birth', 20, $page, $link);
+                    ->with('prefix','position','academic','office','memberOf','memberOf.depart','memberOf.division')
+                    ->orderBy('person_birth');
+                    
+        $data = paginate($model, 20, $page, $req);
         
         return $res->withJson($data);
     }

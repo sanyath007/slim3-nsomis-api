@@ -1,7 +1,7 @@
 <?php
 
-function paginate($model, $orderBy, $recordPerPage, $currenPage, $link)
-{
+function paginate($model, $recordPerPage, $currenPage, $request)
+{        
     $count = $model->count();
     
     $perPage = $recordPerPage;
@@ -14,8 +14,9 @@ function paginate($model, $orderBy, $recordPerPage, $currenPage, $link)
 
     $items = $model->skip($offset)
                 ->take($perPage)
-                ->orderBy($orderBy)
                 ->get();
+
+    $link = getUrlWithQueryStr($request);
 
     return [
         'items' => $items,
@@ -26,11 +27,32 @@ function paginate($model, $orderBy, $recordPerPage, $currenPage, $link)
             'last_page' => $lastPage,
             'from' => $offset + 1,
             'to' => $lastRecordPerPage,
-            'path'  => $link,
-            'first_page_url' => $link. '?page=1',
-            'prev_page_url' => (!$prev) ? $prev : $link. '?page=' .$prev,
-            'next_page_url' => (!$next) ? $next : $link. '?page=' .$next,
-            'last_page_url' => $link. '?page=' .$lastPage
+            'path'  => strrpos($link, '&') ? substr($link, 0, strrpos($link, '&')) : substr($link, 0, strrpos($link, '?')),
+            'first_page_url' => $link. 'page=1',
+            'prev_page_url' => (!$prev) ? $prev : $link. 'page=' .$prev,
+            'next_page_url' => (!$next) ? $next : $link. 'page=' .$next,
+            'last_page_url' => $link. 'page=' .$lastPage
         ]
     ];
+}
+
+function getUrlWithQueryStr($request)
+{
+    if($request->getServerParam('QUERY_STRING') === "") { // if querystring in empty
+        $qs = '?';
+    } else {
+        // if found "page=" phrase have to slice out or if not found append querystring with '&'
+        if(strrpos($request->getServerParam('QUERY_STRING'), 'page=') === false) {
+            $qs = '?'.$request->getServerParam('QUERY_STRING').'&';
+        } else {
+            if(strrpos($request->getServerParam('QUERY_STRING'), 'page=') > 0) {
+                $qs = '?'.substr($request->getServerParam('QUERY_STRING'), 0, 
+                        strrpos($request->getServerParam('QUERY_STRING'), 'page='));
+            } else {
+                $qs = '?';
+            }
+        }
+    }
+
+    return 'http://'.$request->getServerParam('HTTP_HOST'). $request->getServerParam('REDIRECT_URL').$qs;
 }
