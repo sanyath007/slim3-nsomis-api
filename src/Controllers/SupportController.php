@@ -14,6 +14,7 @@ use App\Models\Division;
 use App\Models\Duty;
 use App\Models\Move;
 use App\Models\Transfer;
+use App\Models\Leave;
 use App\Models\MemberOf;
 
 class SupportController extends Controller
@@ -157,9 +158,9 @@ class SupportController extends Controller
             $move->move_person      = $nurse->person_id;
 
             if ($post['move_doc_no'] != '') {
-                $move->move_date        = $post['move_date'];
+                $move->move_date        = toDateDb($post['move_date']);
                 $move->move_doc_no      = $post['move_doc_no'];
-                $move->move_doc_date    = $post['move_doc_date'];
+                $move->move_doc_date    = toDateDb($post['move_doc_date']);
             }
 
             $move->old_duty         = $old['duty_id'];
@@ -167,7 +168,7 @@ class SupportController extends Controller
             $move->old_depart       = $old['depart_id'];
             $move->old_division     = $old['ward_id'];
             $move->new_duty         = $post['move_duty'];
-            $move->new_faction       = $post['move_faction'];
+            $move->new_faction      = $post['move_faction'];
             $move->new_depart       = $post['move_depart'];
             $move->new_division     = $post['move_division'];
             $move->is_active        = 1;
@@ -204,11 +205,11 @@ class SupportController extends Controller
             //     /** ประวัติการโอนย้าย */
                 $transfer = new Transfer;
                 $transfer->transfer_person      = $args['id'];
-                $transfer->transfer_date        = $post['transfer_date'];
+                $transfer->transfer_date        = toDateDb($post['transfer_date']);
 
                 if ($post['transfer_doc_no'] != '') {
                     $transfer->transfer_doc_no      = $post['transfer_doc_no'];
-                    $transfer->transfer_doc_date    = $post['transfer_doc_date'];
+                    $transfer->transfer_doc_date    = toDateDb($post['transfer_doc_date']);
                 }
 
                 $transfer->transfer_to          = $post['transfer_to'];
@@ -229,27 +230,52 @@ class SupportController extends Controller
         }
     }
 
-    public function getCardStat($req, $res, $args)
+    public function leave($req, $res, $args)
     {
-        $sqlNurse = "select p.position_id, ps.position_name, count(p.person_id) as num 
-                    from personal p
-                    left join position ps on (p.position_id=ps.position_id)
-                    where (p.person_state not in (6,7,8))
-                    and (p.person_id in (select person_id from level where (faction_id='5')))
-                    group by p.position_id, ps.position_name
-                    order by count(p.person_id) desc";
+        $post = (array)$req->getParsedBody();
+        
+        try {
+            $old     = $post['nurse']['member_of'];
 
-        $sqlType = "select p.typeposition_id, t.typeposition_name, count(p.person_id) as num 
-                    from personal p
-                    left join typeposition t on (p.typeposition_id=t.typeposition_id)
-                    where (p.person_state not in (6,7,8))
-                    and (p.person_id in (select person_id from level where (faction_id='5')))
-                    group by p.typeposition_id, t.typeposition_name
-                    order by count(p.person_id) desc";
+            /** อัพเดตข้อมูลพยาบาล */
+            if ($post['leave_type'] == '1') {
+                $nurse  = Person::where('person_id', $args['id'])->update(['person_state' => '7']);
+            } else if ($post['leave_type'] == '2') {
+                $nurse  = Person::where('person_id', $args['id'])->update(['person_state' => '6']);
+            } else if ($post['leave_type'] == '3') {
+                $nurse  = Person::where('person_id', $args['id'])->update(['person_state' => '9']);
+            }
 
-        return $res->withJson([
-            'nurse' => DB::connection('person')->select($sqlNurse),
-            'types' => DB::connection('person')->select($sqlType),
-        ]);
+            if($nurse > 0) {
+            //     /** ประวัติการโอนย้าย */
+                $leave = new Leave;
+                $leave->leave_person      = $args['id'];
+                $leave->leave_date        = toDateDb($post['leave_date']);
+
+                if ($post['leave_doc_no'] != '') {
+                    $leave->leave_doc_no      = $post['leave_doc_no'];
+                    $leave->leave_doc_date    = toDateDb($post['leave_doc_date']);
+                }
+
+                $leave->leave_type          = $post['leave_type'];
+                $leave->leave_reason        = $post['leave_reason'];
+                $leave->old_duty            = $old['duty_id'];
+                $leave->old_faction         = $old['faction_id'];
+                $leave->old_depart          = $old['depart_id'];
+                $leave->old_division        = $old['ward_id'];
+                
+                if ($leave->save()) {
+                    return $res->withJson([
+                        'nurse' => $nurse
+                    ]);
+                } else {
+                    var_dump($leave);
+                }
+            } else {
+                //throw error handler
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 }

@@ -117,6 +117,7 @@ $app->put('/supports/{id}', 'SupportController:update');
 $app->delete('/supports/{id}', 'SupportController:delete');
 $app->put('/supports/{id}/move', 'SupportController:move');
 $app->put('/supports/{id}/transfer', 'SupportController:transfer');
+$app->put('/supports/{id}/leave', 'SupportController:leave');
 
 $app->get('/arrears-op/{sdate}/{edate}', 'ArrearController:getOpArears');
 $app->get('/arrears-ip/{sdate}/{edate}', 'ArrearController:getIpArears');

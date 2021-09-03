@@ -56,3 +56,10 @@ function getUrlWithQueryStr($request)
 
     return 'http://'.$request->getServerParam('HTTP_HOST'). $request->getServerParam('REDIRECT_URL').$qs;
 }
+
+function toDateDb($str)
+{
+    $arrDate = explode('/', $str);
+
+    return ($arrDate[2]-543). '-' .$arrDate[1]. '-' .$arrDate[0];
+}
