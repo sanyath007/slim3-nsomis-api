@@ -142,6 +142,6 @@ $container['PersonController'] = function($c) {
     return new App\Controllers\PersonController($c);
 };
 
-$container['SuuportController'] = function($c) {
-    return new App\Controllers\SuuportController($c);
+$container['SupportController'] = function($c) {
+    return new App\Controllers\SupportController($c);
 };

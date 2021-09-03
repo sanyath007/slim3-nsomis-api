@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
-use App\Models\Nurse;
 use App\Models\Person;
 use App\Models\Prefix;
 use App\Models\Position;
@@ -17,7 +16,7 @@ use App\Models\Move;
 use App\Models\Transfer;
 use App\Models\MemberOf;
 
-class SuuportController extends Controller
+class SupportController extends Controller
 {
     public function getAll($req, $res, $args)
     {
@@ -26,7 +25,7 @@ class SuuportController extends Controller
         $division = $req->getQueryParam('division');
         $fname  = $req->getQueryParam('fname');
 
-        $model = Person::where('profession_id', '4')
+        $model = Person::whereNotIn('position_id', [22, 27])
                     ->whereNotIn('person_state', [6,7,8,9])
                     ->join('level', 'personal.person_id', '=', 'level.person_id')
                     ->where('level.faction_id', '5')
@@ -54,7 +53,7 @@ class SuuportController extends Controller
             'positions'     => Position::where('position_id', '22')->get(),
             'academics'     => Academic::where('typeac_id', '1')->get(),
             'hospPay18s'    => Hospcode::where('chwpart', '30')->get(),
-            'departs'       => Depart::where('faction_id', '5')->get(),
+            'departs'       => Depart::where('faction_id', '5')->orderBy('depart_name')->get(),
             'divisions'     => Division::orderBy('ward_name')->get(),
             'duties'        => Duty::all(),
         ]);
@@ -252,45 +251,5 @@ class SuuportController extends Controller
             'nurse' => DB::connection('person')->select($sqlNurse),
             'types' => DB::connection('person')->select($sqlType),
         ]);
-    }
-
-    public function updateDB($req, $res, $args)
-    {
-        $nurses = Nurse::all();
-
-        foreach($nurses as $n) {
-            $checkinDate = $this->modThYear($n->checkin_date);
-            $startingDate = $this->modThYear($n->starting_date);
-            // $chkinDate = $this->modDbYear($n->checkin_date);
-            // $startDate = $this->modDbYear($n->starting_date);
-
-            $n->checkin_date = $checkinDate;
-            $n->starting_date = $startingDate;
-            // $n->chkin_date = $chkinDate;
-            // $n->start_date = $startDate;
-            $n->save();
-        }
-        
-        // return $res->withJson([
-        //     'nurses' => $nurses
-        // ]);
-    }
-
-    
-    protected function modDbYear($date)
-    {
-        $arr = explode('-', $date);
-        $thYear = ((int)substr($arr[0], 0, 2) != 25) ? '25'.substr($arr[0], -2) : $arr[0];
-        $enYear = (int)$thYear - 543;
-
-        return $enYear.'-'.$arr[1].'-'.$arr[2];
-    }
-    
-    protected function modThYear($date)
-    {
-        $arr = explode('-', $date);
-        $thYear = ((int)substr($arr[0], 0, 2) != 25) ? '25'.substr($arr[0], -2) : $arr[0];
-
-        return $arr[2].'/'.$arr[1].'/'.$thYear;
     }
 }
