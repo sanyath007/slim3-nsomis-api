@@ -10,6 +10,7 @@ use App\Models\Prefix;
 use App\Models\Position;
 use App\Models\Academic;
 use App\Models\Hospcode;
+use App\Models\Faction;
 use App\Models\Depart;
 use App\Models\Division;
 use App\Models\Duty;
@@ -54,7 +55,8 @@ class NurseController extends Controller
             'positions'     => Position::where('position_id', '22')->get(),
             'academics'     => Academic::where('typeac_id', '1')->get(),
             'hospPay18s'    => Hospcode::where('chwpart', '30')->get(),
-            'departs'       => Depart::where('faction_id', '5')->get(),
+            'factions'       => Faction::all(),
+            'departs'       => Depart::all(),
             'divisions'     => Division::orderBy('ward_name')->get(),
             'duties'        => Duty::all(),
         ]);
@@ -156,19 +158,24 @@ class NurseController extends Controller
             /** ประวัติการย้ายภายใน */
             $move = new Move;
             $move->move_person      = $nurse->person_id;
+            $move->move_date        = $post['move_date'];
+            $move->in_out           = $old['in_out'];
 
             if ($post['move_doc_no'] != '') {
-                $move->move_date        = $post['move_date'];
                 $move->move_doc_no      = $post['move_doc_no'];
                 $move->move_doc_date    = $post['move_doc_date'];
             }
 
-            $move->old_duty         = $old['duty_id'];
-            $move->old_faction      = $old['faction_id'];
-            $move->old_depart       = $old['depart_id'];
-            $move->old_division     = $old['ward_id'];
+            /** เก็บประวัติสังกัดก่อนโอนย้าย (เฉพาะกรณีย้ายออก) */
+            if ($post['in_out'] == 'O') {
+                $move->old_duty         = $old['duty_id'];
+                $move->old_faction      = $old['faction_id'];
+                $move->old_depart       = $old['depart_id'];
+                $move->old_division     = $old['ward_id'];
+            }
+
             $move->new_duty         = $post['move_duty'];
-            $move->new_faction       = $post['move_faction'];
+            $move->new_faction      = $post['move_faction'];
             $move->new_depart       = $post['move_depart'];
             $move->new_division     = $post['move_division'];
             $move->is_active        = 1;
@@ -199,25 +206,42 @@ class NurseController extends Controller
         
         try {
             $old     = $post['nurse']['member_of'];
+
             /** อัพเดตข้อมูลพยาบาล */
             $nurse  = Person::where('person_id', $args['id'])->update(['person_state' => '8']);
+
             if($nurse > 0) {
-            //     /** ประวัติการโอนย้าย */
+                /** ประวัติการโอนย้าย */
                 $transfer = new Transfer;
                 $transfer->transfer_person      = $args['id'];
                 $transfer->transfer_date        = $post['transfer_date'];
+                $transfer->in_out               = $post['in_out'];
+                $transfer->transfer_to          = $post['transfer_to'];
 
                 if ($post['transfer_doc_no'] != '') {
                     $transfer->transfer_doc_no      = $post['transfer_doc_no'];
                     $transfer->transfer_doc_date    = $post['transfer_doc_date'];
                 }
 
-                $transfer->transfer_to          = $post['transfer_to'];
-                $transfer->old_duty             = $old['duty_id'];
-                $transfer->old_faction          = $old['faction_id'];
-                $transfer->old_depart           = $old['depart_id'];
-                $transfer->old_division         = $old['ward_id'];
+                /** เก็บประวัติสังกัดก่อนโอนย้าย (เฉพาะกรณีโอนย้ายออก) */
+                if ($post['in_out'] == 'O') {
+                    $transfer->old_duty             = $old['duty_id'];
+                    $transfer->old_faction          = $old['faction_id'];
+                    $transfer->old_depart           = $old['depart_id'];
+                    $transfer->old_division         = $old['ward_id'];
+                }
+
                 $transfer->save();
+
+                /** อัพเดตสังกัดหน่วยงานปัจจุบัน (เฉพาะกรณีโอนย้ายเข้า) */
+                if ($post['in_out'] == 'I') {
+                    $member  = new MemberOf;
+                    $member->duty_id       = '5';
+                    $member->faction_id    = '5';
+                    $member->depart_id     = '65';
+                    $member->ward_id       = '113';
+                    $member->save();
+                }
 
                 return $res->withJson([
                     'nurse' => $nurse
