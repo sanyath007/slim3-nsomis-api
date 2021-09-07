@@ -16,7 +16,7 @@ class IpController extends Controller
             ip.ward, w.name, 
             SUM(ip.rw) AS rw, 
             COUNT(ip.an) AS dc_num, 
-            SUM(a.admdate) as admdate
+            SUM(a.admdate) as admdate, '' as bed
             FROM ipt ip
             LEFT JOIN ward w ON (ip.ward=w.ward)
             LEFT JOIN an_stat a ON (ip.an=a.an)				
