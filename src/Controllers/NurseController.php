@@ -28,7 +28,7 @@ class NurseController extends Controller
         $fname  = $req->getQueryParam('fname');
 
         $model = Person::whereIn('position_id', [22, 27])
-                    ->whereNotIn('person_state', [6,7,8,9])
+                    ->whereNotIn('person_state', [6,7,8,9,99])
                     ->join('level', 'personal.person_id', '=', 'level.person_id')
                     ->where('level.faction_id', '5')
                     ->when(!empty($depart), function($q) use ($depart) {
