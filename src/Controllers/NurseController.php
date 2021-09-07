@@ -259,7 +259,7 @@ class NurseController extends Controller
         $sqlNurse = "select p.position_id, ps.position_name, count(p.person_id) as num 
                     from personal p
                     left join position ps on (p.position_id=ps.position_id)
-                    where (p.person_state not in (6,7,8,9))
+                    where (p.person_state not in (6,7,8,9,99))
                     and (p.person_id in (select person_id from level where (faction_id='5')))
                     group by p.position_id, ps.position_name
                     order by count(p.person_id) desc";
@@ -267,7 +267,7 @@ class NurseController extends Controller
         $sqlType = "select p.typeposition_id, t.typeposition_name, count(p.person_id) as num 
                     from personal p
                     left join typeposition t on (p.typeposition_id=t.typeposition_id)
-                    where (p.person_state not in (6,7,8,9))
+                    where (p.person_state not in (6,7,8,9,99))
                     and (p.person_id in (select person_id from level where (faction_id='5')))
                     group by p.typeposition_id, t.typeposition_name
                     order by count(p.person_id) desc";
