@@ -43,7 +43,7 @@ class NurseController extends Controller
                     ->with('prefix','position','academic','office','memberOf','memberOf.depart','memberOf.division')
                     ->orderBy('person_birth');
                     
-        $data = paginate($model, 50, $page, $req);
+        $data = paginate($model, 10, $page, $req);
         
         return $res->withJson($data);
     }
