@@ -254,6 +254,26 @@ class NurseController extends Controller
         }
     }
 
+    public function unknown($req, $res, $args)
+    {
+        $post = (array)$req->getParsedBody();
+        
+        try {
+            /** อัพเดตข้อมูลพยาบาล */
+            $nurse  = Person::where('person_id', $args['id'])->update(['person_state' => '99']);
+
+            if($nurse > 0) {
+                return $res->withJson([
+                    'nurse' => $nurse
+                ]);
+            } else {
+                //throw error handler
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
     public function getCardStat($req, $res, $args)
     {
         $sqlNurse = "select p.position_id, ps.position_name, count(p.person_id) as num 
