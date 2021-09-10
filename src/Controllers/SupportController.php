@@ -27,7 +27,8 @@ class SupportController extends Controller
         $fname  = $req->getQueryParam('fname');
 
         $model = Person::whereNotIn('position_id', [22, 27])
-                    ->whereNotIn('person_state', [6,7,8,9])
+                    ->whereNotIn('person_state', [6,7,8,9,99])
+                    // ->whereIn('person_state', [99]) //ดึงบุคลากรที่ไม่ทราบสถานะ
                     ->join('level', 'personal.person_id', '=', 'level.person_id')
                     ->where('level.faction_id', '5')
                     ->when(!empty($depart), function($q) use ($depart) {
@@ -202,7 +203,7 @@ class SupportController extends Controller
             /** อัพเดตข้อมูลพยาบาล */
             $nurse  = Person::where('person_id', $args['id'])->update(['person_state' => '8']);
             if($nurse > 0) {
-            //     /** ประวัติการโอนย้าย */
+                /** ประวัติการโอนย้าย */
                 $transfer = new Transfer;
                 $transfer->transfer_person      = $args['id'];
                 $transfer->transfer_date        = toDateDb($post['transfer_date']);
@@ -247,7 +248,7 @@ class SupportController extends Controller
             }
 
             if($nurse > 0) {
-            //     /** ประวัติการโอนย้าย */
+                /** ประวัติการโอนย้าย */
                 $leave = new Leave;
                 $leave->leave_person      = $args['id'];
                 $leave->leave_date        = toDateDb($post['leave_date']);
@@ -271,6 +272,26 @@ class SupportController extends Controller
                 } else {
                     var_dump($leave);
                 }
+            } else {
+                //throw error handler
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
+    public function unknown($req, $res, $args)
+    {
+        $post = (array)$req->getParsedBody();
+        
+        try {
+            /** อัพเดตข้อมูลพยาบาล */
+            $person  = Person::where('person_id', $args['id'])->update(['person_state' => '99']);
+
+            if($person > 0) {
+                return $res->withJson([
+                    'person' => $person
+                ]);
             } else {
                 //throw error handler
             }
