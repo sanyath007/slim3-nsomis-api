@@ -64,10 +64,9 @@ class NurseController extends Controller
 
     public function getProfile($req, $res, $args)
     {
-        $nurse = Nurse::where('cid', '=', $args['id'])
-                    ->with('hosppay18:hospcode,name')
-                    ->with('person:person_firstname,person_lastname,person_birth')
-                    ->with('person.prefix','person.position','academic', 'depart')
+        $nurse = Person::where('person_id', '=', $args['id'])
+                    ->with('prefix','position','academic','office')
+                    ->with('memberOf','memberOf.depart','memberOf.division', 'memberOf.duty')
                     ->first();
         
         return $res->withJson($nurse);
