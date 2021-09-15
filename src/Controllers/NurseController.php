@@ -7,6 +7,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 use App\Models\Nurse;
 use App\Models\Person;
 use App\Models\Prefix;
+use App\Models\TypePosition;
 use App\Models\Position;
 use App\Models\Academic;
 use App\Models\Hospcode;
@@ -27,7 +28,7 @@ class NurseController extends Controller
         $division = $req->getQueryParam('division');
         $fname  = $req->getQueryParam('fname');
 
-        $model = Person::whereIn('position_id', [22, 27])
+        $model = Person::whereIn('position_id', [22,27,57])
                     ->whereNotIn('person_state', [6,7,8,9,99])
                     ->join('level', 'personal.person_id', '=', 'level.person_id')
                     ->where('level.faction_id', '5')
@@ -40,7 +41,8 @@ class NurseController extends Controller
                     ->when(!empty($fname), function($q) use ($fname) {
                         $q->where('person_firstname', 'like', $fname. '%');
                     })
-                    ->with('prefix','position','academic','office','memberOf','memberOf.depart','memberOf.division')
+                    ->with('prefix','typeposition','position','academic','office')
+                    ->with('memberOf','memberOf.depart','memberOf.division')
                     ->orderBy('person_birth');
                     
         $data = paginate($model, 10, $page, $req);
@@ -52,7 +54,7 @@ class NurseController extends Controller
     {
         return $res->withJson([
             'prefixes'      => Prefix::all(),
-            'positions'     => Position::where('position_id', '22')->get(),
+            'positions'     => Position::whereIn('position_id', [22,27,57])->get(),
             'academics'     => Academic::where('typeac_id', '1')->get(),
             'hospPay18s'    => Hospcode::where('chwpart', '30')->get(),
             'factions'       => Faction::all(),
@@ -158,7 +160,7 @@ class NurseController extends Controller
             $move = new Move;
             $move->move_person      = $nurse->person_id;
             $move->move_date        = $post['move_date'];
-            $move->in_out           = $old['in_out'];
+            $move->in_out           = $post['in_out'];
 
             if ($post['move_doc_no'] != '') {
                 $move->move_doc_no      = $post['move_doc_no'];
