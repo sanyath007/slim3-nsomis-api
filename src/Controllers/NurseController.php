@@ -28,7 +28,7 @@ class NurseController extends Controller
         $division = $req->getQueryParam('division');
         $fname  = $req->getQueryParam('fname');
 
-        $model = Person::whereIn('position_id', [22,27,57])
+        $model = Person::whereIn('position_id', [22,27,53])
                     ->whereNotIn('person_state', [6,7,8,9,99])
                     ->join('level', 'personal.person_id', '=', 'level.person_id')
                     ->where('level.faction_id', '5')
@@ -54,10 +54,11 @@ class NurseController extends Controller
     {
         return $res->withJson([
             'prefixes'      => Prefix::all(),
-            'positions'     => Position::whereIn('position_id', [22,27,57])->get(),
+            'typepositions' => TypePosition::all(),
+            'positions'     => Position::whereIn('position_id', [22,27,53])->get(),
             'academics'     => Academic::where('typeac_id', '1')->get(),
             'hospPay18s'    => Hospcode::where('chwpart', '30')->get(),
-            'factions'       => Faction::all(),
+            'factions'      => Faction::all(),
             'departs'       => Depart::all(),
             'divisions'     => Division::orderBy('ward_name')->get(),
             'duties'        => Duty::all(),
