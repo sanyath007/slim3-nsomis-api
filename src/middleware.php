@@ -145,3 +145,11 @@ $container['PersonController'] = function($c) {
 $container['SupportController'] = function($c) {
     return new App\Controllers\SupportController($c);
 };
+
+$container['MoveController'] = function($c) {
+    return new App\Controllers\MoveController($c);
+};
+
+$container['PersonPositionController'] = function($c) {
+    return new App\Controllers\PersonPositionController($c);
+};

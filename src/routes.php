@@ -121,6 +121,20 @@ $app->put('/supports/{id}/transfer', 'SupportController:transfer');
 $app->put('/supports/{id}/leave', 'SupportController:leave');
 $app->put('/supports/{id}/unknown', 'SupportController:unknown');
 
+$app->get('/moves/{personId}', 'MoveController:getAll');
+$app->get('/moves/{personId}/init/form', 'MoveController:getInitForm');
+$app->get('/moves/{personId}/{id}', 'MoveController:getById');
+$app->post('/moves', 'MoveController:store');
+$app->put('/moves/{id}', 'MoveController:update');
+$app->delete('/moves/{id}', 'MoveController:delete');
+
+$app->get('/in-positions', 'PersonPositionController:getAll');
+$app->get('/in-positions/init/form', 'PersonPositionController:getInitForm');
+$app->get('/in-positions/{id}', 'PersonPositionController:getById');
+$app->post('/in-positions', 'PersonPositionController:store');
+$app->put('/in-positions/{id}', 'PersonPositionController:update');
+$app->delete('/in-positions/{id}', 'PersonPositionController:delete');
+
 $app->get('/arrears-op/{sdate}/{edate}', 'ArrearController:getOpArears');
 $app->get('/arrears-ip/{sdate}/{edate}', 'ArrearController:getIpArears');
 $app->get('/arrears-payment/{type}/{vn}/{hn}', 'ArrearController:getPaymentArears');
