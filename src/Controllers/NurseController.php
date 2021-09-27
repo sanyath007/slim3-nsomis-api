@@ -124,19 +124,25 @@ class NurseController extends Controller
         $post = (array)$req->getParsedBody();
         
         try {
-            $nurse  = Nurse::find($args['id']);
-            $nurse->cid         = $post['cid'];
-            $nurse->position_id = $post['position'];
-            $nurse->ac_id       = $post['academic'];
-            $nurse->hospcode    = '23839';
-            $nurse->hosp_pay18  = $post['hosp_pay18'];
-            $nurse->depart_id   = $post['depart'];
-            $nurse->chkin_date  = $post['checkin_date'];
-            $nurse->start_date  = $post['start_date'];
-            $nurse->cert_no     = $post['cert_no'];
-            $nurse->position_no = $post['position_no'];
-            $nurse->status      = 1;
-            
+            // $nurse  = Nurse::find($args['id']);
+            // $nurse->cid         = $post['cid'];
+            // $nurse->position_id = $post['position'];
+            // $nurse->ac_id       = $post['academic'];
+            // $nurse->hospcode    = '23839';
+            // $nurse->hosp_pay18  = $post['hosp_pay18'];
+            // $nurse->depart_id   = $post['depart'];
+            // $nurse->chkin_date  = $post['checkin_date'];
+            // $nurse->start_date  = $post['start_date'];
+            // $nurse->cert_no     = $post['cert_no'];
+            // $nurse->position_no = $post['position_no'];
+            // $nurse->status      = 1;
+            $nurse  = Person::where('person_id', $args['id'])->first();
+            $nurse->typeposition_id     = $post['typeposition_id'];
+            $nurse->position_id         = $post['position_id'];
+            $nurse->ac_id               = $post['ac_id'];
+            $nurse->person_singin       = $post['person_singin'];
+            $nurse->person_startdate    = $post['person_startdate'];
+
             if($nurse->save()) {
                 return $res->withJson([
                     'nurse' => $nurse

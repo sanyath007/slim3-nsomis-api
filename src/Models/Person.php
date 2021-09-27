@@ -8,7 +8,7 @@ class Person extends Model
 {
     protected $connection = "person";
     protected $table = "personal";
-    // protected $primaryKey = 'person_id';
+    protected $primaryKey = 'person_id';
     public $incrementing = false; //ไม่ใช้ options auto increment
     public $timestamps = false; //ไม่ใช้ field updated_at และ created_at
 
