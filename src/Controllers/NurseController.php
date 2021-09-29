@@ -142,6 +142,8 @@ class NurseController extends Controller
             $nurse->ac_id               = $post['ac_id'];
             $nurse->person_singin       = $post['person_singin'];
             $nurse->person_startdate    = $post['person_startdate'];
+            $nurse->scholarship         = $post['scholarship'];
+            $nurse->remark              = $post['remark'];
 
             if($nurse->save()) {
                 return $res->withJson([
