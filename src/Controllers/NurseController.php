@@ -77,16 +77,31 @@ class NurseController extends Controller
     
     public function getGenList($req, $res, $args)
     {
-        $nurses = Nurse::whereNotIn('depart_id', [20,21,22,66])
-                    ->whereNotIn('status', [2,3])
-                    ->with('hosppay18:hospcode,name')
-                    ->with('person:person_firstname,person_lastname,person_birth')
-                    ->with('person.prefix','person.position','academic')
-                    ->get();
+        $page       = (int)$req->getQueryParam('page');
+        $depart     = $req->getQueryParam('depart');
+        $division   = $req->getQueryParam('division');
+        $fname      = $req->getQueryParam('fname');
 
-        return $res->withJson([
-            'nurses' => $nurses
-        ]);
+        $model = Person::whereIn('position_id', [22,27,53])
+                    ->whereNotIn('person_state', [6,7,8,9,99])
+                    ->join('level', 'personal.person_id', '=', 'level.person_id')
+                    ->where('level.faction_id', '5')
+                    ->when(!empty($depart), function($q) use ($depart) {
+                        $q->where('level.depart_id', $depart);
+                    })
+                    ->when(!empty($division), function($q) use ($division) {
+                        $q->where('level.ward_id', $division);
+                    })
+                    ->when(!empty($fname), function($q) use ($fname) {
+                        $q->where('person_firstname', 'like', $fname. '%');
+                    })
+                    ->with('prefix','typeposition','position','academic','office')
+                    ->with('memberOf','memberOf.depart','memberOf.division')
+                    ->orderBy('person_birth');
+
+        $data = paginate($model, 300, $page, $req);
+
+        return $res->withJson($data);
     }
     
     public function store($req, $res, $args)
