@@ -105,8 +105,9 @@ $app->put('/nurses/{id}', 'NurseController:update');
 $app->delete('/nurses/{id}', 'NurseController:delete');
 $app->put('/nurses/{id}/move', 'NurseController:move');
 $app->put('/nurses/{id}/transfer', 'NurseController:transfer');
-$app->get('/nurses/card-stat', 'NurseController:getCardStat');
 $app->put('/nurses/{id}/unknown', 'NurseController:unknown');
+$app->get('/nurses/card-stat', 'NurseController:getCardStat');
+$app->get('/nurses/stat/depart', 'NurseController:getNumByDepart');
 
 $app->get('/supports', 'SupportController:getAll');
 $app->get('/supports/init/form', 'SupportController:getInitForm');

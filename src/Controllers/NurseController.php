@@ -308,6 +308,24 @@ class NurseController extends Controller
         ]);
     }
 
+    public function getNumByDepart($req, $res, $args)
+    {
+        $sql = "select mo.depart_id, d.depart_name, 
+                count(case when (p.position_id in (22,27,53)) then p.person_id end) as nurses,
+                count(case when (p.position_id not in (22,27,53)) then p.person_id end) as supports,
+                count(p.person_id) as total
+                from personal p
+                left join level mo on (p.person_id=mo.person_id)
+                #left join position ps on (p.position_id=ps.position_id)
+                left join depart d on (mo.depart_id=d.depart_id)
+                where (p.person_state not in (6,7,8,9,99))
+                and (p.person_id in (select person_id from level where (faction_id='5')))
+                group by mo.depart_id, d.depart_name
+                order by d.depart_name";
+
+        return $res->withJson(DB::connection('person')->select($sql));
+    }
+
     public function updateDB($req, $res, $args)
     {
         $nurses = Nurse::all();
