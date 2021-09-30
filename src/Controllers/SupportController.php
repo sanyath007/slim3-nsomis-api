@@ -26,7 +26,7 @@ class SupportController extends Controller
         $division = $req->getQueryParam('division');
         $fname  = $req->getQueryParam('fname');
 
-        $model = Person::whereNotIn('position_id', [22, 27])
+        $model = Person::whereNotIn('position_id', [22,27,53])
                     ->whereNotIn('person_state', [6,7,8,9,99])
                     // ->whereIn('person_state', [99]) //ดึงบุคลากรที่ไม่ทราบสถานะ
                     ->join('level', 'personal.person_id', '=', 'level.person_id')
