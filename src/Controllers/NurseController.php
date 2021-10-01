@@ -55,8 +55,8 @@ class NurseController extends Controller
         return $res->withJson([
             'prefixes'      => Prefix::all(),
             'typepositions' => TypePosition::all(),
-            'positions'     => Position::whereIn('position_id', [22,27,53])->get(),
-            'academics'     => Academic::where('typeac_id', '1')->get(),
+            'positions'     => Position::all(),
+            'academics'     => Academic::whereIn('typeac_id', [1,3])->get(),
             'hospPay18s'    => Hospcode::where('chwpart', '30')->get(),
             'factions'      => Faction::all(),
             'departs'       => Depart::all(),
