@@ -16,7 +16,7 @@ class CovidController extends Controller
                 LEFT JOIN patient p ON (p.hn=i.hn)
                 LEFT JOIN ward w ON (i.ward=w.ward)
                 LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
-                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                WHERE (i.ward IN ('00', '06', '10', '11', '12', '18', '21'))
                 AND (i.an in (select an from iptdiag where icd10='B342'))
                 AND (p.chwpart='30' AND p.amppart='01')
                 GROUP BY t.addressid, t.name
@@ -35,7 +35,7 @@ class CovidController extends Controller
                 LEFT JOIN patient p ON (p.hn=i.hn)
                 LEFT JOIN ward w ON (i.ward=w.ward)
                 LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
-                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                WHERE (i.ward IN ('00', '06', '10', '11', '12', '18', '21'))
                 AND (i.an IN (select an from iptdiag where icd10='B342'))
                 AND (i.dchdate is null)
                 AND (t.addressid=?)";
@@ -57,7 +57,7 @@ class CovidController extends Controller
                 LEFT JOIN patient p ON (p.hn=i.hn)
                 LEFT JOIN ward w ON (i.ward=w.ward)
                 LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
-                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                WHERE (i.ward IN ('00', '06', '10', '11', '12', '18', '21'))
                 AND (i.an IN (select an from iptdiag where icd10='B342'))
                 AND (i.dchdate=DATE(NOW()))
                 AND (t.addressid=?)";
@@ -74,7 +74,7 @@ class CovidController extends Controller
                 COUNT(CASE WHEN (i.an IN (select an from iptdiag where icd10='B342')) THEN i.an END) AS num_pt
                 FROM ipt i 
                 LEFT JOIN ward w ON (i.ward=w.ward)
-                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                WHERE (i.ward IN ('00', '06', '10', '11', '12', '18', '21'))
                 AND (i.dchdate is null)
                 GROUP BY i.ward, w.name
                 ORDER BY COUNT(i.an) DESC";
@@ -92,7 +92,7 @@ class CovidController extends Controller
                 LEFT JOIN patient p ON (p.hn=i.hn)
                 LEFT JOIN ward w ON (i.ward=w.ward)
                 LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
-                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                WHERE (i.ward IN ('00', '06', '10', '11', '12', '18', '21'))
                 AND (i.an IN (select an from iptdiag where icd10='B342'))
                 AND (i.dchdate is null)
                 AND (i.ward=?)";
@@ -114,7 +114,7 @@ class CovidController extends Controller
                 LEFT JOIN patient p ON (p.hn=i.hn)
                 LEFT JOIN ward w ON (i.ward=w.ward)
                 LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
-                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                WHERE (i.ward IN ('00', '06', '10', '11', '12', '18', '21'))
                 AND (i.an IN (select an from iptdiag where icd10='B342')) ";
 
         $type = "";
@@ -148,7 +148,7 @@ class CovidController extends Controller
                 COUNT(CASE WHEN (i.dchdate = DATE(NOW())) THEN i.an END) AS discharge,
                 COUNT(CASE WHEN (i.dchdate is null) THEN i.an END) AS still
                 FROM ipt i LEFT JOIN ward w ON (i.ward=w.ward)
-                WHERE (i.ward IN ('00', '06', '10', '11', '12'))
+                WHERE (i.ward IN ('00', '06', '10', '11', '12', '18', '21'))
                 AND (i.an in (select an from iptdiag where icd10='B342')) ";
 
         return $res->withJson(collect(DB::select($sql))->first());

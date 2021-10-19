@@ -23,7 +23,7 @@ class ErrorDataController extends Controller
             COUNT(case when (ip.chart_state=1 and DATEDIFF(now(), ip.dchdate) > 31) then ip.an end) AS notsendgreat30
             FROM ipt ip
             LEFT JOIN ward w ON (ip.ward=w.ward)
-            LEFT JOIN an_stat a ON (ip.an=a.an)				
+            LEFT JOIN an_stat a ON (ip.an=a.an)
             WHERE (ip.dchdate BETWEEN ? AND ?)
             GROUP BY ip.ward, w.name ";
                     
