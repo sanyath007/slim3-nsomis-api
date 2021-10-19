@@ -14,7 +14,7 @@ class ProductivityController extends Controller
     public function getSummary($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
-        $edate = $args['month']. '-31';
+        $edate = date('Y-m-t', $sdate);
 
         $sql = "SELECT ward, period, day(product_date) as product_day, productivity
                 FROM productivities
@@ -42,7 +42,7 @@ class ProductivityController extends Controller
     public function getProductWard($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
-        $edate = $args['month']. '-31';
+        $edate = date('Y-m-t', $sdate);
 
         $sql="SELECT * from productivities 
                 WHERE (product_date BETWEEN ? AND ?)
