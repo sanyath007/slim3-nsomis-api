@@ -14,13 +14,13 @@ class ProductivityController extends Controller
     public function getSummary($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
-        $edate = date('Y-m-t', $sdate);
+        $edate = date('Y-m-t', strtotime($sdate));
 
         $sql = "SELECT ward, period, day(product_date) as product_day, productivity
                 FROM productivities
                 WHERE (product_date between ? and ?)
                 order by ward, period ";
-        
+
         $wards = [];
         $ws = Ward::whereNotIn('ward', ['03','04','13','14','15','17'])->orderBy('ward')->get(['ward', 'name']);
         foreach ($ws as $key => $value) {
@@ -42,7 +42,7 @@ class ProductivityController extends Controller
     public function getProductWard($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
-        $edate = date('Y-m-t', $sdate);
+        $edate = date('Y-m-t', strtotime($sdate));
 
         $sql="SELECT * from productivities 
                 WHERE (product_date BETWEEN ? AND ?)
@@ -129,7 +129,7 @@ class ProductivityController extends Controller
             $regtime = '07:30:00';
             $dchtime = '00:30:00';
         }
-        
+
         $sql = "SELECT 
                 COUNT(CASE WHEN (ip.icnp_classification_id='1') THEN ip.an END) AS type1,
                 COUNT(CASE WHEN (ip.icnp_classification_id='2') THEN ip.an END) AS type2,
@@ -176,7 +176,7 @@ class ProductivityController extends Controller
             'ward' => v::notEmpty(),
             'period' => v::notEmpty(),
         ]);
-        
+
         if ($validation->failed()) {
             return $res->withStatus(200)
                     ->withHeader("Content-Type", "application/json")
