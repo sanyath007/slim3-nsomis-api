@@ -61,8 +61,10 @@ $app->get('/ip-type/{date}/{period}/{ward}/{type}', 'ProductivityController:getI
 $app->get('/op/visit/{year}', 'OpController:opvisit');
 $app->get('/op/visit-type/{year}', 'OpController:opVisitType');
 
-$app->get('/er/visit/{year}', 'ErController:ervisit');
-$app->get('/er/emergency/{year}', 'ErController:emergency');
+$app->get('/er/visit/{month}/month', 'ErController:getVisitMonth');
+$app->get('/er/emergency/{month}/month', 'ErController:getEmergencyMonth');
+$app->get('/er/visit/{year}', 'ErController:getVisitYear');
+$app->get('/er/emergency/{year}', 'ErController:getEmergencyYear');
 $app->get('/er/sum-period/{sdate}/{edate}', 'ErController:sumPeriod');
 
 $app->get('/or/visit/{year}', 'OrController:orvisit');
