@@ -7,6 +7,31 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 class IpController extends Controller
 {
+    public function getAdmDcMonth($req, $res, $args)
+    {
+        $sdate = $args['month']. '-01';
+        $edate = date('Y-m-t', strtotime($sdate));
+
+        $sql = "SELECT ip.ward, w.name, 
+                SUM(CASE WHEN (ip.dchdate BETWEEN ? AND ?) THEN ip.rw END) AS rw, 
+                SUM(CASE WHEN (ip.dchdate BETWEEN ? AND ?) THEN a.admdate END) AS admdate,
+                COUNT(CASE WHEN (ip.regdate BETWEEN ? AND ?) THEN ip.an END) AS adm_num,
+                COUNT(CASE WHEN (ip.dchdate BETWEEN ? AND ?) THEN ip.an END) AS dc_num
+                FROM ipt ip
+                LEFT JOIN ward w ON (ip.ward=w.ward)
+                LEFT JOIN an_stat a ON (ip.an=a.an)	
+                WHERE (ip.ward <> '03')
+                GROUP BY ip.ward, w.name ";
+
+        $q = "SELECT * FROM iptbedmove
+                WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?) ";
+
+        return $res->withJson([
+            'ipStat'    => DB::select($sql, [$sdate, $edate, $sdate, $edate, $sdate, $edate, $sdate, $edate]),
+            'moveStat'  => DB::select($q, [$sdate, $edate]),
+        ]);
+    }
+
     public function getAdmdateMonth($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
@@ -33,7 +58,7 @@ class IpController extends Controller
             'wardStat' => DB::select($q, [$sdate, $edate]),
         ]);
     }
-    
+
     public function getBedoccYear($req, $res, $args)
     {
         $sdate = ($args['year'] - 1). '-10-01';
