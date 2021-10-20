@@ -37,7 +37,7 @@ class ErController extends Controller
         $edate = date('Y-m-t', strtotime($sdate));
         
         $sql="SELECT
-        CONCAT(YEAR(vstdate),'-', MONTH(vstdate)) AS yearmonth,
+        CAST(DAY(vstdate) AS SIGNED) AS d,
         COUNT(CASE WHEN(er.er_emergency_type='1') THEN (er.vn) END) AS 'emergency',
         COUNT(CASE WHEN(er.er_emergency_type='2') THEN (er.vn) END) AS 'ugency',
         COUNT(CASE WHEN(er.er_emergency_type='3') THEN (er.vn) END) AS 'semi',
@@ -46,11 +46,9 @@ class ErController extends Controller
         FROM er_regist er 
         LEFT JOIN er_period pr ON (er.er_period=pr.er_period)
         WHERE (vstdate BETWEEN ? AND ?)
-        GROUP BY CONCAT(YEAR(vstdate),'-', MONTH(vstdate)) ";
+        GROUP BY CAST(DAY(vstdate) AS SIGNED) ";
 
-        return $res->withJson([
-            'visit' => DB::select($sql, [$sdate, $edate]),
-        ]);
+        return $res->withJson(DB::select($sql, [$sdate, $edate]));
     }
     
     public function getEmergencyMonth($req, $res, $args)
