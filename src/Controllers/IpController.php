@@ -7,6 +7,52 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 class IpController extends Controller
 {
+    public function getAdmDcDay($req, $res, $args)
+    {
+        $currentDate = date('Y-m-d');
+        $date = $args['date'];
+
+        if($date == $currentDate) {
+            $dchtime = date("H:i:s");
+        } else {
+            $dchtime = '23:59:59';
+        }
+
+        $sql = "SELECT ip.ward, w.name, 
+                SUM(CASE WHEN (ip.dchdate=?) THEN ip.rw END) AS rw, 
+                SUM(CASE WHEN (ip.dchdate=?) THEN a.admdate END) AS admdate,
+                COUNT(CASE WHEN (ip.regdate=?) THEN ip.an END) AS adm_num,
+                COUNT(CASE WHEN (ip.dchdate=?) THEN ip.an END) AS dc_num, ";
+
+        if ($date == $currentDate) {
+            $sql .= "COUNT(CASE WHEN (ip.dchdate IS NULL) THEN ip.an END) AS remain_num ";
+        } else {
+            $sql .= "COUNT(CASE WHEN (
+                        (
+                            (ip.regdate = '" .$date. "' AND ip.regtime <= '23:59:59')
+                            OR (ip.regdate < '" .$date. "')
+                        ) AND (
+                            (ip.dchdate is null)
+                            OR (ip.dchdate = '" .$date. "' AND ip.dchtime > '".$dchtime."')
+                            OR (ip.dchdate > '" .$date. "')
+                        )
+                    ) THEN ip.an END) AS remain_num ";
+        }
+
+        $sql .= "FROM ipt ip
+                LEFT JOIN ward w ON (ip.ward=w.ward)
+                LEFT JOIN an_stat a ON (ip.an=a.an)	
+                WHERE (ip.ward <> '03')
+                GROUP BY ip.ward, w.name ";
+
+        $q = "SELECT * FROM iptbedmove WHERE (movedate=?) ";
+
+        return $res->withJson([
+            'ipStat'    => DB::select($sql, [$date, $date, $date, $date]),
+            'moveStat'  => DB::select($q, [$date]),
+        ]);
+    }
+
     public function getAdmDcMonth($req, $res, $args)
     {
         $sdate = $args['month']. '-01';
@@ -23,8 +69,7 @@ class IpController extends Controller
                 WHERE (ip.ward <> '03')
                 GROUP BY ip.ward, w.name ";
 
-        $q = "SELECT * FROM iptbedmove
-                WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?) ";
+        $q = "SELECT * FROM iptbedmove WHERE (movedate BETWEEN ? AND ?) ";
 
         return $res->withJson([
             'ipStat'    => DB::select($sql, [$sdate, $edate, $sdate, $edate, $sdate, $edate, $sdate, $edate]),
