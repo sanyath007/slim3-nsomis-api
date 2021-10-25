@@ -31,7 +31,7 @@ class OpController extends Controller
         $sql="SELECT 
             CASE 
                 WHEN (o.ovstist IN ('01', '03', '05', '06')) THEN 'Walkin'
-                WHEN (o.ovstist='02') THEN 'Appoint'
+                WHEN (o.ovstist IN ('02','07')) THEN 'Appoint'
                 WHEN (o.ovstist='04') THEN 'Refer'
                 WHEN (o.ovstist IN ('08', '09', '10')) THEN 'EMS'
                 ELSE 'Unknown'
@@ -42,7 +42,7 @@ class OpController extends Controller
             WHERE (vstdate BETWEEN ? AND ?)
             GROUP BY CASE 
                 WHEN (o.ovstist IN ('01', '03', '05', '06')) THEN 'Walkin'
-                WHEN (o.ovstist='02') THEN 'Appoint'
+                WHEN (o.ovstist IN ('02','07')) THEN 'Appoint'
                 WHEN (o.ovstist='04') THEN 'Refer'
                 WHEN (o.ovstist IN ('08', '09', '10')) THEN 'EMS'
             END ";
