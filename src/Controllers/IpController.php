@@ -43,6 +43,7 @@ class IpController extends Controller
                 LEFT JOIN ward w ON (ip.ward=w.ward)
                 LEFT JOIN an_stat a ON (ip.an=a.an)	
                 WHERE (ip.ward <> '03')
+                AND (ip.an not in (select an from ipt_newborn))
                 GROUP BY ip.ward, w.name ";
 
         $q = "SELECT * FROM iptbedmove WHERE (movedate=?) ";
@@ -67,6 +68,7 @@ class IpController extends Controller
                 LEFT JOIN ward w ON (ip.ward=w.ward)
                 LEFT JOIN an_stat a ON (ip.an=a.an)	
                 WHERE (ip.ward <> '03')
+                AND (ip.an not in (select an from ipt_newborn))
                 GROUP BY ip.ward, w.name ";
 
         $q = "SELECT * FROM iptbedmove WHERE (movedate BETWEEN ? AND ?) ";
