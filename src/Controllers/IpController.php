@@ -42,7 +42,7 @@ class IpController extends Controller
         $sql .= "FROM ipt ip
                 LEFT JOIN ward w ON (ip.ward=w.ward)
                 LEFT JOIN an_stat a ON (ip.an=a.an)	
-                WHERE (ip.ward <> '03')
+                WHERE (ip.ward NOT IN ('03','16','17'))
                 AND (ip.an not in (select an from ipt_newborn))
                 GROUP BY ip.ward, w.name ";
 
@@ -67,7 +67,7 @@ class IpController extends Controller
                 FROM ipt ip
                 LEFT JOIN ward w ON (ip.ward=w.ward)
                 LEFT JOIN an_stat a ON (ip.an=a.an)	
-                WHERE (ip.ward <> '03')
+                WHERE (ip.ward NOT IN ('03','16','17'))
                 AND (ip.an not in (select an from ipt_newborn))
                 GROUP BY ip.ward, w.name ";
 
@@ -154,7 +154,7 @@ class IpController extends Controller
             FROM ipt ip
             LEFT JOIN ward w ON (ip.ward=w.ward)
             WHERE (ip.an not in (select an from ipt_newborn))
-            AND (ip.ward <> '03')
+            AND (ip.ward NOT IN ('03','16','17'))
             GROUP BY ip.ward, w.name ORDER BY ip.ward, w.name ";
 
         return $res->withJson(DB::select($sql));
