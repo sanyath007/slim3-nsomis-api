@@ -9,6 +9,7 @@ $capsule->addConnection($container['settings']['db']);
 $capsule->addConnection($container['settings']['person_db'], 'person');
 $capsule->addConnection($container['settings']['pharma_db'], 'pharma');
 $capsule->addConnection($container['settings']['payarrear_db'], 'arrear');
+$capsule->addConnection($container['settings']['escheduling_db'], 'scheduling');
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
