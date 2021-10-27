@@ -122,6 +122,7 @@ class IpController extends Controller
             WHERE (ip.dchdate BETWEEN ? AND ?)
             #AND (ip.ward<>'05')
             #AND (ip.an NOT IN (SELECT an FROM ipt_newborn))
+            AND (ip.ward NOT IN ('03','16','17'))
             GROUP BY ip.ward, w.name ";
                     
         $q = "SELECT * FROM ipt_ward_stat WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?) ";
