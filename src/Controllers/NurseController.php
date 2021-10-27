@@ -183,12 +183,12 @@ class NurseController extends Controller
             /** ประวัติการย้ายภายใน */
             $move = new Move;
             $move->move_person      = $nurse->person_id;
-            $move->move_date        = $post['move_date'];
+            $move->move_date        = toDateDb($post['move_date']);
             $move->in_out           = $post['in_out'];
 
             if ($post['move_doc_no'] != '') {
                 $move->move_doc_no      = $post['move_doc_no'];
-                $move->move_doc_date    = $post['move_doc_date'];
+                $move->move_doc_date    = toDateDb($post['move_doc_date']);
             }
 
             /** เก็บประวัติสังกัดก่อนโอนย้าย (เฉพาะกรณีย้ายออก) */
@@ -239,13 +239,13 @@ class NurseController extends Controller
                 /** ประวัติการโอนย้าย */
                 $transfer = new Transfer;
                 $transfer->transfer_person      = $args['id'];
-                $transfer->transfer_date        = $post['transfer_date'];
+                $transfer->transfer_date        = toDateDb($post['transfer_date']);
                 $transfer->in_out               = $post['in_out'];
                 $transfer->transfer_to          = $post['transfer_to'];
 
                 if ($post['transfer_doc_no'] != '') {
                     $transfer->transfer_doc_no      = $post['transfer_doc_no'];
-                    $transfer->transfer_doc_date    = $post['transfer_doc_date'];
+                    $transfer->transfer_doc_date    = toDateDb($post['transfer_doc_date']);
                 }
 
                 /** เก็บประวัติสังกัดก่อนโอนย้าย (เฉพาะกรณีโอนย้ายออก) */
@@ -271,6 +271,55 @@ class NurseController extends Controller
                 return $res->withJson([
                     'nurse' => $nurse
                 ]);
+            } else {
+                //throw error handler
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
+    public function leave($req, $res, $args)
+    {
+        $post = (array)$req->getParsedBody();
+        
+        try {
+            $old     = $post['nurse']['member_of'];
+
+            /** อัพเดตข้อมูลพยาบาล */
+            if ($post['leave_type'] == '1') {
+                $nurse  = Person::where('person_id', $args['id'])->update(['person_state' => '7']);
+            } else if ($post['leave_type'] == '2') {
+                $nurse  = Person::where('person_id', $args['id'])->update(['person_state' => '6']);
+            } else if ($post['leave_type'] == '3') {
+                $nurse  = Person::where('person_id', $args['id'])->update(['person_state' => '9']);
+            }
+
+            if($nurse > 0) {
+                /** ประวัติการโอนย้าย */
+                $leave = new Leave;
+                $leave->leave_person      = $args['id'];
+                $leave->leave_date        = toDateDb($post['leave_date']);
+
+                if ($post['leave_doc_no'] != '') {
+                    $leave->leave_doc_no      = $post['leave_doc_no'];
+                    $leave->leave_doc_date    = toDateDb($post['leave_doc_date']);
+                }
+
+                $leave->leave_type          = $post['leave_type'];
+                $leave->leave_reason        = $post['leave_reason'];
+                $leave->old_duty            = $old['duty_id'];
+                $leave->old_faction         = $old['faction_id'];
+                $leave->old_depart          = $old['depart_id'];
+                $leave->old_division        = $old['ward_id'];
+                
+                if ($leave->save()) {
+                    return $res->withJson([
+                        'nurse' => $nurse
+                    ]);
+                } else {
+                    var_dump($leave);
+                }
             } else {
                 //throw error handler
             }
