@@ -88,6 +88,7 @@ $app->get('/eye/visio2020/{sdate}/{edate}', 'EyeController:getVision2020');
 $app->get('/eye/visio2020/followup/{hn}/{vn}/{isAdmit}', 'EyeController:getFollowup');
 
 $app->get('/error/chart-send/{sdate}/{edate}', 'ErrorDataController:chartSend');
+$app->get('/error/chart-sent-list/{sdate}/{edate}/{status}/{ward}', 'ErrorDataController:getChartSentList');
 
 $app->get('/pharma/op/{listId}/{sdate}/{edate}', 'PharmaController:opMonth');
 $app->get('/pharma/ip/{listId}/{sdate}/{edate}', 'PharmaController:ipMonth');
