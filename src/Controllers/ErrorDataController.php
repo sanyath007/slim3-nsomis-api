@@ -25,6 +25,7 @@ class ErrorDataController extends Controller
             LEFT JOIN ward w ON (ip.ward=w.ward)
             LEFT JOIN an_stat a ON (ip.an=a.an)
             WHERE (ip.dchdate BETWEEN ? AND ?)
+            AND (ip.ward NOT IN ('03','16','17'))
             GROUP BY ip.ward, w.name ";
                     
         // $q = "SELECT * FROM ipt_ward_stat
