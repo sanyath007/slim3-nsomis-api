@@ -140,8 +140,7 @@ class ProductivityController extends Controller
                 COUNT(ip.an) AS 'all'
                 FROM (
                     select i.an,i.hn,i.regdate,i.regtime,i.dchdate,i.dchtime,i.ward,t.icnp_classification_id 
-                    from ipt i
-                    left join ipt_icnp t on (i.an=t.an)
+                    from ipt i left join ipt_icnp t on (i.an=t.an)
                     where (
                         (i.regdate < '".$args['date']."')
                         or (i.regdate = '".$args['date']."' and i.regtime <= '".$regtime."')
@@ -150,13 +149,14 @@ class ProductivityController extends Controller
                         or (i.dchdate > '".$args['date']."')
                         or (i.dchdate = '".$args['date']."' AND i.dchtime >= '".$dchtime."')
                     )";
-
+                    
+                    // Group วอร์ดที่อยู่ใช้ทรัพยากรร่วมกัน
                     if($args['ward'] == '01') {
                         $sql .= "and (i.ward in ('01','14'))";
                     } else if($args['ward'] == '02') {
                         $sql .= "and (i.ward in ('02','17'))";
                     } else if($args['ward'] == '08') {
-                        $sql .= "and (i.ward in ('08','13','15'))";
+                        $sql .= "and (i.ward in ('08'))";
                     } else {
                         $sql .= "and (i.ward = '".$args['ward']."')";
                     }
