@@ -12,7 +12,7 @@ class MemberOf extends Model
     // public $incrementing = false; //ไม่ใช้ options auto increment
     public $timestamps = false; //ไม่ใช้ field updated_at และ created_at
 
-    public function person()
+    public function persons()
     {
         return $this->hasMany(Person::class, 'person_id', 'person_id');
     }
