@@ -43,6 +43,7 @@ $app->get('/dashboard/error-ip-month/{month}', 'DashboardController:errorIpMonth
 $app->get('/dashboard/ip-visit-year/{year}', 'DashboardController:ipVisitYear');
 $app->get('/dashboard/ip-class-year/{year}', 'DashboardController:ipClassYear');
 
+$app->get('/ip/class/{date}', 'IpController:ipclassDay');
 $app->get('/ip/class/{sdate}/{edate}', 'IpController:ipclass');
 $app->get('/ip/admdc-day/{date}', 'IpController:getAdmDcDay');
 $app->get('/ip/admdc-month/{month}', 'IpController:getAdmDcMonth');

@@ -229,6 +229,39 @@ class IpController extends Controller
         ]);
     }
 
+    public function ipclassDay($req, $res, $args)
+    {
+        if($args['date'] == date('Y-m-d')) {
+            $dchtime = date("H:i:s");
+        } else {
+            $dchtime = '23:59:59';
+        }
+
+        $sql="SELECT ip.ward, w.name, 
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='1'))) THEN ip.an END) AS type1,
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='2'))) THEN ip.an END) AS type2,
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='3'))) THEN ip.an END) AS type3,
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='4'))) THEN ip.an END) AS type4,
+            COUNT(CASE WHEN (ip.an IN (select an from ipt_icnp where (icnp_classification_id='5'))) THEN ip.an END) AS type5,
+            COUNT(CASE WHEN (ip.an not IN (select an from ipt_icnp)) THEN ip.an END) AS 'unknown',
+            COUNT(ip.an) AS 'all'
+            FROM ipt ip LEFT JOIN ward w ON (ip.ward=w.ward)
+            WHERE ((
+                    (ip.regdate = '" .$args['date']. "' AND ip.regtime <= '23:59:59')
+                    OR (ip.regdate < '" .$args['date']. "')
+                ) AND (
+                    (ip.dchdate is null)
+                    OR (ip.dchdate = '" .$args['date']. "' AND ip.dchtime > '".$dchtime."')
+                    OR (ip.dchdate > '" .$args['date']. "')
+                )
+            )
+            GROUP BY ip.ward, w.name ";
+
+        return $res->withJson([
+            'classes' => DB::select($sql),
+        ]);
+    }
+
     public function ptDchByWard($req, $res, $args)
     {
         $sql="SELECT a.an, a.hn, pat.cid,
