@@ -159,6 +159,8 @@ $app->get('/covid/{type}/all', 'CovidController:getPatientsAll');
 $app->get('/persons', 'PersonController:getAll');
 
 $app->get('/schedulings', 'SchedulingController:getAll');
+$app->get('/schedulings/add', 'SchedulingController:initForm');
+$app->get('/schedulings/member-of/{division}', 'SchedulingController:getMemberOfDivision');
 $app->post('/schedulings', 'SchedulingController:store');
 
 $app->group('/api', function(Slim\App $app) { 

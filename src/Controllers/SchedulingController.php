@@ -32,4 +32,26 @@ class SchedulingController extends Controller
                                 ->get()
         ]);
     }
+
+    public function initForm($req, $res, $args)
+    {
+        return $res->withJson([
+            'factions'      => Faction::all(),
+            'departs'       => Depart::all(),
+            'divisions'     => Division::all(),
+        ]);
+    }
+
+    public function getMemberOfDivision($req, $res, $args)
+    {
+        $members = Person::join('level', 'level.person_id', '=', 'personal.person_id')
+                    ->where([
+                        'level.faction_id'  => '5',
+                        'level.ward_id'     => $args['division'],
+                    ])
+                    ->where('person_state', '1')
+                    ->get();
+
+        return $res->withJson($members);
+    }
 }
