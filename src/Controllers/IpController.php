@@ -132,6 +132,33 @@ class IpController extends Controller
             'wardStat' => DB::select($q, [$sdate, $edate]),
         ]);
     }
+
+    public function getBedoccMonth($req, $res, $args)
+    {
+        $sdate = ($args['month']). '-01';
+        $edate = date('Y-m-t', strtotime($sdate));
+
+        $sql="SELECT 
+            ip.ward, w.name, 
+            SUM(ip.rw) AS rw, 
+            COUNT(ip.an) AS dc_num, 
+            SUM(a.admdate) as admdate 
+            FROM ipt ip
+            LEFT JOIN ward w ON (ip.ward=w.ward)
+            LEFT JOIN an_stat a ON (ip.an=a.an)				
+            WHERE (ip.dchdate BETWEEN ? AND ?)
+            #AND (ip.ward<>'05')
+            #AND (ip.an NOT IN (SELECT an FROM ipt_newborn))
+            AND (ip.ward NOT IN ('03','16','17'))
+            GROUP BY ip.ward, w.name ";
+                    
+        $q = "SELECT * FROM ipt_ward_stat WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?) ";
+
+        return $res->withJson([
+            'admdate' => DB::select($sql, [$sdate, $edate]),
+            'wardStat' => DB::select($q, [$sdate, $edate]),
+        ]);
+    }
     
     public function getBedEmptyDay($req, $res, $args)
     {

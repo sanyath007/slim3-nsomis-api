@@ -49,6 +49,7 @@ $app->get('/ip/admdc-day/{date}', 'IpController:getAdmDcDay');
 $app->get('/ip/admdc-month/{month}', 'IpController:getAdmDcMonth');
 $app->get('/ip/admdate-month/{month}', 'IpController:getAdmdateMonth');
 $app->get('/ip/bedocc-year/{year}', 'IpController:getBedoccYear');
+$app->get('/ip/bedocc-month/{month}', 'IpController:getBedoccMonth');
 $app->get('/ip/bedempty-day/{date}', 'IpController:getBedEmptyDay');
 $app->get('/ip/ptdchbyward/{sdate}/{edate}/{ward}', 'IpController:ptDchByWard');
 $app->get('/ip/ptlosbycare/{sdate}/{edate}/{ward}', 'IpController:ptLosByCare');
