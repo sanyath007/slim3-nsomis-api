@@ -39,6 +39,13 @@ class ProductivityController extends Controller
         ]);
     }
 
+    public function getInitForm($req, $res, $args)
+    {
+        return $res->withJson([
+            'wards' => Ward::whereNotIn('ward', ['03','04','14','16','17','20'])->get(),
+        ]);
+    }
+
     public function getProductWard($req, $res, $args)
     {
         $sdate = $args['month']. '-01';

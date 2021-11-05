@@ -55,6 +55,7 @@ $app->get('/ip/ptdchbyward/{sdate}/{edate}/{ward}', 'IpController:ptDchByWard');
 $app->get('/ip/ptlosbycare/{sdate}/{edate}/{ward}', 'IpController:ptLosByCare');
 $app->get('/ip/ip-lists/{date}/{ward}', 'IpController:getIpList');
 
+$app->get('/products/init-form', 'ProductivityController:getInitForm');
 $app->get('/product-ward/{month}/{ward}', 'ProductivityController:getProductWard');
 $app->get('/product-add', 'ProductivityController:getProductAdd');
 $app->get('/product-workload/{date}/{period}/{ward}', 'ProductivityController:getWorkload');
