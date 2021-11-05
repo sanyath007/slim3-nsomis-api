@@ -181,8 +181,8 @@ class IpController extends Controller
             ) THEN ip.an END) AS num_pt 
             FROM ipt ip
             LEFT JOIN ward w ON (ip.ward=w.ward)
-            WHERE (ip.an not in (select an from ipt_newborn))
-            AND (ip.ward NOT IN ('03','16','17'))
+            WHERE (ip.ward NOT IN ('03','16','17') AND ip.an not in (select an from ipt_newborn))
+            OR (ip.ward IN ('13','15') AND ip.an in (select an from ipt_newborn))
             GROUP BY ip.ward, w.name ORDER BY ip.ward, w.name ";
 
         return $res->withJson(DB::select($sql));
