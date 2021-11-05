@@ -57,8 +57,7 @@ class ProductivityController extends Controller
                 ORDER BY product_date, period";
 
         return $res->withJson([
-            'product' => DB::connection('pharma')->select($sql, [$sdate, $edate, $args['ward']]),
-            'wards' => Ward::whereNotIn('ward', ['03','04','14','16','17','20'])->get(),
+            'product' => DB::connection('pharma')->select($sql, [$sdate, $edate, $args['ward']])
         ]);
     }
 
