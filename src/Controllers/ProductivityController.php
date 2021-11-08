@@ -65,15 +65,15 @@ class ProductivityController extends Controller
     {
         $regtime = '';
         $dchtime = '';
-        if($args['period'] == 1) {
-            $regtime = '15:30:00';
-            $dchtime = '08:30:00';
-        } else if($args['period'] == 2) {
-            $regtime = '23:59:59';
-            $dchtime = '16:30:00';
-        } else if($args['period'] == 3) {
+        if($args['period'] == 1) { // เวรดึก
             $regtime = '07:30:00';
             $dchtime = '00:30:00';
+        } else if($args['period'] == 2) { // เวรเช้า
+            $regtime = '15:30:00';
+            $dchtime = '08:30:00';
+        } else if($args['period'] == 3) { // เวรบ่าย
+            $regtime = '23:59:59';
+            $dchtime = '16:30:00';
         }
 
         $sql = "SELECT ip.*,concat(p.pname,p.fname,' ',p.lname) as patient_name,
@@ -126,15 +126,15 @@ class ProductivityController extends Controller
     {
         $regtime = '';
         $dchtime = '';
-        if($args['period'] == 1) {
-            $regtime = '15:30:00';
-            $dchtime = '08:30:00';
-        } else if($args['period'] == 2) {
-            $regtime = '23:59:59';
-            $dchtime = '16:30:00';
-        } else if($args['period'] == 3) {
+        if($args['period'] == 1) { // เวรดึก
             $regtime = '07:30:00';
             $dchtime = '00:30:00';
+        } else if($args['period'] == 2) {  // เวรเช้า
+            $regtime = '15:30:00';
+            $dchtime = '08:30:00';
+        } else if($args['period'] == 3) {  // เวรบ่าย
+            $regtime = '23:59:59';
+            $dchtime = '16:30:00';
         }
 
         $sql = "SELECT 
