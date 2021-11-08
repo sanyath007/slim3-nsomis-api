@@ -153,4 +153,47 @@ class CovidController extends Controller
 
         return $res->withJson(collect(DB::select($sql))->first());
     }
+
+    public function getRegMonth($req, $res, $args)
+    {
+        $sdate = ($args['month']). '-01';
+        $edate = date('Y-m-t', strtotime($sdate));
+
+        $sql="SELECT CAST(DAY(regdate) AS SIGNED) AS d, COUNT(i.an) AS 'all' 
+                FROM ipt i LEFT JOIN ward w ON (i.ward=w.ward)
+                WHERE (i.regdate BETWEEN ? AND ?)
+                AND (
+                    (i.ward IN ('11', '12', '18', '10', '00', '21'))
+                    OR (i.ward='06' AND i.an in (select an from iptdiag where icd10='B342'))
+                )
+                GROUP BY CAST(DAY(regdate) AS SIGNED) 
+                ORDER BY CAST(DAY(regdate) AS SIGNED) ";
+
+        return $res->withJson(DB::select($sql, [$sdate, $edate]));
+    }
+
+    public function getRegWardMonth($req, $res, $args)
+    {
+        $sdate = ($args['month']). '-01';
+        $edate = date('Y-m-t', strtotime($sdate));
+
+        $sql="SELECT CAST(DAY(regdate) AS SIGNED) AS d, 
+                COUNT(CASE WHEN (i.ward='06') THEN i.an END) AS fl1,
+                COUNT(CASE WHEN (i.ward='11') THEN i.an END) AS fl2,
+                COUNT(CASE WHEN (i.ward='12') THEN i.an END) AS fl3,
+                COUNT(CASE WHEN (i.ward='18') THEN i.an END) AS fl6,
+                COUNT(CASE WHEN (i.ward='10') THEN i.an END) AS fl9,
+                COUNT(CASE WHEN (i.ward='00') THEN i.an END) AS fl10,
+                COUNT(CASE WHEN (i.ward='21') THEN i.an END) AS w11
+                FROM ipt i LEFT JOIN ward w ON (i.ward=w.ward)
+                WHERE (i.regdate BETWEEN ? AND ?)
+                AND (
+                    (i.ward IN ('11', '12', '18', '10', '00', '21'))
+                    OR (i.ward='06' AND i.an in (select an from iptdiag where icd10='B342'))
+                )
+                GROUP BY CAST(DAY(regdate) AS SIGNED) 
+                ORDER BY CAST(DAY(regdate) AS SIGNED) ";
+
+        return $res->withJson(DB::select($sql, [$sdate, $edate]));
+    }
 }

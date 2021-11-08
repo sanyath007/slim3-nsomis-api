@@ -158,6 +158,8 @@ $app->get('/covid/num-bed', 'CovidController:getNumBed');
 $app->get('/covid/card-stat', 'CovidController:getCardStat');
 $app->get('/covid/{ward}/ward', 'CovidController:getPatientsward');
 $app->get('/covid/{type}/all', 'CovidController:getPatientsAll');
+$app->get('/covid/register/{month}/month', 'CovidController:getRegMonth');
+$app->get('/covid/register/ward/{month}/month', 'CovidController:getRegWardMonth');
 
 $app->get('/persons', 'PersonController:getAll');
 
