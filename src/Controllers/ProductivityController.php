@@ -22,7 +22,7 @@ class ProductivityController extends Controller
                 order by ward, period ";
 
         $wards = [];
-        $ws = Ward::whereNotIn('ward', ['03','04','14','16','17','20'])->orderBy('ward')->get(['ward', 'name']);
+        $ws = Ward::whereNotIn('ward', ['03','04','16','17','20'])->orderBy('ward')->get(['ward', 'name']);
         foreach ($ws as $key => $value) {
             for($p = 1; $p <= 3; $p++){
                 array_push($wards, [
