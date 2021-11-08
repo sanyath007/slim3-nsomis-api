@@ -42,7 +42,7 @@ class ProductivityController extends Controller
     public function getInitForm($req, $res, $args)
     {
         return $res->withJson([
-            'wards' => Ward::whereNotIn('ward', ['03','04','14','16','17','20'])->get(),
+            'wards' => Ward::whereNotIn('ward', ['03','04','16','17','20'])->get(),
         ]);
     }
 
@@ -93,7 +93,7 @@ class ProductivityController extends Controller
 
                     // Group วอร์ดที่อยู่ใช้ทรัพยากรร่วมกัน
                     if($args['ward'] == '01') {
-                        $sql .= "and (i.ward in ('01','14'))";
+                        $sql .= "and (i.ward in ('01'))";
                     } else if($args['ward'] == '02') {
                         $sql .= "and (i.ward in ('02','17'))";
                     } else if($args['ward'] == '08') {
@@ -119,7 +119,7 @@ class ProductivityController extends Controller
 
     public function getProductAdd($req, $res, $args)
     {
-        return $res->withJson(Ward::whereNotIn('ward', ['03','04','14','16','17','20'])->get());
+        return $res->withJson(Ward::whereNotIn('ward', ['03','04','16','17','20'])->get());
     }
 
     public function getWorkload($req, $res, $args)
@@ -159,7 +159,7 @@ class ProductivityController extends Controller
                     
                     // Group วอร์ดที่อยู่ใช้ทรัพยากรร่วมกัน
                     if($args['ward'] == '01') {
-                        $sql .= "and (i.ward in ('01','14'))";
+                        $sql .= "and (i.ward in ('01'))";
                     } else if($args['ward'] == '02') {
                         $sql .= "and (i.ward in ('02','17'))";
                     } else if($args['ward'] == '08') {
