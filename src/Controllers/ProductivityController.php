@@ -122,6 +122,14 @@ class ProductivityController extends Controller
         return $res->withJson(Ward::whereNotIn('ward', ['03','04','16','17','20'])->get());
     }
 
+    public function getProduct($req, $res, $args)
+    {
+        return $res->withJson([
+            'product'   => Productivity::find($args['id']),
+            'wards'     => Ward::whereNotIn('ward', ['03','04','16','17','20'])->get()
+        ]);
+    }
+
     public function getWorkload($req, $res, $args)
     {
         $regtime = '';
@@ -247,5 +255,61 @@ class ProductivityController extends Controller
                         'product' => $product
                     ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
         }
+    }
+
+    
+    public function update($req, $res, $args)
+    {   
+        // Check validation data
+        $validation = $this->validator->validate($req, [
+            'ward' => v::notEmpty(),
+            'period' => v::notEmpty(),
+        ]);
+
+        if ($validation->failed()) {
+            return $res->withStatus(200)
+                    ->withHeader("Content-Type", "application/json")
+                    ->write(json_encode([
+                        'status' => 1,
+                        'errors' => $validation->getMessages(),
+                        'message' => 'Validation Error!!'
+                    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
+        }
+
+        $post = (array)$req->getParsedBody();
+
+        $product = Productivity::find($args['id']);
+        // $product->ward = $post['ward'];
+        // $product->period = $post['period'];
+        // $product->product_date = $post['product_date'];
+        // $product->total_patient = $post['total_patient'];
+        $product->type1 = $post['type1'];
+        $product->type2 = $post['type2'];
+        $product->type3 = $post['type3'];
+        $product->type4 = $post['type4'];
+        $product->type5 = $post['type5'];
+        $product->xtype1 = $post['xtype1'];
+        $product->xtype2 = $post['xtype2'];
+        $product->xtype3 = $post['xtype3'];
+        $product->xtype4 = $post['xtype4'];
+        $product->xtype5 = $post['xtype5'];
+        $product->xtotal = $post['xtotal'];
+        $product->rn = $post['rn'];
+        $product->pn = $post['pn'];
+        $product->total_staff = $post['total_staff'];
+        $product->xstaff = $post['xstaff'];
+        $product->productivity = $post['productivity'];
+        $product->updated_user = $post['user'];
+        var_dump($product);
+        // if($product->save()) {
+        //     return $res->withStatus(200)
+        //             ->withHeader("Content-Type", "application/json")
+        //             ->write(json_encode([
+        //                 'status' => 0,
+        //                 'errors' => '',
+        //                 'message' => 'Insertion successfully',
+        //                 'product' => $product
+        //             ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
+        // }
     }
 }

@@ -59,7 +59,9 @@ $app->get('/products/init-form', 'ProductivityController:getInitForm');
 $app->get('/product-ward/{month}/{ward}', 'ProductivityController:getProductWard');
 $app->get('/product-add', 'ProductivityController:getProductAdd');
 $app->get('/product-workload/{date}/{period}/{ward}', 'ProductivityController:getWorkload');
-$app->post('/product-store', 'ProductivityController:store');
+$app->post('/product', 'ProductivityController:store');
+$app->get('/product/{id}', 'ProductivityController:getProduct');
+$app->put('/product/{id}', 'ProductivityController:update');
 $app->get('/product-sum/{month}', 'ProductivityController:getSummary');
 $app->get('/ip-type/{date}/{period}/{ward}/{type}', 'ProductivityController:getIpType');
 
