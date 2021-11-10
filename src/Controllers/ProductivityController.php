@@ -300,17 +300,25 @@ class ProductivityController extends Controller
         $product->xstaff = $post['xstaff'];
         $product->productivity = $post['productivity'];
         $product->updated_user = $post['user'];
-        var_dump($product);
-        // if($product->save()) {
-        //     return $res->withStatus(200)
-        //             ->withHeader("Content-Type", "application/json")
-        //             ->write(json_encode([
-        //                 'status' => 0,
-        //                 'errors' => '',
-        //                 'message' => 'Insertion successfully',
-        //                 'product' => $product
-        //             ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
-        // }
+
+        if($product->save()) {
+            return $res->withStatus(200)
+                    ->withHeader("Content-Type", "application/json")
+                    ->write(json_encode([
+                        'status' => 0,
+                        'errors' => '',
+                        'message' => 'Insertion successfully',
+                        'product' => $product
+                    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
+        } else {
+            return $res->withStatus(200)
+                    ->withHeader("Content-Type", "application/json")
+                    ->write(json_encode([
+                        'status' => 1,
+                        'errors' => '',
+                        'message' => 'Error occur',
+                    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
+        }
     }
 
     public function delete($req, $res, $args)
