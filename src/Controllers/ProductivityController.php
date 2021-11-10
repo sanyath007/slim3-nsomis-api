@@ -323,17 +323,23 @@ class ProductivityController extends Controller
 
     public function delete($req, $res, $args)
     {
-        $product = Productivity::find($args['id']);
-
-        // if($product->save()) {
-        //     return $res->withStatus(200)
-        //             ->withHeader("Content-Type", "application/json")
-        //             ->write(json_encode([
-        //                 'status' => 0,
-        //                 'errors' => '',
-        //                 'message' => 'Insertion successfully',
-        //                 'product' => $product
-        //             ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
-        // }
+        if(Productivity::find($args['id'])->delete()) {
+            return $res->withStatus(200)
+                    ->withHeader("Content-Type", "application/json")
+                    ->write(json_encode([
+                        'status'    => 0,
+                        'errors'    => '',
+                        'message'   => 'Deletion successfully',
+                        'id'        => $args['id']
+                    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
+        } else {
+            return $res->withStatus(200)
+            ->withHeader("Content-Type", "application/json")
+            ->write(json_encode([
+                'status'    => 1,
+                'errors'    => '',
+                'message'   => 'Error occur',
+            ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT |  JSON_UNESCAPED_UNICODE));
+        }
     }
 }
