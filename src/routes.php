@@ -62,6 +62,7 @@ $app->get('/product-workload/{date}/{period}/{ward}', 'ProductivityController:ge
 $app->post('/product', 'ProductivityController:store');
 $app->get('/product/{id}', 'ProductivityController:getProduct');
 $app->put('/product/{id}', 'ProductivityController:update');
+$app->delete('/product/{id}', 'ProductivityController:delete');
 $app->get('/product-sum/{month}', 'ProductivityController:getSummary');
 $app->get('/ip-type/{date}/{period}/{ward}/{type}', 'ProductivityController:getIpType');
 
