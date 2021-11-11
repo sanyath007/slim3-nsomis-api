@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
+use App\Models\EpidWeek;
 
 class CovidController extends Controller
 {
@@ -170,6 +171,34 @@ class CovidController extends Controller
                 ORDER BY CAST(DAY(regdate) AS SIGNED) ";
 
         return $res->withJson(DB::select($sql, [$sdate, $edate]));
+    }
+
+    public function getRegWeek($req, $res, $args)
+    {
+        $weeks  = EpidWeek::all();
+
+        $sql = "SELECT ";
+        
+        $rowCount = 0;
+        foreach($weeks as $week) {
+            $sql .= "COUNT(CASE WHEN (regdate BETWEEN '" .$week->start_date. "' AND '" .$week->end_date. "') 
+                    THEN i.an END) AS '" .$week->week_no. "' ";
+
+            if ($rowCount < count($weeks) - 1) {
+                $sql .= ", ";
+            }
+
+            $rowCount++;
+        }
+
+        $sql .= "FROM ipt i LEFT JOIN ward w ON (i.ward=w.ward) 
+                WHERE (regdate BETWEEN ? AND ?)
+                AND (
+                    (i.ward IN ('11', '12', '18', '10', '00', '21'))
+                    OR (i.ward='06' AND i.an in (select an from iptdiag where icd10='B342'))
+                )";
+
+        return $res->withJson(collect(DB::select($sql, ['2021-01-03', '2022-01-01']))->first());
     }
 
     public function getRegWardMonth($req, $res, $args)

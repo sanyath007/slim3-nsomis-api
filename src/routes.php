@@ -163,6 +163,7 @@ $app->get('/covid/{ward}/ward', 'CovidController:getPatientsward');
 $app->get('/covid/{type}/all', 'CovidController:getPatientsAll');
 $app->get('/covid/register/{month}/month', 'CovidController:getRegMonth');
 $app->get('/covid/register/ward/{month}/month', 'CovidController:getRegWardMonth');
+$app->get('/covid/register/{week}/epi-week', 'CovidController:getRegWeek');
 
 $app->get('/persons', 'PersonController:getAll');
 
