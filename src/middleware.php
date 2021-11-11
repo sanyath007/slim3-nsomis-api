@@ -153,3 +153,7 @@ $container['MoveController'] = function($c) {
 $container['PersonPositionController'] = function($c) {
     return new App\Controllers\PersonPositionController($c);
 };
+
+$container['EpidWeekController'] = function($c) {
+    return new App\Controllers\EpidWeekController($c);
+};

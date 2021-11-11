@@ -165,6 +165,8 @@ $app->get('/covid/register/{month}/month', 'CovidController:getRegMonth');
 $app->get('/covid/register/ward/{month}/month', 'CovidController:getRegWardMonth');
 $app->get('/covid/register/{week}/epi-week', 'CovidController:getRegWeek');
 
+$app->get('/epid-weeks', 'EpidWeekController:getWeeks');
+
 $app->get('/persons', 'PersonController:getAll');
 
 $app->group('/api', function(Slim\App $app) { 
