@@ -17,8 +17,10 @@ class CovidController extends Controller
                 LEFT JOIN patient p ON (p.hn=i.hn)
                 LEFT JOIN ward w ON (i.ward=w.ward)
                 LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
-                WHERE (i.ward IN ('00', '06', '10', '11', '12', '18', '21'))
-                AND (i.an in (select an from iptdiag where icd10='B342'))
+                WHERE (
+                    (i.ward IN ('11', '12', '18', '10', '00', '21'))
+                    OR (i.ward='06' AND i.an in (select an from iptdiag where icd10='B342'))
+                )
                 AND (p.chwpart='30' AND p.amppart='01')
                 GROUP BY t.addressid, t.name
                 ORDER BY count(i.an) DESC";
@@ -36,8 +38,10 @@ class CovidController extends Controller
                 LEFT JOIN patient p ON (p.hn=i.hn)
                 LEFT JOIN ward w ON (i.ward=w.ward)
                 LEFT JOIN thaiaddress t ON (t.addressid=concat(p.chwpart, p.amppart, p.tmbpart))
-                WHERE (i.ward IN ('00', '06', '10', '11', '12', '18', '21'))
-                AND (i.an IN (select an from iptdiag where icd10='B342'))
+                WHERE (
+                    (i.ward IN ('11', '12', '18', '10', '00', '21'))
+                    OR (i.ward='06' AND i.an in (select an from iptdiag where icd10='B342'))
+                )
                 AND (i.dchdate is null)
                 AND (t.addressid=?)";
 
@@ -75,7 +79,10 @@ class CovidController extends Controller
                 COUNT(CASE WHEN (i.an IN (select an from iptdiag where icd10='B342')) THEN i.an END) AS num_pt
                 FROM ipt i 
                 LEFT JOIN ward w ON (i.ward=w.ward)
-                WHERE (i.ward IN ('00', '06', '10', '11', '12', '18', '21'))
+                WHERE (
+                    (i.ward IN ('11', '12', '18', '10', '00', '21'))
+                    OR (i.ward='06' AND i.an in (select an from iptdiag where icd10='B342'))
+                )
                 AND (i.dchdate is null)
                 GROUP BY i.ward, w.name
                 ORDER BY COUNT(i.an) DESC";
