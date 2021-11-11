@@ -175,7 +175,7 @@ class CovidController extends Controller
 
     public function getRegWeek($req, $res, $args)
     {
-        $weeks  = EpidWeek::all();
+        $weeks  = EpidWeek::where('week_no', '<=', $args['week'])->get();
 
         $sql = "SELECT ";
         
