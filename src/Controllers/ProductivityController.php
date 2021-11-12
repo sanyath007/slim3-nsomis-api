@@ -282,7 +282,7 @@ class ProductivityController extends Controller
         // $product->ward = $post['ward'];
         // $product->period = $post['period'];
         // $product->product_date = $post['product_date'];
-        // $product->total_patient = $post['total_patient'];
+        $product->total_patient = $post['total_patient'];
         $product->type1 = $post['type1'];
         $product->type2 = $post['type2'];
         $product->type3 = $post['type3'];
