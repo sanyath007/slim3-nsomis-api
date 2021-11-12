@@ -167,8 +167,12 @@ class CovidController extends Controller
         $sdate = ($args['month']). '-01';
         $edate = date('Y-m-t', strtotime($sdate));
 
-        $sql="SELECT CAST(DAY(regdate) AS SIGNED) AS d, COUNT(i.an) AS 'all' 
+        $sql="SELECT CAST(DAY(regdate) AS SIGNED) AS d, 
+                COUNT(CASE WHEN(p.sex='1') THEN i.an END) AS 'm', 
+                COUNT(CASE WHEN(p.sex='2') THEN i.an END) AS 'w', 
+                COUNT(i.an) AS 'all' 
                 FROM ipt i LEFT JOIN ward w ON (i.ward=w.ward)
+                LEFT JOIN patient p ON (i.hn=p.hn)
                 WHERE (i.regdate BETWEEN ? AND ?)
                 AND (
                     (i.ward IN ('11', '12', '18', '10', '00', '21'))
