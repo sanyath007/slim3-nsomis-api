@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use Illuminate\Database\Capsule\Manager as DB;
+use App\Models\EpidWeek;
 
 class IpController extends Controller
 {
@@ -159,7 +160,41 @@ class IpController extends Controller
             'wardStat' => DB::select($q, [$sdate, $edate]),
         ]);
     }
-    
+
+    public function getBedoccWeek($req, $res, $args)
+    {
+        $week = EpidWeek::where('week_no', $args['week'])->first();
+
+        $sql="SELECT 
+            ip.ward, w.name, 
+            SUM(ip.rw) AS rw, 
+            COUNT(ip.an) AS dc_num, 
+            SUM(a.admdate) as admdate 
+            FROM ipt ip
+            LEFT JOIN ward w ON (ip.ward=w.ward)
+            LEFT JOIN an_stat a ON (ip.an=a.an)				
+            WHERE (ip.dchdate BETWEEN ? AND ?)
+            #AND (ip.ward<>'05')
+            #AND (ip.an NOT IN (SELECT an FROM ipt_newborn))
+            AND (
+                (ip.ward IN ('11', '12', '18', '10', '00', '21'))
+                OR (ip.ward='06' AND ip.an in (select an from iptdiag where icd10='B342'))
+            )
+            GROUP BY ip.ward, w.name ";
+
+        $q = "SELECT * FROM ipt_ward_stat 
+                WHERE an IN (SELECT an FROM ipt WHERE (dchdate BETWEEN ? AND ?) 
+                AND (
+                    (ward IN ('11', '12', '18', '10', '00', '21'))
+                    OR (ward='06' AND an in (select an from iptdiag where icd10='B342'))
+                )) ";
+
+        return $res->withJson([
+            'admdate' => DB::select($sql, [$week->start_date, $week->end_date]),
+            'wardStat' => DB::select($q, [$week->start_date, $week->end_date]),
+        ]);
+    }
+
     public function getBedEmptyDay($req, $res, $args)
     {
         if($args['date'] == date('Y-m-d')) {
