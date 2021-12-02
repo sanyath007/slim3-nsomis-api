@@ -129,8 +129,8 @@ class IpController extends Controller
         $q = "SELECT * FROM ipt_ward_stat 
                 WHERE an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?) 
                 AND (
-                    (ward IN (SELECT ward FROM ward WHERE ward NOT IN ('03','04','16','17')))
-                    OR (ward='04' AND an NOT IN (SELECT an FROM ipt_newborn))
+                    (ward IN (SELECT ward FROM ward WHERE ward NOT IN ('03','04','06','11','12','16','17')))
+                    OR (ward IN ('04','06','11','12') AND an NOT IN (SELECT an FROM ipt_newborn))
                 )";
 
         return $res->withJson([
@@ -160,10 +160,10 @@ class IpController extends Controller
             GROUP BY ip.ward, w.name ";
                     
         $q = "SELECT * FROM ipt_ward_stat 
-            WHERE (an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?)) 
+            WHERE (an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?))
             AND (
-                (ward IN (SELECT ward FROM ward WHERE ward NOT IN ('03','04','16','17')))
-                OR (ward='04' AND an NOT IN (SELECT an FROM ipt_newborn))
+                (ward IN (SELECT ward FROM ward WHERE ward NOT IN ('03','04','06','11','12','16','17')))
+                OR (ward IN ('04','06','11','12') AND an NOT IN (SELECT an FROM ipt_newborn))
             )";
 
         return $res->withJson([
@@ -354,7 +354,8 @@ class IpController extends Controller
             LEFT JOIN ward w ON (a.ward=w.ward)
             WHERE (a.dchdate BETWEEN ? AND ?) AND (a.ward=?) ";
 
-        if ($args['ward'] == '04') {
+        $filterWard = ['04','06','11','12'];
+        if (in_array($args['ward'], $filterWard)) {
             $sql .= "AND (a.an NOT IN (SELECT an FROM ipt_newborn))";
         }
         
@@ -387,8 +388,9 @@ class IpController extends Controller
                 LEFT JOIN ward w ON (a.ward=w.ward)
                 WHERE (ws.an IN (SELECT an FROM ipt WHERE (dchdate BETWEEN  ? AND ?)))
                 AND (ws.ward=?) ";
-        
-        if ($args['ward'] == '04') {
+
+        $filterWard = ['04','06','11','12'];
+        if (in_array($args['ward'], $filterWard)) {
             $sql .= "AND (a.an NOT IN (SELECT an FROM ipt_newborn))";
         }
         
