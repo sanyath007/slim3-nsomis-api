@@ -328,6 +328,7 @@ class IpController extends Controller
                     OR (ip.dchdate > '" .$args['date']. "')
                 )
             )
+            #WHERE (ip.dchdate BETWEEN '2021-11-01' AND '2021-11-30')
             GROUP BY ip.ward, w.name ";
 
         return $res->withJson([
