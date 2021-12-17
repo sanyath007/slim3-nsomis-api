@@ -47,6 +47,7 @@ $app->get('/ip/class/{date}', 'IpController:ipclassDay');
 $app->get('/ip/class/{sdate}/{edate}', 'IpController:ipclass');
 $app->get('/ip/admdc-day/{date}', 'IpController:getAdmDcDay');
 $app->get('/ip/admdc-month/{month}', 'IpController:getAdmDcMonth');
+$app->get('/ip/admdc-year/{year}', 'IpController:getAdmDcYear');
 $app->get('/ip/admdate-month/{month}', 'IpController:getAdmdateMonth');
 $app->get('/ip/bedocc-year/{year}', 'IpController:getBedoccYear');
 $app->get('/ip/bedocc-month/{month}', 'IpController:getBedoccMonth');

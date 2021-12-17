@@ -44,7 +44,7 @@ class IpController extends Controller
                 LEFT JOIN ward w ON (ip.ward=w.ward)
                 LEFT JOIN an_stat a ON (ip.an=a.an)	
                 WHERE (ip.ward NOT IN ('03','16','17'))
-                AND (ip.an not in (select an from ipt_newborn))
+                #AND (ip.an not in (select an from ipt_newborn))
                 GROUP BY ip.ward, w.name ";
 
         $q = "SELECT * FROM iptbedmove WHERE (movedate=?) ";
@@ -69,7 +69,32 @@ class IpController extends Controller
                 LEFT JOIN ward w ON (ip.ward=w.ward)
                 LEFT JOIN an_stat a ON (ip.an=a.an)	
                 WHERE (ip.ward NOT IN ('03','16','17'))
-                AND (ip.an not in (select an from ipt_newborn))
+                #AND (ip.an not in (select an from ipt_newborn))
+                GROUP BY ip.ward, w.name ";
+
+        $q = "SELECT * FROM iptbedmove WHERE (movedate BETWEEN ? AND ?) ";
+
+        return $res->withJson([
+            'ipStat'    => DB::select($sql, [$sdate, $edate, $sdate, $edate, $sdate, $edate, $sdate, $edate]),
+            'moveStat'  => DB::select($q, [$sdate, $edate]),
+        ]);
+    }
+
+    public function getAdmDcYear($req, $res, $args)
+    {
+        $sdate = (((int)$args['year']) - 544). '-10-01';
+        $edate = (((int)$args['year']) - 543). '-09-30';
+
+        $sql = "SELECT ip.ward, w.name, 
+                SUM(CASE WHEN (ip.dchdate BETWEEN ? AND ?) THEN ip.rw END) AS rw, 
+                SUM(CASE WHEN (ip.dchdate BETWEEN ? AND ?) THEN a.admdate END) AS admdate,
+                COUNT(CASE WHEN (ip.regdate BETWEEN ? AND ?) THEN ip.an END) AS adm_num,
+                COUNT(CASE WHEN (ip.dchdate BETWEEN ? AND ?) THEN ip.an END) AS dc_num
+                FROM ipt ip
+                LEFT JOIN ward w ON (ip.ward=w.ward)
+                LEFT JOIN an_stat a ON (ip.an=a.an)	
+                WHERE (ip.ward NOT IN ('03','16','17'))
+                #AND (ip.an not in (select an from ipt_newborn))
                 GROUP BY ip.ward, w.name ";
 
         $q = "SELECT * FROM iptbedmove WHERE (movedate BETWEEN ? AND ?) ";
