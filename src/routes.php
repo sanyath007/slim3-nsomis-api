@@ -122,6 +122,8 @@ $app->put('/nurses/{id}/leave', 'NurseController:leave');
 $app->put('/nurses/{id}/unknown', 'NurseController:unknown');
 $app->get('/nurses/card-stat', 'NurseController:getCardStat');
 $app->get('/nurses/stat/depart', 'NurseController:getNumByDepart');
+$app->get('/nurses/{id}/moves', 'NurseController:getMoves');
+$app->get('/nurses/{id}/promotes', 'NurseController:getPromotes');
 
 $app->get('/supports', 'SupportController:getAll');
 $app->get('/supports/init/form', 'SupportController:getInitForm');

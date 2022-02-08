@@ -18,6 +18,7 @@ use App\Models\Duty;
 use App\Models\Move;
 use App\Models\Transfer;
 use App\Models\MemberOf;
+use App\Models\Promote;
 
 class NurseController extends Controller
 {
@@ -71,6 +72,16 @@ class NurseController extends Controller
                     ->with('prefix','position','academic','office')
                     ->with('memberOf','memberOf.depart','memberOf.division', 'memberOf.duty')
                     ->first();
+        
+        return $res->withJson($nurse);
+    }
+    
+    public function getPromotes($req, $res, $args)
+    {
+        $nurse = Promote::where('person_id', '=', $args['id'])
+                    ->with('typeposition','typeacademic','position','academic')
+                    // ->with('memberOf','memberOf.depart','memberOf.division', 'memberOf.duty')
+                    ->get();
         
         return $res->withJson($nurse);
     }
