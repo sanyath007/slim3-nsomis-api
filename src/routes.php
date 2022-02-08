@@ -138,6 +138,10 @@ $app->put('/supports/{id}/transfer', 'SupportController:transfer');
 $app->put('/supports/{id}/leave', 'SupportController:leave');
 $app->put('/supports/{id}/unknown', 'SupportController:unknown');
 
+$app->get('/promotes/{personId}', 'PromoteController:getAll');
+$app->get('/promotes/{personId}/init/form', 'PromoteController:getInitForm');
+$app->get('/promotes/{personId}/{id}', 'PromoteController:getById');
+
 $app->get('/moves/{personId}', 'MoveController:getAll');
 $app->get('/moves/{personId}/init/form', 'MoveController:getInitForm');
 $app->get('/moves/{personId}/{id}', 'MoveController:getById');
