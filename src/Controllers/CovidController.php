@@ -186,11 +186,19 @@ class CovidController extends Controller
 
     public function getRegWeek($req, $res, $args)
     {
-        $weeks  = EpidWeek::where('week_no', '<=', $args['week'])->get();
+        $year = $req->getParam('year');
+
+        $weeks  = EpidWeek::where('week_no', '<=', $args['week'])
+                    ->when(!empty($year), function($q) use ($year) {
+                        $q->where('year', $year);
+                    })->get();
+
+        $rowCount = 0;
+        $sdate = $weeks[0]->start_date;
+        $edate = $weeks[count($weeks) - 1]->end_date;
 
         $sql = "SELECT ";
-        
-        $rowCount = 0;
+
         foreach($weeks as $week) {
             $sql .= "COUNT(CASE WHEN (regdate BETWEEN '" .$week->start_date. "' AND '" .$week->end_date. "') 
                     THEN i.an END) AS '" .$week->week_no. "' ";
@@ -209,7 +217,7 @@ class CovidController extends Controller
                     OR (i.first_ward='06' AND i.an in (select an from iptdiag where icd10='B342'))
                 )";
 
-        return $res->withJson(collect(DB::select($sql, ['2021-01-03', '2022-01-01']))->first());
+        return $res->withJson(collect(DB::select($sql, [$sdate, $edate]))->first());
     }
 
     public function getRegWardMonth($req, $res, $args)
