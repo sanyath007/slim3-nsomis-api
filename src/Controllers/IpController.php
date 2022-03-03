@@ -199,7 +199,12 @@ class IpController extends Controller
 
     public function getBedoccWeek($req, $res, $args)
     {
-        $week = EpidWeek::where('week_no', $args['week'])->first();
+        $year = $req->getParam('year');
+
+        $week  = EpidWeek::where('week_no', $args['week'])
+                    ->when(!empty($year), function($q) use ($year) {
+                        $q->where('year', $year);
+                    })->first();
 
         $sql="SELECT 
             ip.ward, w.name, 
