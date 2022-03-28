@@ -187,8 +187,9 @@ class CovidController extends Controller
     public function getRegWeek($req, $res, $args)
     {
         $year = $req->getParam('year');
+        $week = (int)date('Y')+543 == $year ? $args['week'] : 53;
 
-        $weeks  = EpidWeek::where('week_no', '<=', $args['week'])
+        $weeks  = EpidWeek::where('week_no', '<=', $week)
                     ->when(!empty($year), function($q) use ($year) {
                         $q->where('year', $year);
                     })->get();
