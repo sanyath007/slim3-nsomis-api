@@ -15,6 +15,7 @@ use App\Models\Faction;
 use App\Models\Depart;
 use App\Models\Division;
 use App\Models\Duty;
+use App\Models\Leave;
 use App\Models\Move;
 use App\Models\Transfer;
 use App\Models\MemberOf;
@@ -195,7 +196,9 @@ class NurseController extends Controller
             $move = new Move;
             $move->move_person      = $nurse->person_id;
             $move->move_date        = toDateDb($post['move_date']);
+            $move->move_reason      = $post['move_reason'];
             $move->in_out           = $post['in_out'];
+            $move->remark           = $post['remark'];
 
             if ($post['move_doc_no'] != '') {
                 $move->move_doc_no      = $post['move_doc_no'];
@@ -251,8 +254,10 @@ class NurseController extends Controller
                 $transfer = new Transfer;
                 $transfer->transfer_person      = $args['id'];
                 $transfer->transfer_date        = toDateDb($post['transfer_date']);
-                $transfer->in_out               = $post['in_out'];
                 $transfer->transfer_to          = $post['transfer_to'];
+                $transfer->transfer_reason      = $post['transfer_reason'];
+                $transfer->in_out               = $post['in_out'];
+                $transfer->remark               = $post['remark'];
 
                 if ($post['transfer_doc_no'] != '') {
                     $transfer->transfer_doc_no      = $post['transfer_doc_no'];
@@ -319,6 +324,8 @@ class NurseController extends Controller
 
                 $leave->leave_type          = $post['leave_type'];
                 $leave->leave_reason        = $post['leave_reason'];
+                $leave->remark              = $post['remark'];
+
                 $leave->old_duty            = $old['duty_id'];
                 $leave->old_faction         = $old['faction_id'];
                 $leave->old_depart          = $old['depart_id'];
@@ -329,10 +336,10 @@ class NurseController extends Controller
                         'nurse' => $nurse
                     ]);
                 } else {
-                    var_dump($leave);
+                    // var_dump($leave);
                 }
             } else {
-                //throw error handler
+                // throw error handler
             }
         } catch (\Throwable $th) {
             //throw $th;
