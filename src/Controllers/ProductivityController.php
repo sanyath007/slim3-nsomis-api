@@ -119,14 +119,14 @@ class ProductivityController extends Controller
 
     public function getProductAdd($req, $res, $args)
     {
-        return $res->withJson(Ward::whereNotIn('ward', ['03','04','16','17','20'])->get());
+        return $res->withJson(Ward::whereNotIn('ward', ['03','04','16','17'])->get());
     }
 
     public function getProduct($req, $res, $args)
     {
         return $res->withJson([
             'product'   => Productivity::find($args['id']),
-            'wards'     => Ward::whereNotIn('ward', ['03','04','16','17','20'])->get()
+            'wards'     => Ward::whereNotIn('ward', ['03','04','16','17'])->get()
         ]);
     }
 
