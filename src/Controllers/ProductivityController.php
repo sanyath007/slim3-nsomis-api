@@ -42,7 +42,7 @@ class ProductivityController extends Controller
     public function getInitForm($req, $res, $args)
     {
         return $res->withJson([
-            'wards' => Ward::whereNotIn('ward', ['03','04','16','17','20'])->get(),
+            'wards' => Ward::whereNotIn('ward', ['03','04','16','17'])->get(),
         ]);
     }
 
