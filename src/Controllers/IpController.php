@@ -169,21 +169,52 @@ class IpController extends Controller
         $sdate = ($args['month']). '-01';
         $edate = date('Y-m-t', strtotime($sdate));
 
-        $sql="SELECT 
-            ip.ward, w.name, 
-            SUM(ip.rw) AS rw, 
-            COUNT(ip.an) AS dc_num, 
-            SUM(a.admdate) as admdate 
-            FROM ipt ip
-            LEFT JOIN ward w ON (ip.ward=w.ward)
-            LEFT JOIN an_stat a ON (ip.an=a.an)				
-            WHERE (ip.dchdate BETWEEN ? AND ?)
-            AND (
-                (ip.ward NOT IN ('03','16','17'))
-                OR (ip.ward='04' AND (ip.an NOT IN (SELECT an FROM ipt_newborn)))
+        $ips = DB::table('ipt')
+                    ->select("*")
+                    ->whereBetween('dchdate', [$sdate, $edate])
+                    ->groupBy('ward')
+                    ->pluck('ward');
+
+        $stats = DB::table('ipt')
+                    ->leftJoin('ipt_ward_stat', 'ipt.an', '=', 'ipt_ward_stat.an')
+                    ->whereBetween('ipt.dchdate', [$sdate, $edate])
+                    ->groupBy('ipt_ward_stat.ward')
+                    ->pluck('ipt_ward_stat.ward');
+
+        $wards = DB::table('ward')
+                    ->select('ward', 'name')
+                    ->where(function($query) use ($ips, $stats) {
+                        $query->whereIn('ward', $ips);
+                        $query->orWhereIn('ward', $stats);
+                    })
+                    ->whereNotIn('ward', ['03','16','17'])
+                    ->orderBy('ward')
+                    ->get();
+
+        $newbornList = DB::table('ipt_newborn')->select("an")->groupBy('an')->pluck('an');
+
+        $admdate = DB::table('ward')
+            ->select(
+                "ward.ward",
+                "ward.name", 
+                DB::raw("SUM(ipt.rw) as rw"), 
+                DB::raw("COUNT(ipt.an) as dc_num"), 
+                DB::raw("SUM(an_stat.admdate) as admdate")
             )
-            GROUP BY ip.ward, w.name ";
-                    
+            ->leftJoin('ipt', 'ward.ward', '=', 'ipt.ward')
+            ->leftJoin('an_stat', 'ipt.an', '=', 'an_stat.an')
+            ->whereBetween('ipt.dchdate', [$sdate, $edate])
+            ->where(function($q) use ($wards, $newbornList) {
+                $q->whereNotIn('ward.ward', ['03','16','17']);
+                $q->orWhere(function($sub) use ($newbornList) {
+                    $sub->where('ipt.ward', '04');
+                    $sub->whereNotIn('ipt.an', $newbornList);
+                });
+            })
+            ->groupBy('ward.ward')
+            ->groupBy('ward.name')
+            ->get();
+
         $q = "SELECT * FROM ipt_ward_stat 
             WHERE (an IN (SELECT an FROM ipt WHERE dchdate BETWEEN ? AND ?))
             AND (
@@ -192,8 +223,9 @@ class IpController extends Controller
             )";
 
         return $res->withJson([
-            'admdate' => DB::select($sql, [$sdate, $edate]),
-            'wardStat' => DB::select($q, [$sdate, $edate]),
+            'wards'     => $wards,
+            'admdate'   => $admdate,
+            'wardStat'  => DB::select($q, [$sdate, $edate]),
         ]);
     }
 
