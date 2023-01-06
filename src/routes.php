@@ -66,6 +66,7 @@ $app->get('/product/{id}', 'ProductivityController:getProduct');
 $app->put('/product/{id}', 'ProductivityController:update');
 $app->delete('/product/{id}', 'ProductivityController:delete');
 $app->get('/product-sum/{month}', 'ProductivityController:getSummary');
+$app->get('/product-overall/{month}', 'ProductivityController:getOverAll');
 $app->get('/ip-type/{date}/{period}/{ward}/{type}', 'ProductivityController:getIpType');
 
 $app->get('/op/visit/{year}', 'OpController:opvisit');
